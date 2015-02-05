@@ -41,17 +41,17 @@ def readSpikes(fh, fsize, fHeaderSize, spikeHeadFStr,
     
     retData=dict();
     
-    retData["timeStamp"]=np.zeros(numSpikes, dtype="uint64");
-    retData["waveForms"]=np.zeros(numSpikes, totalSampleSize, dtype="float32");
-    retData["gains"]=np.zeros(numSpikes, nChs, dtype="float32");
-    retData["thresholds"]=np.zeros(numSpikes, nChs, dtype="float32");
+    retData["timestamps"]=np.zeros(numSpikes, dtype="uint64");
+    retData["waveforms"]=np.zeros((numSpikes, totalSampleSize), dtype="float32");
+    retData["gains"]=np.zeros((numSpikes, nChs), dtype="float32");
+    retData["thresholds"]=np.zeros((numSpikes, nChs), dtype="float32");
     
     fh.seek(fHeaderSize);
     
     for i in np.r_[0:numSpikes]:
         spike=struct.unpack(spikeFStr, fh.read(spikeSize));
-        retData["timeStamp"][i]=spike[1];
-        retData["waveForms"][i, :]=spike[spikeDataInd, spikeDataInd+totalSampleSize];
+        retData["timestamps"][i]=spike[1];
+        retData["waveforms"][i, :]=spike[spikeDataInd:spikeDataInd+totalSampleSize];
         retData["gains"][i, :]=spike[spikeGainInd:spikeGainInd+nChs];
         retData["thresholds"][i, :]=spike[spikeThreshInd:spikeThreshInd+nChs];    
 
@@ -60,10 +60,10 @@ def readSpikes(fh, fsize, fHeaderSize, spikeHeadFStr,
 #             print(spike);
     
     retData["gains"]=retData["gains"]/1000.;
-    retData["waveForm"]=(32768.-retData["waveForm"]);
+    retData["waveforms"]=(32768.-retData["waveforms"]);
     for i in np.r_[0:nChs]:
         wStart=i*nSamples;
         wEnd=wStart+nSamples;
-        retData["waveForms"][:, wStart, wEnd]=retData["waveForm"][:, wStart, wEnd]/retData["gains"][:, i];
+        retData["waveforms"][:, wStart:wEnd]=retData["waveforms"][:, wStart:wEnd]/retData["gains"][:, i][np.newaxis].T;
 
     return retData;

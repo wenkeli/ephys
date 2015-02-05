@@ -4,9 +4,11 @@ import matplotlib;
 matplotlib.use("Qt4Agg");
 import matplotlib.pyplot as pp;
 
-from ..fileIO.loadOpenEphysSPikes import readSpikes;
+from ..fileIO.loadOpenEphysSpikes import readSpikes;
 
 from ..data.spikes import SpikesData;
+
+import numpy as np;
 
     
 fileName="/mnt/FastData/spikes_data/mCD__2014-05-01_16-07-49__acq9/Tetrode10.spikes";
@@ -17,57 +19,54 @@ fileStat=os.stat(fileName);
 
 fileSize=fileStat.st_size;
 
-data=readSpike(file, fileSize, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+data=readSpikes(file, fileSize, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
 
 file.close();
 
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][0]["waveForm"][100000:101000, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][1]["waveForm"][100000:101000, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][2]["waveForm"][100000:101000, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][3]["waveForm"][100000:101000, :].T);
-# fig.show();
-
+spikes=SpikesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
 
 # fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][0]["waveForm"][117545, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][1]["waveForm"][117545, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][2]["waveForm"][117545, :].T);
-# fig.show();
-#   
-# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-# ax.plot(data["channels"][3]["waveForm"][117545, :].T);
+# ax.plot(data["waveforms"][100000:101000, :].T);
 # fig.show();
 
-waveMaxBools=np.zeros(data["channels"][0]["gain"].shape, dtype="bool");
-waveMaxIndBools=np.zeros(waveMaxBools.shape, dtype="bool");
-waveCombBools=np.zeros(waveMaxBools.shape, dtype="bool");
+# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+# ax.plot(spikes.waveforms[0, 0:10, :].T);
+# fig.show();
+# 
+# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+# ax.plot(spikes.waveforms[1, 0:10, :].T);
+# fig.show();
+# 
+# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+# ax.plot(spikes.waveforms[2, 0:10, :].T);
+# fig.show();
+# 
+# fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+# ax.plot(spikes.waveforms[3, 0:10, :].T);
+# fig.show();
 
-for i in np.r_[0:4]:
-    curMaxBools=(np.max(data["channels"][i]["waveForm"][:, 4:10], 1)>25);
-    waveMaxBools=waveMaxBools | curMaxBools;
+spikeInds=np.r_[0:spikes.numSpikes];
+
+rands=np.random.random(10);
+
+failInds=spikeInds[spikes.triggerCh<0];
+randFailInds=failInds[np.int32(rands*failInds.size)];
+
+succInds=spikeInds[spikes.triggerCh>=0];
+randSuccInds=succInds[np.int32(rands*succInds.size)];
+
+for i in randFailInds:
+    fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+    ax.plot(spikes.waveforms[:, i, :].T);
+    fig.show();
+
+for i in randSuccInds:
+    fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+    pp.hold(True);
+    ax.plot(spikes.waveforms[:, i, :].T);
+    ax.plot(spikes.waveforms[spikes.triggerCh[i], i, :], color="k", linewidth=2);
+    pp.hold(False);
+    fig.show();
     
-    maxInds=np.argmax(data["channels"][i]["waveForm"][:, 0:15], 1);
-    curMaxIndBools=(maxInds>=7) & (maxInds<10);
-    waveMaxIndBools=waveMaxIndBools | curMaxIndBools;
-    waveCombBools=waveCombBools | (curMaxBools & curMaxIndBools);
     
     
-print(str(np.sum(waveMaxBools)));
-print(str(np.sum(waveMaxIndBools)));
-print(str(np.sum(waveCombBools)));

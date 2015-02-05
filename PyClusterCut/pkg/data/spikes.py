@@ -1,15 +1,13 @@
 import numpy as np
 
-from ..fileIO.loadOpenEphysSpikes import readSpikes;
-
 # class ChannelData:
-#     self.waveForms=[];
+#     self.waveforms=[];
 #     self.gains=[];
 #     self.params=dict();
 #     
-#     def __init(self, waveForms, gains):
-#         self.waveForms=np.zeros(waveForms.shape, dtype="float32");
-#         self.waveForms[:]=waveForms;
+#     def __init(self, waveforms, gains):
+#         self.waveforms=np.zeros(waveforms.shape, dtype="float32");
+#         self.waveforms[:]=waveforms;
 #         
 #         self.gains=np.zeros(gains.shape, dtype="float32");
 #         self.gains[:]=gains;
@@ -30,16 +28,16 @@ from ..fileIO.loadOpenEphysSpikes import readSpikes;
 #         calcPeakAngle();
 #         
 #     def calcPeak(self, peakStart=7, peakEnd=10):
-#         self.params["peak"]=np.max(self.waveForms[:, peakStart:peakEnd], 1);
+#         self.params["peak"]=np.max(self.waveforms[:, peakStart:peakEnd], 1);
 #     
 #     def calcPeakTime(self, peakStart=7, peakEnd=10):
-#         self.params["peakTime"]=np.argmax(self.waveForms[:, peakStart:peakEnd], 1)+peakStart;
+#         self.params["peakTime"]=np.argmax(self.waveforms[:, peakStart:peakEnd], 1)+peakStart;
 #     
 #     def calcValley(self, valleyStart=10, valleyEnd=30):
-#         self.params["valley"]=np.min(self.waveForms[:, valleyStart:valleyEnd], 1);
+#         self.params["valley"]=np.min(self.waveforms[:, valleyStart:valleyEnd], 1);
 #         
 #     def calcValley(self, valleyStart=10, valleyEnd=30):
-#         self.params["valleyTime"]=np.argmin(self.waveForms[:, valleyStart:valley], 1)+valleyStart;
+#         self.params["valleyTime"]=np.argmin(self.waveforms[:, valleyStart:valley], 1)+valleyStart;
 #         
 #     def calcPVWidth(self):
 #         self.params["PVWidth"]=self.params["valleyTime"]-self.params["peakTime"];
@@ -57,9 +55,9 @@ from ..fileIO.loadOpenEphysSpikes import readSpikes;
 #         return self.params[paramType];
 
 class SpikesData:    
-    def __init__(self, nChannels, nPointsPerChannel, waveForms, gains, thresholds, timeStamps, triggerChs=None):
-        self.waveForms=[];
-        self.timeStamps=[];
+    def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):
+        self.waveforms=[];
+        self.timestamps=[];
         
         self.thresholds=[];
         self.gains=[];
@@ -68,18 +66,20 @@ class SpikesData:
         
         self.params=dict();
         self.numChs=0;
-        self.pointsPerCh=0;
+        self.numPtsPerCh=0;
         self.numSpikes=0;
         
         
-        self.numSpikes=waveForms.shape(0);
+        self.numSpikes=waveforms.shape[0];
+        self.numChs=thresholds.shape[1];
+        self.numPtsPerCh=waveforms.shape[1]/self.numChs;
         
-        self.waveForms=np.array(np.copy(waveForms), dtype="float32");
-        self.waveForms=self.waveForms.reshape((self.numSpikes, nChannels, nPointsPerChannel));
-        self.waveForms=self.waveForms.transpose(1, 0, 3);
+        self.waveforms=np.array(np.copy(waveforms), dtype="float32");
+        self.waveforms=self.waveforms.reshape((self.numSpikes, self.numChs, self.numPtsPerCh));
+        self.waveforms=self.waveforms.transpose(1, 0, 2);
         
-        self.timeStamps=np.zeros(timeStamps.shape, dtype="uint64");
-        self.timeStamps[:]=timeStamps;
+        self.timestamps=np.zeros(timestamps.shape, dtype="uint64");
+        self.timestamps[:]=timestamps;
         
         self.thresholds=np.zeros(thresholds.T.shape, dtype="float32");
         self.thresholds[:]=thresholds.T;
@@ -87,21 +87,28 @@ class SpikesData:
         self.gains=np.zeros(gains.T.shape, dtype="float32");
         self.gains[:]=gains.T;
         
-        calcTriggerChannel(triggerChs);
+        self.calcTriggerChannel(triggerChs);
+        self.calcParams();
         
-        calcParams();
+    def calcTriggerChannel(self, triggerCh, triggerEndPoint=9):
+        self.triggerCh=np.zeros(self.numSpikes, dtype="int32");
+        self.triggerCh[:]=-1;
         
-    def calcTriggerChannel(self, triggerChs, triggerEndPoint=5):
-        self.triggerCh=np.zeros(self.numSpikes, dtype="uint16");
-        
-        if(triggerChs!=None):
-            self.triggerCh[:]=triggerChs;
+        if(triggerCh!=None):
+            self.triggerCh[:]=triggerCh;
             return;
         
+        appendCol=np.zeros(self.numSpikes, dtype="bool")[np.newaxis].T;
         for i in np.r_[0:self.numChs]:
-            isTrigger=np.sum((self.waveForms[i, :, 0:triggerEndPoint]>
-                              self.thresholds[i, :]), 1)>0;
+            aboveThresh=self.waveforms[i, :, 0:triggerEndPoint]>=(self.thresholds[i, :][np.newaxis].T);
+            belowThresh=self.waveforms[i, :, 0:triggerEndPoint-1]<(self.thresholds[i, :][np.newaxis].T);
+            
+            belowThresh=np.hstack((appendCol, belowThresh));
+            
+            isTrigger=np.sum((aboveThresh & belowThresh), 1)>0;
+                                         
             self.triggerCh[isTrigger]=i;
+    
     
     def calcParams(self):
         return;
@@ -116,29 +123,29 @@ class SpikesData:
         self.numChs;
         
     def getSpikeTimes(self):
-        return self.timeStamps;
+        return self.timestamps;
     
 
 
 # class SpikesData:
 #     self.chs=[];
-#     self.timeStamps=[];
+#     self.timestamps=[];
 #     self.numChs=0;
-#     self.pointsPerCh=0;
+#     self.numPtsPerCh=0;
 #     
-#     def __init__(self, nChannels, nPointsPerChannel, waveForms, gains, timeStamps):
+#     def __init__(self, nChannels, nPointsPerChannel, waveforms, gains, timestamps):
 #         self.chs=[None]*nChannels;
 #         
 #         for i in np.r_[0:nChannels]:
 #             waveStart=nPointsPerChannel*i;
 #             waveEnd=waveStart+nPointsPerChannel;
 #             
-#             self.chs[i]=ChannelData(waveForms[:, waveStart, waveEnd], gains[:, i]);
+#             self.chs[i]=ChannelData(waveforms[:, waveStart, waveEnd], gains[:, i]);
 #             
-#             self.timeStamps=timeStamps;
+#             self.timestamps=timestamps;
 #             
 #             self.numChs=nChannels;
-#             self.pointsPerCh=nPointsPerChannel;
+#             self.numPtsPerCh=nPointsPerChannel;
 #         
 #             
 #     def getChParamsTypes(self, chN):
@@ -151,5 +158,5 @@ class SpikesData:
 #         self.numChs;
 #         
 #     def getSpikeTimes(self):
-#         return self.timeStamps;
+#         return self.timestamps;
     
