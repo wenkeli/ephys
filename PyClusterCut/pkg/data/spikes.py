@@ -1,60 +1,7 @@
 import numpy as np
+from scipy.signal import waveforms
 
-# class ChannelData:
-#     self.waveforms=[];
-#     self.gains=[];
-#     self.params=dict();
-#     
-#     def __init(self, waveforms, gains):
-#         self.waveforms=np.zeros(waveforms.shape, dtype="float32");
-#         self.waveforms[:]=waveforms;
-#         
-#         self.gains=np.zeros(gains.shape, dtype="float32");
-#         self.gains[:]=gains;
-#         
-#         calcParams();
-#  
-#         
-#     def calcParams(self):
-#         calcPeak();
-#         calcPeakTime();
-#         calcValley();
-#         calcValleyTime();
-#         calcPVWidth();
-#         
-#         calcPeakEnergy();
-#         calcValleyEnergy();
-#         
-#         calcPeakAngle();
-#         
-#     def calcPeak(self, peakStart=7, peakEnd=10):
-#         self.params["peak"]=np.max(self.waveforms[:, peakStart:peakEnd], 1);
-#     
-#     def calcPeakTime(self, peakStart=7, peakEnd=10):
-#         self.params["peakTime"]=np.argmax(self.waveforms[:, peakStart:peakEnd], 1)+peakStart;
-#     
-#     def calcValley(self, valleyStart=10, valleyEnd=30):
-#         self.params["valley"]=np.min(self.waveforms[:, valleyStart:valleyEnd], 1);
-#         
-#     def calcValley(self, valleyStart=10, valleyEnd=30):
-#         self.params["valleyTime"]=np.argmin(self.waveforms[:, valleyStart:valley], 1)+valleyStart;
-#         
-#     def calcPVWidth(self):
-#         self.params["PVWidth"]=self.params["valleyTime"]-self.params["peakTime"];
-#         
-#     def calcPeakEnergy(self):
-#         self.params["peakEnergy"]=0;
-#         
-#     def calcValleyEnergy(self): 
-#         return;
-#     
-#     def getParamTypes(self):
-#         return self.params.keys();
-#     
-#     def getParam(self, paramType):
-#         return self.params[paramType];
-
-class SpikesData:    
+class SamplesData:
     def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):
         self.waveforms=[];
         self.timestamps=[];
@@ -108,12 +55,67 @@ class SpikesData:
             isTrigger=np.sum((aboveThresh & belowThresh), 1)>0;
                                          
             self.triggerCh[isTrigger]=i;
+            
+        validEvents=self.triggerCh>=0;
+        
+        self.numSpikes=np.sum(validEvents);
+        
+        self.waveforms=self.waveforms[:, validEvents, :];
+        self.timestamps=self.timestamps[validEvents];
+        self.thresholds=self.thresholds[:, validEvents];
+        self.gains=self.gains[:, validEvents];
+        
+        self.triggerCh=self.triggerCh[validEvents];
     
     
     def calcParams(self):
-        return;
-            
-    def getChParamsTypes(self):
+        self.calcPeak();
+        self.calcValley();
+        self.calcPVWidth();
+        self.calcPeakEnergy();
+        self.calcValleyEnergy();
+        self.calcPeakAngle();
+        
+    def calcPeak(self, peakTime=8):
+        self.params["peak"]=self.waveforms[:, :, peakTime];
+        self.params["peakTime"]=np.zeros((self.numChs, self.numSpikes), dtype="uint32");
+        self.params["peakTime"][:]=peakTime;
+        
+    def calcValley(self, valleyStart=10, valleyEnd=30):
+        self.params["valley"]=np.min(self.waveforms[:, :, valleyStart:valleyEnd], 2);
+        self.params["valleyTime"]=np.argmin(self.waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
+        
+        valleyTime=self.params["valleyTime"][self.triggerCh, np.r_[0:self.numSpikes]];
+        for i in np.r_[0:self.numChs]:
+            self.params["valleyTime"][i, :]=valleyTime;
+        self.params["valleyTime"]=np.uint32(self.params["valleyTime"]);
+    
+    def calcPVWidth(self):
+        self.params["PVWidth"]=self.params["valleyTime"]-self.params["peakTime"];
+        
+    def calcPeakEnergy(self):
+        self.params["peakEnergy"]=np.copy(self.waveforms);
+        self.params["peakEnergy"][self.params["peakEnergy"]<0]=0;
+        self.params["peakEnergy"]=np.sum(self.params["peakEnergy"], 2);
+        
+    def calcValleyEnergy(self):
+        self.params["valleyEnergy"]=np.copy(self.waveforms);
+        self.params["valleyEnergy"][self.params["valleyEnergy"]>0]=0;
+        self.params["valleyEnergy"]=np.abs(np.sum(self.params["valleyEnergy"], 2));
+        
+    def calcPeakAngle(self, stepSize=2):
+        self.params["peakAngle"]=np.zeros((self.numChs, self.numSpikes), dtype="float32");
+        
+        chIndRow=np.zeros(self.numSpikes, dtype="int32");
+        spikeIndRow=np.r_[0:self.numSpikes];
+        
+        for i in np.r_[0:self.numChs]:
+            chIndRow[:]=i;
+            peakTimeRow=self.params["peakTime"][i, :];
+            self.params["peakAngle"][i, :]=(self.waveforms[chIndRow, spikeIndRow, peakTimeRow]-
+                                            self.waveforms[chIndRow, spikeIndRow, peakTimeRow-stepSize]);
+        
+    def getChParamTypes(self):
         return self.params.keys();
     
     def getChParam(self, chN, paramType):
@@ -124,39 +126,5 @@ class SpikesData:
         
     def getSpikeTimes(self):
         return self.timestamps;
-    
 
-
-# class SpikesData:
-#     self.chs=[];
-#     self.timestamps=[];
-#     self.numChs=0;
-#     self.numPtsPerCh=0;
-#     
-#     def __init__(self, nChannels, nPointsPerChannel, waveforms, gains, timestamps):
-#         self.chs=[None]*nChannels;
-#         
-#         for i in np.r_[0:nChannels]:
-#             waveStart=nPointsPerChannel*i;
-#             waveEnd=waveStart+nPointsPerChannel;
-#             
-#             self.chs[i]=ChannelData(waveforms[:, waveStart, waveEnd], gains[:, i]);
-#             
-#             self.timestamps=timestamps;
-#             
-#             self.numChs=nChannels;
-#             self.numPtsPerCh=nPointsPerChannel;
-#         
-#             
-#     def getChParamsTypes(self, chN):
-#         return self.chs[chN].getParamTypes();
-#     
-#     def getChParam(self, chN, paramType):
-#         return self.chs[chN].getParam();
-#     
-#     def getNumChannels(self):
-#         self.numChs;
-#         
-#     def getSpikeTimes(self):
-#         return self.timestamps;
     

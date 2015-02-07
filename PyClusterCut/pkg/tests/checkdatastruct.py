@@ -4,9 +4,9 @@ import matplotlib;
 matplotlib.use("Qt4Agg");
 import matplotlib.pyplot as pp;
 
-from ..fileIO.loadOpenEphysSpikes import readSpikes;
+from ..fileIO.loadOpenEphysSpikes import readSamples;
 
-from ..data.spikes import SpikesData;
+from ..data.spikes import SamplesData;
 
 import numpy as np;
 
@@ -19,11 +19,11 @@ fileStat=os.stat(fileName);
 
 fileSize=fileStat.st_size;
 
-data=readSpikes(file, fileSize, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+data=readSamples(file, fileSize, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
 
 file.close();
 
-spikes=SpikesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
+samples=SamplesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
 
 # fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
 # ax.plot(data["waveforms"][100000:101000, :].T);
@@ -45,28 +45,28 @@ spikes=SpikesData(data["waveforms"], data["gains"], data["thresholds"], data["ti
 # ax.plot(spikes.waveforms[3, 0:10, :].T);
 # fig.show();
 
-spikeInds=np.r_[0:spikes.numSpikes];
+# spikeInds=np.r_[0:spikes.numSpikes];
+# 
+# rands=np.random.random(10);
+# 
+# failInds=spikeInds[spikes.triggerCh<0];
+# randFailInds=failInds[np.int32(rands*failInds.size)];
+# 
+# succInds=spikeInds[spikes.triggerCh>=0];
+# randSuccInds=succInds[np.int32(rands*succInds.size)];
 
-rands=np.random.random(10);
-
-failInds=spikeInds[spikes.triggerCh<0];
-randFailInds=failInds[np.int32(rands*failInds.size)];
-
-succInds=spikeInds[spikes.triggerCh>=0];
-randSuccInds=succInds[np.int32(rands*succInds.size)];
-
-for i in randFailInds:
-    fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-    ax.plot(spikes.waveforms[:, i, :].T);
-    fig.show();
-
-for i in randSuccInds:
-    fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
-    pp.hold(True);
-    ax.plot(spikes.waveforms[:, i, :].T);
-    ax.plot(spikes.waveforms[spikes.triggerCh[i], i, :], color="k", linewidth=2);
-    pp.hold(False);
-    fig.show();
+# for i in randFailInds:
+#     fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+#     ax.plot(spikes.waveforms[:, i, :].T);
+#     fig.show();
+# 
+# for i in randSuccInds:
+#     fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
+#     pp.hold(True);
+#     ax.plot(spikes.waveforms[:, i, :].T);
+#     ax.plot(spikes.waveforms[spikes.triggerCh[i], i, :], color="k", linewidth=2);
+#     pp.hold(False);
+#     fig.show();
     
     
     

@@ -1,7 +1,7 @@
 import struct;
 import numpy as np;
 
-def readSpikes(fh, fsize, fHeaderSize, spikeHeadFStr, 
+def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr, 
               spikeGainFStr, spikeThreshFStr, spikeConstTailSize, 
               spikeDataFStr, nChInd, nSampleInd):
     header=fh.read(fHeaderSize);
