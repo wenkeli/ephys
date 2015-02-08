@@ -122,7 +122,7 @@ class SamplesData:
         return self.params[paramType][chN, :];
     
     def getNumChannels(self):
-        self.numChs;
+        return self.numChs;
         
     def getSpikeTimes(self):
         return self.timestamps;
