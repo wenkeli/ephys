@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>MainW</class>
+ <widget class="QWidget" name="MainW">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>831</height>
+    <width>261</width>
+    <height>837</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>cluster cut control</string>
   </property>
   <widget class="QPushButton" name="openFileButton">
    <property name="geometry">
@@ -207,17 +210,30 @@
   <widget class="QPushButton" name="viewButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>670</y>
+     <x>190</x>
+     <y>710</y>
      <width>41</width>
      <height>25</height>
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>View</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="quitButton">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>810</y>
+     <width>71</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>quit</string>
    </property>
   </widget>
  </widget>
@@ -226,7 +242,7 @@
   <connection>
    <sender>openFileButton</sender>
    <signal>clicked()</signal>
-   <receiver>Form</receiver>
+   <receiver>MainW</receiver>
    <slot>loadFile()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -242,11 +258,11 @@
   <connection>
    <sender>viewButton</sender>
    <signal>clicked()</signal>
-   <receiver>Form</receiver>
-   <slot>updateView()</slot>
+   <receiver>MainW</receiver>
+   <slot>updatePlotView()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
+     <x>95</x>
      <y>685</y>
     </hint>
     <hint type="destinationlabel">
@@ -255,9 +271,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>quitButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>quit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>106</x>
+     <y>794</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>773</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
-  <slot>updateView()</slot>
+  <slot>updatePlotView()</slot>
+  <slot>quit()</slot>
  </slots>
 </ui>

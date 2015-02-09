@@ -6,6 +6,6 @@ from PySide.QtGui import QApplication;
 
 if __name__ =="__main__":
     app=QApplication(sys.argv);
-    frame=MainW();
+    frame=MainW(app);
     frame.show();
     app.exec_();
