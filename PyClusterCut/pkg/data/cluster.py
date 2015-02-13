@@ -6,14 +6,14 @@ import numpy as np;
 
 class Boundary:
     def __init__(self, x, y, viewChs, viewParams):
-        self.points=np.array([[x], [y]], dtype="float32");
-        if((x[0]!=x[-1]) or (y[0]!=y[1])):
+        self.points=np.array([x, y], dtype="float32");
+        if((x[0]!=x[-1]) or (y[0]!=y[-1])):
             self.points=np.float32(np.hstack((self.points, [[x[0]], [y[0]]])));
         self.viewChs=viewChs;
         self.viewParams=viewParams;
         
     def isView(self, testVChs, testVParams):
-        return ((self.viewChs==testChs) and (self.viewParams==testVParams));
+        return ((self.viewChs==testVChs) and (self.viewParams==testVParams));
     
     def getPoints(self):
         return self.points;
@@ -24,7 +24,7 @@ class Boundary:
         pathCodes[-1]=Path.CLOSEPOLY;
         pathCodes[1:-1]=Path.LINETO;
         
-        boundary=Path(points.T, pathCodes);
+        boundary=Path(self.points.T, pathCodes);
         
         return boundary.contains_points(np.array([dataX, dataY]).T);
 
@@ -42,12 +42,12 @@ class Cluster:
 #             sBA=sBA | clustersList[i].getSelectArray();
 #             
 #         return  Cluster(data, sBA);
-    def __init__(self, samples, boundaries=[], selectArray=None):
+    def __init__(self, samples, boundaries=[], selectArray=[]):
         self.data=samples;
         self.sBA=[];
         self.boundaries=boundaries;
         
-        if(selectArray==None):
+        if(len(selectArray)<=0):
             self.sBA=np.zeros(self.data.getNumSamples(), dtype="bool");
             self.sBA[:]=True;
         else:
@@ -69,7 +69,15 @@ class Cluster:
         return self.data.getChParam(chN, paramType)[self.sBA];
     
     def modifySelect(self, selectMod):
+        retPoints=self.sBA & (~selectMod);
         self.sBA=self.sBA & selectMod;
+        return retPoints;
+    
+    def addSelect(self, selectMod):
+        self.sBA=self.sBA | selectMod;
+        
+    def removeSelect(self, selectMod):
+        self.sBA=self.sBA & (~selectMod);
         
     def addBoundary(self, boundary):
         self.boundaries.append(boundary);

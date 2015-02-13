@@ -217,7 +217,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window&lt;/p&gt;&lt;p&gt;keyboard shortcut: V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>View</string>
@@ -234,6 +234,54 @@
    </property>
    <property name="text">
     <string>quit</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="addButton">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>680</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster with the points in the boundary&lt;/p&gt;&lt;p&gt;Keyboard shortcut: A&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="refineButton">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>650</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;refine the selected working cluster with points in the boundaries&lt;/p&gt;&lt;p&gt;keyboard shortcut: R&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>Refine</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="copyButton">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>710</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster with the points in the boundary, but also keep the points in the original cluster also&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>copy</string>
    </property>
   </widget>
  </widget>
@@ -262,12 +310,12 @@
    <slot>updatePlotView()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
-     <y>685</y>
+     <x>230</x>
+     <y>724</y>
     </hint>
     <hint type="destinationlabel">
-     <x>148</x>
-     <y>682</y>
+     <x>226</x>
+     <y>809</y>
     </hint>
    </hints>
   </connection>
@@ -278,12 +326,140 @@
    <slot>quit()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>106</x>
-     <y>794</y>
+     <x>16</x>
+     <y>824</y>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
      <y>773</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>addCluster()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>34</x>
+     <y>698</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>62</x>
+     <y>748</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>refineButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>refineCluster()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>662</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>144</x>
+     <y>638</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>workClusterSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>changeWorkCluster()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>544</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>555</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hChannelSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>invalidateView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>78</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>vChannelSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>invalidateView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>38</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>65</x>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hParamSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>invalidateView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>133</x>
+     <y>425</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>vParamSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>invalidateView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>159</x>
+     <y>431</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>viewClustersSelect</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainW</receiver>
+   <slot>invalidateView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>207</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>507</y>
     </hint>
    </hints>
   </connection>
@@ -292,5 +468,9 @@
   <slot>loadFile()</slot>
   <slot>updatePlotView()</slot>
   <slot>quit()</slot>
+  <slot>addCluster()</slot>
+  <slot>refineCluster()</slot>
+  <slot>changeWorkCluster()</slot>
+  <slot>invalidateView()</slot>
  </slots>
 </ui>
