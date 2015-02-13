@@ -72,15 +72,16 @@ class MainW(QMainWindow, Ui_MainW):
                             | Qt.WindowMinimizeButtonHint);
                             
         self.app=app;
-        screenSize=QApplication.desktop().screenGeometry();
+        screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
         
         cpw=self.geometry().width();
-        
+        self.move(sw-cpw, 0);
         self.plotW=GraphicsLayoutWidget();
-#         self.plotW.resize(sw-cpw-50, sh);
-        self.plotW.resize(1500, 1000);
+        self.plotW.resize(sw-cpw, sh);
+        self.plotW.move(0, 0);
+#         self.plotW.resize(1500, 1000);
         self.plotW.setFocusPolicy(Qt.StrongFocus);
         self.plotW.setObjectName("GraphicsWindow");
         self.plotW.setWindowFlags(Qt.CustomizeWindowHint
@@ -272,7 +273,7 @@ class MainW(QMainWindow, Ui_MainW):
             selWorkClust[0].setSelected(False);
         self.changeWorkCluster();
         
-        self.maxClustN=self.maxClustN+1;  
+        self.maxClustN=self.maxClustN+1;
     
         
     def removeFromClusterList(self, ind):
@@ -295,11 +296,17 @@ class MainW(QMainWindow, Ui_MainW):
         
     def clearSelect(self):
         self.hChannelSelect.clear();
+        self.hChList[:]=[];
         self.hParamSelect.clear();
+        self.hParamList[:]=[];
         self.vChannelSelect.clear();
+        self.vChList[:]=[];
         self.vParamSelect.clear();
+        self.vParamList[:]=[];
         self.workClusterSelect.clear();
+        self.workClustList.clear();
         self.viewClustersSelect.clear();
+        self.viewClustList.clear();
     
     def populateSelect(self):
         numChannels=self.data.getNumChannels();
@@ -387,11 +394,10 @@ class MainW(QMainWindow, Ui_MainW):
                                                  self.data.getChParam(self.vChN, self.vParamT));
                                                  
         clusterPointsBA=pointsBA & self.clusters[self.workClustID].getSelectArray();
-        
-        self.addToClusterList(False, [clustBound], clusterPointsBA, self.getPen());
-        
-#         print("addcluster");
+        if(np.sum(clusterPointsBA)>0):
+            self.addToClusterList(False, [clustBound], clusterPointsBA, self.getPen());
         self.initBound();
+        self.updatePlotView();
         
     
     def refineCluster(self):
@@ -411,12 +417,13 @@ class MainW(QMainWindow, Ui_MainW):
         retPoints=self.clusters[self.workClustID].modifySelect(clusterPointsBA);
         self.clusters[self.initClustID].addSelect(retPoints);
         self.initBound();
+        self.updatePlotView();
         
         
     def changeWorkCluster(self):
         selectItem=self.workClusterSelect.selectedItems();
         self.workClustID=selectItem[0].data(self.selectDataRole);
-        
+        self.viewClustersSelect.clearSelection();
         self.viewClustList[self.workClustID].setSelected(True);
 
     
