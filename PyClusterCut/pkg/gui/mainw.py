@@ -198,6 +198,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.addButton.setEnabled(enable);
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
+        self.deleteButton.setEnabled(enable);
         
     def invalidateView(self):
         self.viewValid=False;
