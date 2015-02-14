@@ -407,7 +407,7 @@ class MainW(QMainWindow, Ui_MainW):
 
         self.viewClustList[self.workClustID].setSelected(True);
         viewClustItems=self.viewClustersSelect.selectedItems();
-        for item in viewClustItems:
+        for item in viewClustItems[::-1]:
             clustID=item.data(self.selectDataRole);        
             self.plotClusterItems[clustID].setPlotData(self.hChN, self.vChN, self.hParamT, self.vParamT);
             self.plotClusterItems[clustID].addToPlot();
