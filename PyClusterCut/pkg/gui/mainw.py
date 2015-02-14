@@ -79,7 +79,7 @@ class MainW(QMainWindow, Ui_MainW):
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
         self.plotW=GraphicsLayoutWidget();
-        self.plotW.resize(sw-cpw, sh);
+        self.plotW.resize(sw-cpw-25, sh);
         self.plotW.move(0, 0);
 #         self.plotW.resize(1500, 1000);
         self.plotW.setFocusPolicy(Qt.StrongFocus);
@@ -130,6 +130,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.dataDir="";
         self.data=None;
         self.clusters=dict();
+        self.parentClustIDs=dict();
         self.plotClusterItems=dict();
         self.maxClustN=0;
         self.maxClustID="";
@@ -230,12 +231,9 @@ class MainW(QMainWindow, Ui_MainW):
         print("calculating parameters");
         self.data=SamplesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
         print("done");
-#         self.clusters[self.maxClustID]=Cluster(self.data);
-#         self.plotClusterItems[self.maxClustID]=ClusterPlotItem(self.clusters[0]);
-#         self.maxClustID=self.maxClustID+1;
 
         self.populateSelect();
-        self.addToClusterList(False);
+        self.addToClusterList(False, False);
         self.initClustID=self.workClustID;
         
         self.initBound();
@@ -248,9 +246,17 @@ class MainW(QMainWindow, Ui_MainW):
         del(data);
         
         
-    def addToClusterList(self, copy, clustBounds=[], pointsBA=[], pen=None):
+    def addToClusterList(self, copy, useParent, clustBounds=[], pointsBA=[], pen=None):
         self.maxClustID=str(self.maxClustN);
-        self.clusters[self.maxClustID]=Cluster(self.data, clustBounds, pointsBA);
+        if(useParent):
+            self.clusters[self.maxClustID]=Cluster(self.data, self.clusters[self.workClustID],
+                                                   clustBounds, pointsBA);
+            self.parentClustIDs[self.maxClustID]=self.workClustID;
+        else:
+            self.clusters[self.maxClustID]=Cluster(self.data, None,
+                                                   clustBounds, pointsBA);
+            self.parentClustIDs[self.maxClustID]=None;
+                                                   
         self.plotClusterItems[self.maxClustID]=ClusterPlotItem(self.clusters[self.maxClustID], 
                                                                self.plot, pen);
         
@@ -277,7 +283,7 @@ class MainW(QMainWindow, Ui_MainW):
     
         
     def removeFromClusterList(self, ind):
-        if(ind==0):
+        if(ind==self.initClustID):
             return;
             
         row=self.workClusterSelect.row(self.workClustList[ind]);
@@ -290,8 +296,28 @@ class MainW(QMainWindow, Ui_MainW):
         
         del(self.plotClusterItems[ind]);
         
-        self.clusters[self.initClustID].addSelect(self.clusters[ind].getSelectArray());
+        
+        for k in self.parentClustIDs.keys():
+            if(self.parentClustIDs[k]==ind):
+                self.parentClustIDs[k]=self.parentClustIDs[ind];
+                if(self.parentClustIDs[k]!=None):
+                    self.clusters[k].setParentClust(self.clusters[self.parentClustIDs[k]]);
+                else:
+                    self.clusters[k].setParentClust(None);
+        
+        
+        if(self.parentClustIDs[ind]!=None):
+            self.workClustID=self.parentClustIDs[ind];
+        else:
+            self.workClustID=self.initClustID;
+            self.clusters[self.initClustID].addSelect(self.clusters[ind].getSelectArray());
+            
+        del(self.parentClustIDs[ind]);
+        
         del(self.clusters[ind]);
+        
+        self.workClustList[self.workClustID].setSelected(True);
+        self.changeWorkCluster();
 
         
     def clearSelect(self):
@@ -340,7 +366,13 @@ class MainW(QMainWindow, Ui_MainW):
         self.keyShortcuts[widgetName]=[];
         
         self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
-                                          widget, self.updatePlotView));      
+                                                       widget, self.updatePlotView));
+        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
+                                                       widget, self.deleteCluster));
+        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+                                                       widget, self.refineCluster));
+        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
+                                                       widget, self.addCluster));                                                       
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -395,9 +427,17 @@ class MainW(QMainWindow, Ui_MainW):
                                                  
         clusterPointsBA=pointsBA & self.clusters[self.workClustID].getSelectArray();
         if(np.sum(clusterPointsBA)>0):
-            self.addToClusterList(False, [clustBound], clusterPointsBA, self.getPen());
+            self.addToClusterList(False, True, [clustBound], clusterPointsBA, self.getPen());
         self.initBound();
         self.updatePlotView();
+        
+    
+    def deleteCluster(self):
+        if((not self.dataValid) or (not self.viewValid)):
+            return;
+        self.removeFromClusterList(self.workClustID);
+        self.updatePlotView();
+        
         
     
     def refineCluster(self):
@@ -415,7 +455,6 @@ class MainW(QMainWindow, Ui_MainW):
         clusterPointsBA=clustBound.calcPointsInBoundary(self.data.getChParam(self.hChN, self.hParamT),
                                                         self.data.getChParam(self.vChN, self.vParamT));
         retPoints=self.clusters[self.workClustID].modifySelect(clusterPointsBA);
-        self.clusters[self.initClustID].addSelect(retPoints);
         self.initBound();
         self.updatePlotView();
         

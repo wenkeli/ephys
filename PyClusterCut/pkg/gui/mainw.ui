@@ -25,6 +25,9 @@
      <height>25</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;load a data file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>load file</string>
    </property>
@@ -51,6 +54,9 @@
      <height>141</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the parameter to display on the horizontal axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <widget class="QListWidget" name="hChannelSelect">
    <property name="geometry">
@@ -62,7 +68,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the channel for the horizontal axis to be displayed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the channel to display on the horizontal axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="horizontalScrollBarPolicy">
     <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -78,7 +84,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the channel for the vertical axis to be displayed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the channel to display on the vertical axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QListWidget" name="vParamSelect">
@@ -90,6 +96,9 @@
      <height>141</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the parameter to display on the vertical axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <widget class="QListWidget" name="workClusterSelect">
    <property name="geometry">
@@ -100,6 +109,9 @@
      <height>141</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the working cluster&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <widget class="QListWidget" name="viewClustersSelect">
    <property name="geometry">
@@ -109,6 +121,9 @@
      <width>61</width>
      <height>141</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the clusters to view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="selectionMode">
     <enum>QAbstractItemView::MultiSelection</enum>
@@ -136,6 +151,9 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;horizontal axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>H</string>
    </property>
@@ -151,6 +169,9 @@
      <width>16</width>
      <height>16</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;vertical axis&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>V</string>
@@ -181,6 +202,9 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the clusters that are displayed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;viewing clusters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
@@ -196,6 +220,9 @@
      <width>51</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the cluster that the cluster operations (add, delete, refine, copy) apply to&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;working cluster&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -227,10 +254,13 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>750</y>
+     <y>761</y>
      <width>63</width>
-     <height>32</height>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;exit the application&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>quit</string>
@@ -246,7 +276,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster with the points in the boundary&lt;/p&gt;&lt;p&gt;Keyboard shortcut: A&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the selected working cluster with the points in the boundary.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: A&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Add</string>
@@ -262,7 +292,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;refine the selected working cluster with points in the boundaries&lt;/p&gt;&lt;p&gt;keyboard shortcut: R&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;refine the selected working cluster with points in the boundaries, All the points outside of the boundary is returned to the parent cluster that the cluster was created from.&lt;/p&gt;&lt;p&gt;keyboard shortcut: R&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Refine</string>
@@ -278,10 +308,26 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster with the points in the boundary, but also keep the points in the original cluster also&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>copy</string>
+    <string>Copy</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="deleteButton">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>640</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete the selected working cluster, all the points will be returned to the parent cluster that the cluster was created from.&lt;/p&gt;&lt;p&gt;keyboard shortcut: D&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>Delet</string>
    </property>
   </widget>
  </widget>
@@ -327,7 +373,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>16</x>
-     <y>824</y>
+     <y>781</y>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
@@ -463,6 +509,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>deleteButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>deleteCluster()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>196</x>
+     <y>652</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>178</x>
+     <y>732</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -472,5 +534,6 @@
   <slot>refineCluster()</slot>
   <slot>changeWorkCluster()</slot>
   <slot>invalidateView()</slot>
+  <slot>deleteCluster()</slot>
  </slots>
 </ui>

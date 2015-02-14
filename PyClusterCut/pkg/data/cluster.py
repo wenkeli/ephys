@@ -12,6 +12,9 @@ class Boundary:
         self.viewChs=viewChs;
         self.viewParams=viewParams;
         
+    def __del__(self):
+        del(self.points);
+        
     def isView(self, testVChs, testVParams):
         return ((self.viewChs==testVChs) and (self.viewParams==testVParams));
     
@@ -42,8 +45,9 @@ class Cluster:
 #             sBA=sBA | clustersList[i].getSelectArray();
 #             
 #         return  Cluster(data, sBA);
-    def __init__(self, samples, boundaries=[], selectArray=[]):
+    def __init__(self, samples, parent=None, boundaries=[], selectArray=[]):
         self.data=samples;
+        self.parentClust=parent;
         self.sBA=[];
         self.boundaries=boundaries;
         
@@ -52,6 +56,11 @@ class Cluster:
             self.sBA[:]=True;
         else:
             self.sBA=np.copy(selectArray);
+            
+    def __del__(self):
+        self.addToParentClust();
+        del(self.sBA);
+        del(self.boundaries[:]);
         
     def getSelectArray(self):
         return self.sBA;
@@ -71,7 +80,17 @@ class Cluster:
     def modifySelect(self, selectMod):
         retPoints=self.sBA & (~selectMod);
         self.sBA=self.sBA & selectMod;
+        if(self.parentClust!=None):
+            self.parentClust.addSelect(retPoints);
         return retPoints;
+    
+    def setParentClust(self, parentClust):
+        self.parentClust=parentClust;
+    
+    def addToParentClust(self):
+        if(self.parentClust==None):
+            return;
+        self.parentClust.addSelect(self.sBA);
     
     def addSelect(self, selectMod):
         self.sBA=self.sBA | selectMod;
