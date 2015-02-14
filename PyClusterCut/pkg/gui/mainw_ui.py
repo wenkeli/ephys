@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Fri Feb 13 19:47:39 2015
+# Created: Sat Feb 14 11:34:33 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,6 +95,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.vParamSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
         QtCore.QObject.connect(self.viewClustersSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
         QtCore.QObject.connect(self.deleteButton, QtCore.SIGNAL("clicked()"), MainW.deleteCluster)
+        QtCore.QObject.connect(self.copyButton, QtCore.SIGNAL("clicked()"), MainW.copyCluster)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):

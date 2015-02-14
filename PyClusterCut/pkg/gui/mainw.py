@@ -373,7 +373,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
                                                        widget, self.refineCluster));
         self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
-                                                       widget, self.addCluster));                                                       
+                                                       widget, self.addCluster));
+        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
+                                               widget, self.copyCluster));                                                       
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -414,24 +416,30 @@ class MainW(QMainWindow, Ui_MainW):
         self.validateView();
         
     
-    def addCluster(self):
-        if((not self.closedBound) or (not self.dataValid) or (not self.viewValid)):
-            return;
-
+    def calcPointsInBound(self):
         viewChs=[self.hChN, self.vChN];
         viewParams=[self.hParamT, self.vParamT];
         clustBound=Boundary(self.boundPoints[0, :], self.boundPoints[1, :],
-                            viewChs, viewParams);
-                            
+                            viewChs, viewParams);                            
         pointsBA=clustBound.calcPointsInBoundary(self.data.getChParam(self.hChN, self.hParamT),
-                                                 self.data.getChParam(self.vChN, self.vParamT));
-                                                 
+                                                 self.data.getChParam(self.vChN, self.vParamT));                                             
         clusterPointsBA=pointsBA & self.clusters[self.workClustID].getSelectArray();
-        if(np.sum(clusterPointsBA)>0):
-            self.addToClusterList(False, True, [clustBound], clusterPointsBA, self.getPen());
         self.initBound();
-        self.updatePlotView();
+        return (clustBound, clusterPointsBA);
         
+    def addClustCommon(self, copy):
+        if((not self.closedBound) or (not self.dataValid) or (not self.viewValid)):
+            return;
+        (clustBound, clusterPointsBA)=self.calcPointsInBound();
+        if(np.sum(clusterPointsBA)>0):
+            self.addToClusterList(copy, True, [clustBound], clusterPointsBA, self.getPen());
+        self.updatePlotView();
+    
+    def addCluster(self):
+        self.addClustCommon(False);
+    
+    def copyCluster(self):
+        self.addClustCommon(True);
     
     def deleteCluster(self):
         if((not self.dataValid) or (not self.viewValid)):

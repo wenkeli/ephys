@@ -525,6 +525,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>copyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>copyCluster()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -535,5 +551,6 @@
   <slot>changeWorkCluster()</slot>
   <slot>invalidateView()</slot>
   <slot>deleteCluster()</slot>
+  <slot>copyCluster()</slot>
  </slots>
 </ui>
