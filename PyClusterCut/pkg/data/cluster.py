@@ -4,7 +4,7 @@ from matplotlib.path import Path;
 
 import numpy as np;
 
-class Boundary:
+class Boundary(object):
     def __init__(self, x, y, viewChs, viewParams):
         self.points=np.array([x, y], dtype="float32");
         if((x[0]!=x[-1]) or (y[0]!=y[-1])):
@@ -31,7 +31,7 @@ class Boundary:
         
         return boundary.contains_points(np.array([dataX, dataY]).T);
 
-class Cluster:
+class Cluster(object):
 #     @staticmethod
 #     def mergeClusters(clustersList):
 #         numClusters=len(clustersList);

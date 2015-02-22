@@ -1,6 +1,6 @@
 import numpy as np;
 
-class SamplesData:
+class SamplesData(object):
     def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):
         self.waveforms=[];
         self.timestamps=[];

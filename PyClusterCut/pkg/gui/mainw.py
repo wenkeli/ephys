@@ -22,7 +22,7 @@ from ..fileIO.loadOpenEphysSpikes import readSamples;
 from ..data.spikes import SamplesData;
 from ..data.cluster import Cluster, Boundary;
 
-class ClusterPlotItem:
+class ClusterPlotItem(object):
     def __init__(self, cluster, plot, pen=None):
         self.cluster=cluster;
         if(pen==None):
