@@ -28,6 +28,8 @@ class SamplesData(object):
         self.triggerCh=[];
         
         self.params=dict();
+        self.paramType=dict();
+        
         self.numChs=0;
         self.numPtsPerCh=0;
         self.numSamples=0;
@@ -43,6 +45,8 @@ class SamplesData(object):
         
         self.timestamps=np.zeros(timestamps.shape, dtype="uint64");
         self.timestamps[:]=timestamps;
+        self.params["time"]=self.timestamps;
+        self.paramType["time"]=0; #0 is channel independent
         
         self.thresholds=np.zeros(thresholds.T.shape, dtype="float32");
         self.thresholds[:]=thresholds.T;
@@ -94,48 +98,54 @@ class SamplesData(object):
         
     def calcPeak(self, peakTime=8):
         self.params["peak"]=self.waveforms[:, :, peakTime];
-        self.params["peakTime"]=np.zeros((self.numChs, self.numSamples), dtype="uint32");
+        self.paramType["peak"]=1;
+        
+        self.params["peakTime"]=np.zeros(self.numSamples, dtype="uint32");
         self.params["peakTime"][:]=peakTime;
+        self.paramType["peakTime"]=0;
         
     def calcValley(self, valleyStart=10, valleyEnd=30):
-        self.params["valley"]=np.min(self.waveforms[:, :, valleyStart:valleyEnd], 2);
+#         self.params["valley"]=np.min(self.waveforms[:, :, valleyStart:valleyEnd], 2);
         self.params["valleyTime"]=np.argmin(self.waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
-        
-        valleyTime=self.params["valleyTime"][self.triggerCh, np.r_[0:self.numSamples]];
-        for i in np.r_[0:self.numChs]:
-            self.params["valleyTime"][i, :]=valleyTime;
+        self.params["valleyTime"]=self.params["valleyTime"][self.triggerCh, np.r_[0:self.numSamples]];
         self.params["valleyTime"]=np.uint32(self.params["valleyTime"]);
+        self.paramType["valleyTime"]=0;
+        
+        self.params["valley"]=self.waveforms[:, np.r_[0:self.numSamples], self.params["valleyTime"]];
+        self.paramType["valley"]=1;
     
     def calcPVWidth(self):
         self.params["PVWidth"]=self.params["valleyTime"]-self.params["peakTime"];
+        self.paramType["PVWidth"]=0;
         
     def calcPeakEnergy(self):
         self.params["peakEnergy"]=np.copy(self.waveforms);
         self.params["peakEnergy"][self.params["peakEnergy"]<0]=0;
         self.params["peakEnergy"]=np.sum(self.params["peakEnergy"], 2);
+        self.paramType["peakEnergy"]=1;
         
     def calcValleyEnergy(self):
         self.params["valleyEnergy"]=np.copy(self.waveforms);
         self.params["valleyEnergy"][self.params["valleyEnergy"]>0]=0;
         self.params["valleyEnergy"]=np.abs(np.sum(self.params["valleyEnergy"], 2));
+        self.paramType["valleyEnergy"]=1;
         
     def calcPeakAngle(self, stepSize=2):
-        self.params["peakAngle"]=np.zeros((self.numChs, self.numSamples), dtype="float32");
+        sampleInd=np.r_[0:self.numSamples];
+
+        self.params["peakAngle"]=(self.waveforms[:, sampleInd, self.params["peakTime"]]-
+                                  self.waveforms[:, sampleInd, self.params["peakTime"]-stepSize]);
+        self.paramType["peakAngle"]=1;
+
         
-        chIndRow=np.zeros(self.numSamples, dtype="int32");
-        sampleIndRow=np.r_[0:self.numSamples];
-        
-        for i in np.r_[0:self.numChs]:
-            chIndRow[:]=i;
-            peakTimeRow=self.params["peakTime"][i, :];
-            self.params["peakAngle"][i, :]=(self.waveforms[chIndRow, sampleIndRow, peakTimeRow]-
-                                            self.waveforms[chIndRow, sampleIndRow, peakTimeRow-stepSize]);
-        
-    def getChParamTypes(self):
+    def getParamNames(self):
         return self.params.keys();
     
-    def getChParam(self, chN, paramType):
-        return self.params[paramType][chN, :];
+    def getParam(self, chN, paramName):
+        if(self.paramType[paramName]==0):
+            return self.params[paramName];
+        else:
+            return self.params[paramName][chN, :];
     
     def getWaveforms(self, chN=None):
         if(chN==None):

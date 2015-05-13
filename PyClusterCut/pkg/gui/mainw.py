@@ -130,6 +130,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.dataDir="";
         self.data=None;
+        self.workingSet=None;
         self.sampleClustCnt=None;
         self.clusters=dict();
         self.plotClusterItems=dict();
@@ -233,6 +234,8 @@ class MainW(QMainWindow, Ui_MainW):
         print("calculating parameters");
         self.data=SamplesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
         print("done");
+        self.workingSet=np.zeros(self.data.getNumSamples(), dtype="bool");
+        self.workingSet[:]=True;
 
         self.populateSelect();
         self.addToClusterList(False, False);
@@ -249,14 +252,14 @@ class MainW(QMainWindow, Ui_MainW):
         del(data);
         
         
-    def addToClusterList(self, copy, useParent, clustBounds=[], pointsBA=[], pen=None):
+    def addToClusterList(self, copy, isNotInitClust, clustBounds=[], pointsBA=[], pen=None):
         self.maxClustID=str(self.maxClustN);
-        if(useParent):
-            self.clusters[self.maxClustID]=Cluster(self.data, self.clusters[self.initClustID], 
-                                                   self.sampleClustCnt, clustBounds, pointsBA);
+        if(isNotInitClust):
+            self.clusters[self.maxClustID]=Cluster(self.data, pointsBA, self.clusters[self.initClustID], 
+                                                   self.sampleClustCnt, clustBounds);
         else:
-            self.clusters[self.maxClustID]=Cluster(self.data, None, None,
-                                                   clustBounds, pointsBA);
+            self.clusters[self.maxClustID]=Cluster(self.data, self.workingSet, None, None,
+                                                   clustBounds);
                                                    
         self.plotClusterItems[self.maxClustID]=ClusterPlotItem(self.clusters[self.maxClustID], 
                                                                self.plot, pen);
@@ -307,9 +310,9 @@ class MainW(QMainWindow, Ui_MainW):
         
         del(self.plotClusterItems[ind]);
         
-        self.workClustID=self.initClustID;
-        
         del(self.clusters[ind]);
+        
+        self.workClustID=self.initClustID;
         
         self.workClustList[self.workClustID].setSelected(True);
         self.changeWorkCluster();
@@ -342,17 +345,37 @@ class MainW(QMainWindow, Ui_MainW):
             self.vChList[i].setData(self.selectDataRole, i);
             self.vChannelSelect.addItem(self.vChList[i]);
             
-        paramKeys=self.data.getChParamTypes();
-        numParams=len(paramKeys);
+        paramNames=self.data.getParamNames();
+        
+        ignoredParamNames=["peakTime", "valleyTime", "PVWidth"];
+        
+        modParamNames=[];
+        if("peak" in paramNames):
+            modParamNames.append("peak");
+        if("valley" in paramNames):
+            modParamNames.append("valley");
+        if("peakAngle" in paramNames):
+            modParamNames.append("peakAngle");
+        if("time" in paramNames):
+            modParamNames.append("time");
+        
+        for i in paramNames:
+            if(i in ignoredParamNames):
+                continue;
+            if(i in modParamNames):
+                continue;
+            modParamNames.append(i);
+        
+        numParams=len(modParamNames);
         self.hParamList=[None]*numParams;
         self.vParamList=[None]*numParams;
         for i in np.r_[0:numParams]:
-            self.hParamList[i]=QListWidgetItem(paramKeys[i]);
-            self.hParamList[i].setData(self.selectDataRole, paramKeys[i]);
+            self.hParamList[i]=QListWidgetItem(modParamNames[i]);
+            self.hParamList[i].setData(self.selectDataRole, modParamNames[i]);
             self.hParamSelect.addItem(self.hParamList[i]);
             
-            self.vParamList[i]=QListWidgetItem(paramKeys[i]);
-            self.vParamList[i].setData(self.selectDataRole, paramKeys[i]);
+            self.vParamList[i]=QListWidgetItem(modParamNames[i]);
+            self.vParamList[i].setData(self.selectDataRole, modParamNames[i]);
             self.vParamSelect.addItem(self.vParamList[i]);
             
         
@@ -415,12 +438,12 @@ class MainW(QMainWindow, Ui_MainW):
         viewParams=[self.hParamT, self.vParamT];
         clustBound=Boundary(self.boundPoints[0, :], self.boundPoints[1, :],
                             viewChs, viewParams);                            
-        pointsBA=clustBound.calcPointsInBoundary(self.data.getChParam(self.hChN, self.hParamT),
-                                                 self.data.getChParam(self.vChN, self.vParamT));
+        pointsBA=clustBound.calcPointsInBoundary(self.data.getParam(self.hChN, self.hParamT),
+                                                 self.data.getParam(self.vChN, self.vParamT));
                                                  
-        workingPoints=np.copy(self.clusters[self.workClustID].getSelectArray());                                                                                      
+        workingPoints=self.clusters[self.workClustID].getSelectArray();                                                                                      
         if(self.workClustID==self.initClustID):
-            workingPoints[:]=True;
+            workingPoints=self.workingSet;
         
         clusterPointsBA=pointsBA & workingPoints;
         self.initBound();
@@ -460,9 +483,9 @@ class MainW(QMainWindow, Ui_MainW):
                             viewChs, viewParams);
                             
         self.clusters[self.workClustID].addBoundary(clustBound);
-        clusterPointsBA=clustBound.calcPointsInBoundary(self.data.getChParam(self.hChN, self.hParamT),
-                                                        self.data.getChParam(self.vChN, self.vParamT));
-        retPoints=self.clusters[self.workClustID].modifySelect(clusterPointsBA);
+        clusterPointsBA=clustBound.calcPointsInBoundary(self.data.getParam(self.hChN, self.hParamT),
+                                                        self.data.getParam(self.vChN, self.vParamT));
+        self.clusters[self.workClustID].modifySelect(clusterPointsBA);
         self.initBound();
         self.updatePlotView();
         

@@ -46,18 +46,14 @@ class Cluster(object):
 #             sBA=sBA | clustersList[i].getSelectArray();
 #             
 #         return  Cluster(data, sBA);
-    def __init__(self, samples, sourceClust=None, clustCount=None, boundaries=[], selectArray=[]):
+    def __init__(self, samples, selectArray, sourceClust=None, clustCount=None, boundaries=[]):
         self.data=samples;
         self.sourceCluster=sourceClust;
         self.sampleClustCnt=clustCount;
         self.sBA=[];
         self.boundaries=boundaries;
         
-        if(len(selectArray)<=0):
-            self.sBA=np.zeros(self.data.getNumSamples(), dtype="bool");
-            self.sBA[:]=True;
-        else:
-            self.sBA=np.copy(selectArray);
+        self.sBA=np.copy(selectArray);
             
         if(self.sampleClustCnt!=None):
             self.sampleClustCnt.addClustCount(self.sBA);
@@ -76,11 +72,8 @@ class Cluster(object):
             return waveforms[:, self.sBA, :];
         return waveforms[self.sBA, :];
     
-    def getSampleTimes(self):
-        return self.data.getSampleTimes()[self.sBA];
-    
-    def getParam(self, chN, paramType):
-        return self.data.getChParam(chN, paramType)[self.sBA];
+    def getParam(self, chN, paramName):
+        return self.data.getParam(chN, paramName)[self.sBA];
     
     def modifySelect(self, selectMod):
         removePoints=self.sBA & (~selectMod);
