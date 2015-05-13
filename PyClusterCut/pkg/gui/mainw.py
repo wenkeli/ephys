@@ -20,6 +20,7 @@ import FastScatterPlotItem as fscatter;
 from ..fileIO.loadOpenEphysSpikes import readSamples;
 
 from ..data.samples import SamplesData;
+from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
 
 class ClusterPlotItem(object):
@@ -129,14 +130,13 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.dataDir="";
         self.data=None;
+        self.sampleClustCnt=None;
         self.clusters=dict();
-        self.parentClustIDs=dict();
         self.plotClusterItems=dict();
         self.maxClustN=0;
         self.maxClustID="";
         self.workClustID="";
         self.initClustID="";
-        self.cutPointsID="cutPoints";
         self.dataValid=False;
 
 
@@ -237,6 +237,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.populateSelect();
         self.addToClusterList(False, False);
         self.initClustID=self.workClustID;
+        self.sampleClustCnt=SamplesClustCount(self.data.getNumSamples());
         
         self.initBound();
         self.enableViewUI(True);
@@ -251,13 +252,11 @@ class MainW(QMainWindow, Ui_MainW):
     def addToClusterList(self, copy, useParent, clustBounds=[], pointsBA=[], pen=None):
         self.maxClustID=str(self.maxClustN);
         if(useParent):
-            self.clusters[self.maxClustID]=Cluster(self.data, self.clusters[self.workClustID],
-                                                   clustBounds, pointsBA);
-            self.parentClustIDs[self.maxClustID]=self.workClustID;
+            self.clusters[self.maxClustID]=Cluster(self.data, self.clusters[self.initClustID], 
+                                                   self.sampleClustCnt, clustBounds, pointsBA);
         else:
-            self.clusters[self.maxClustID]=Cluster(self.data, None,
+            self.clusters[self.maxClustID]=Cluster(self.data, None, None,
                                                    clustBounds, pointsBA);
-            self.parentClustIDs[self.maxClustID]=None;
                                                    
         self.plotClusterItems[self.maxClustID]=ClusterPlotItem(self.clusters[self.maxClustID], 
                                                                self.plot, pen);
@@ -269,18 +268,28 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewClustList[self.maxClustID]=QListWidgetItem(str(self.maxClustID));
         self.viewClustList[self.maxClustID].setData(self.selectDataRole, self.maxClustID);
         self.viewClustersSelect.addItem(self.viewClustList[self.maxClustID]);
+        self.viewClustList[self.maxClustID].setSelected(True);
         
-        if((len(pointsBA)>0) and (not copy) and self.workClustID!=""):
+        
+#         if((len(pointsBA)>0) and self.workClustID!=""):
+#             if(self.workClustID==self.initClustID):
+# #                 self.clusters[self.initClustID].setSelect(self.sampleClustCnt.getNoClustSamples());
+#                 self.clusters[self.initClustID].removeSelect(pointsBA);
+#             elif(not copy):    
+#                 self.clusters[self.workClustID].removeSelect(pointsBA);
+
+        if((len(pointsBA)>0) and (self.workClustID!="") and (not copy)): 
             self.clusters[self.workClustID].removeSelect(pointsBA);
         
-        self.workClustID=self.maxClustID;
-        
-        selWorkClust=self.workClusterSelect.selectedItems();
-        self.workClustList[self.workClustID].setSelected(True);
-        if(len(selWorkClust)>0):
-            selWorkClust[0].setSelected(False);
-        self.changeWorkCluster();
-        
+        if(self.workClustID==""):
+            self.workClustID=self.maxClustID;
+            selWorkClust=self.workClusterSelect.selectedItems();
+            self.workClustList[self.workClustID].setSelected(True);
+            if(len(selWorkClust)>0):
+                selWorkClust[0].setSelected(False);
+            self.changeWorkCluster();
+            
+            
         self.maxClustN=self.maxClustN+1;
     
         
@@ -298,23 +307,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         del(self.plotClusterItems[ind]);
         
-        
-        for k in self.parentClustIDs.keys():
-            if(self.parentClustIDs[k]==ind):
-                self.parentClustIDs[k]=self.parentClustIDs[ind];
-                if(self.parentClustIDs[k]!=None):
-                    self.clusters[k].setParentClust(self.clusters[self.parentClustIDs[k]]);
-                else:
-                    self.clusters[k].setParentClust(None);
-        
-        
-        if(self.parentClustIDs[ind]!=None):
-            self.workClustID=self.parentClustIDs[ind];
-        else:
-            self.workClustID=self.initClustID;
-            self.clusters[self.initClustID].addSelect(self.clusters[ind].getSelectArray());
-            
-        del(self.parentClustIDs[ind]);
+        self.workClustID=self.initClustID;
         
         del(self.clusters[ind]);
         
@@ -423,8 +416,13 @@ class MainW(QMainWindow, Ui_MainW):
         clustBound=Boundary(self.boundPoints[0, :], self.boundPoints[1, :],
                             viewChs, viewParams);                            
         pointsBA=clustBound.calcPointsInBoundary(self.data.getChParam(self.hChN, self.hParamT),
-                                                 self.data.getChParam(self.vChN, self.vParamT));                                             
-        clusterPointsBA=pointsBA & self.clusters[self.workClustID].getSelectArray();
+                                                 self.data.getChParam(self.vChN, self.vParamT));
+                                                 
+        workingPoints=np.copy(self.clusters[self.workClustID].getSelectArray());                                                                                      
+        if(self.workClustID==self.initClustID):
+            workingPoints[:]=True;
+        
+        clusterPointsBA=pointsBA & workingPoints;
         self.initBound();
         return (clustBound, clusterPointsBA);
         
@@ -472,7 +470,6 @@ class MainW(QMainWindow, Ui_MainW):
     def changeWorkCluster(self):
         selectItem=self.workClusterSelect.selectedItems();
         self.workClustID=selectItem[0].data(self.selectDataRole);
-        self.viewClustersSelect.clearSelection();
         self.viewClustList[self.workClustID].setSelected(True);
 
     

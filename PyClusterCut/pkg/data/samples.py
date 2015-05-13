@@ -1,5 +1,22 @@
 import numpy as np;
 
+class SamplesClustCount(object):
+    def __init__(self, numSamples):
+        self.sampleNumClust=np.zeros(numSamples, dtype="int32");
+        
+    def addClustCount(self, sBA):
+        self.sampleNumClust[sBA]=self.sampleNumClust[sBA]+1;
+        
+    def minusClustCount(self, sBA):
+        self.sampleNumClust[sBA]=self.sampleNumClust[sBA]-1;
+        self.sampleNumClust[self.sampleNumClust<0]=0;
+        
+    def getNoClustSamples(self):
+        return self.getNClustSamples(0);
+    
+    def getNClustSamples(self, numClusts):
+        return self.sampleNumClust==numClusts;
+
 class SamplesData(object):
     def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):
         self.waveforms=[];

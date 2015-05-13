@@ -1,4 +1,5 @@
 from .samples import SamplesData;
+from .samples import SamplesClustCount;
 
 from matplotlib.path import Path;
 
@@ -45,10 +46,10 @@ class Cluster(object):
 #             sBA=sBA | clustersList[i].getSelectArray();
 #             
 #         return  Cluster(data, sBA);
-    def __init__(self, samples, sourceClust=None, refClust=None, boundaries=[], selectArray=[]):
+    def __init__(self, samples, sourceClust=None, clustCount=None, boundaries=[], selectArray=[]):
         self.data=samples;
         self.sourceCluster=sourceClust;
-        self.refCluster=refClust;
+        self.sampleClustCnt=clustCount;
         self.sBA=[];
         self.boundaries=boundaries;
         
@@ -58,8 +59,11 @@ class Cluster(object):
         else:
             self.sBA=np.copy(selectArray);
             
+        if(self.sampleClustCnt!=None):
+            self.sampleClustCnt.addClustCount(self.sBA);
+            
     def __del__(self):
-        self.addToParentClust();
+        self.removeSelect(self.sBA);
         del(self.sBA);
         del(self.boundaries[:]);
         
@@ -79,25 +83,28 @@ class Cluster(object):
         return self.data.getChParam(chN, paramType)[self.sBA];
     
     def modifySelect(self, selectMod):
-        retPoints=self.sBA & (~selectMod);
-        self.sBA=self.sBA & selectMod;
-        if(self.sourceCluster!=None):
-            self.sourceCluster.addSelect(retPoints);
-        return retPoints;
+        removePoints=self.sBA & (~selectMod);
+        self.removeSelect(removePoints);
     
-    def setParentClust(self, parentClust):
-        self.sourceCluster=parentClust;
+    def updateParentClustSelect(self):
+        if((self.sourceCluster!=None) and (self.sampleClustCnt!=None)):
+            self.sourceCluster.setSelect(self.sampleClustCnt.getNoClustSamples());
     
-    def addToParentClust(self):
-        if(self.sourceCluster==None):
-            return;
-        self.sourceCluster.addSelect(self.sBA);
+    def setSelect(self, selectMod):
+        self.removeSelect(self.sBA);
+        self.addSelect(selectMod);
     
     def addSelect(self, selectMod):
+        if(self.sampleClustCnt!=None):
+            self.sampleClustCnt.addClustCount(selectMod & (~self.sBA));
         self.sBA=self.sBA | selectMod;
+        self.updateParentClustSelect();
         
     def removeSelect(self, selectMod):
+        if(self.sampleClustCnt!=None):
+            self.sampleClustCnt.minusClustCount(selectMod & (self.sBA));         
         self.sBA=self.sBA & (~selectMod);
+        self.updateParentClustSelect();
         
     def addBoundary(self, boundary):
         self.boundaries.append(boundary);
