@@ -1,4 +1,4 @@
-from .spikes import SamplesData;
+from .samples import SamplesData;
 
 from matplotlib.path import Path;
 
@@ -45,9 +45,10 @@ class Cluster(object):
 #             sBA=sBA | clustersList[i].getSelectArray();
 #             
 #         return  Cluster(data, sBA);
-    def __init__(self, samples, parent=None, boundaries=[], selectArray=[]):
+    def __init__(self, samples, sourceClust=None, refClust=None, boundaries=[], selectArray=[]):
         self.data=samples;
-        self.parentClust=parent;
+        self.sourceCluster=sourceClust;
+        self.refCluster=refClust;
         self.sBA=[];
         self.boundaries=boundaries;
         
@@ -80,17 +81,17 @@ class Cluster(object):
     def modifySelect(self, selectMod):
         retPoints=self.sBA & (~selectMod);
         self.sBA=self.sBA & selectMod;
-        if(self.parentClust!=None):
-            self.parentClust.addSelect(retPoints);
+        if(self.sourceCluster!=None):
+            self.sourceCluster.addSelect(retPoints);
         return retPoints;
     
     def setParentClust(self, parentClust):
-        self.parentClust=parentClust;
+        self.sourceCluster=parentClust;
     
     def addToParentClust(self):
-        if(self.parentClust==None):
+        if(self.sourceCluster==None):
             return;
-        self.parentClust.addSelect(self.sBA);
+        self.sourceCluster.addSelect(self.sBA);
     
     def addSelect(self, selectMod):
         self.sBA=self.sBA | selectMod;

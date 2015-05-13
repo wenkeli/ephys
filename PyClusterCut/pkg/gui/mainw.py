@@ -19,7 +19,7 @@ import FastScatterPlotItem as fscatter;
 
 from ..fileIO.loadOpenEphysSpikes import readSamples;
 
-from ..data.spikes import SamplesData;
+from ..data.samples import SamplesData;
 from ..data.cluster import Cluster, Boundary;
 
 class ClusterPlotItem(object):
@@ -136,6 +136,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.maxClustID="";
         self.workClustID="";
         self.initClustID="";
+        self.cutPointsID="cutPoints";
         self.dataValid=False;
 
 
