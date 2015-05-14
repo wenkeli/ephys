@@ -351,7 +351,7 @@ class MainW(QMainWindow, Ui_MainW):
                                                        widget, self.updatePlotView));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
                                                        widget, self.deleteCluster));
-        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("F")),
                                                        widget, self.refineCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
                                                        widget, self.addCluster));

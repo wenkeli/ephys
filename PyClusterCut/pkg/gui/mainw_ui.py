@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sat Feb 14 11:34:33 2015
+# Created: Thu May 14 17:23:43 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -70,17 +70,29 @@ class Ui_MainW(object):
         self.quitButton.setGeometry(QtCore.QRect(0, 761, 63, 21))
         self.quitButton.setObjectName("quitButton")
         self.addButton = QtGui.QPushButton(MainW)
-        self.addButton.setGeometry(QtCore.QRect(10, 640, 41, 25))
+        self.addButton.setGeometry(QtCore.QRect(30, 640, 41, 25))
         self.addButton.setObjectName("addButton")
         self.refineButton = QtGui.QPushButton(MainW)
-        self.refineButton.setGeometry(QtCore.QRect(170, 610, 41, 25))
+        self.refineButton.setGeometry(QtCore.QRect(180, 640, 41, 25))
         self.refineButton.setObjectName("refineButton")
         self.copyButton = QtGui.QPushButton(MainW)
         self.copyButton.setGeometry(QtCore.QRect(140, 670, 41, 25))
         self.copyButton.setObjectName("copyButton")
         self.deleteButton = QtGui.QPushButton(MainW)
-        self.deleteButton.setGeometry(QtCore.QRect(180, 640, 41, 25))
+        self.deleteButton.setGeometry(QtCore.QRect(130, 640, 41, 25))
         self.deleteButton.setObjectName("deleteButton")
+        self.clearWaveButton = QtGui.QPushButton(MainW)
+        self.clearWaveButton.setGeometry(QtCore.QRect(120, 610, 41, 25))
+        self.clearWaveButton.setObjectName("clearWaveButton")
+        self.reportClusterButton = QtGui.QPushButton(MainW)
+        self.reportClusterButton.setGeometry(QtCore.QRect(170, 610, 41, 25))
+        self.reportClusterButton.setObjectName("reportClusterButton")
+        self.waveButton = QtGui.QPushButton(MainW)
+        self.waveButton.setGeometry(QtCore.QRect(70, 610, 41, 25))
+        self.waveButton.setObjectName("waveButton")
+        self.undoButton = QtGui.QPushButton(MainW)
+        self.undoButton.setGeometry(QtCore.QRect(40, 670, 41, 25))
+        self.undoButton.setObjectName("undoButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -126,9 +138,17 @@ class Ui_MainW(object):
         self.addButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>add a cluster from the selected working cluster with the points in the boundary.</p><p>Keyboard shortcut: A</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.addButton.setText(QtGui.QApplication.translate("MainW", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.refineButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>refine the selected working cluster with points in the boundaries, All the points outside of the boundary is returned to the parent cluster that the cluster was created from.</p><p>keyboard shortcut: R</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.refineButton.setText(QtGui.QApplication.translate("MainW", "Refine", None, QtGui.QApplication.UnicodeUTF8))
+        self.refineButton.setText(QtGui.QApplication.translate("MainW", "reFine", None, QtGui.QApplication.UnicodeUTF8))
         self.copyButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also</p><p>keyboard shortcut: C</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.copyButton.setText(QtGui.QApplication.translate("MainW", "Copy", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>delete the selected working cluster, all the points will be returned to the parent cluster that the cluster was created from.</p><p>keyboard shortcut: D</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteButton.setText(QtGui.QApplication.translate("MainW", "Delet", None, QtGui.QApplication.UnicodeUTF8))
+        self.clearWaveButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>clear the waveform view window</p><p>Keyboard shortcut: E</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.clearWaveButton.setText(QtGui.QApplication.translate("MainW", "clEar", None, QtGui.QApplication.UnicodeUTF8))
+        self.reportClusterButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: R</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "Reprt", None, QtGui.QApplication.UnicodeUTF8))
+        self.waveButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the next 100 waveforms of the working cluster</p><p>Keyboard shortcut: W</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.waveButton.setText(QtGui.QApplication.translate("MainW", "Wave", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo a step in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoButton.setText(QtGui.QApplication.translate("MainW", "Undo", None, QtGui.QApplication.UnicodeUTF8))
 
