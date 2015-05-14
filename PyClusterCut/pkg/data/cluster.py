@@ -7,28 +7,28 @@ import numpy as np;
 
 class Boundary(object):
     def __init__(self, x, y, viewChs, viewParams):
-        self.points=np.array([x, y], dtype="float32");
+        self.__points=np.array([x, y], dtype="float32");
         if((x[0]!=x[-1]) or (y[0]!=y[-1])):
-            self.points=np.float32(np.hstack((self.points, [[x[0]], [y[0]]])));
-        self.viewChs=viewChs;
-        self.viewParams=viewParams;
+            self.__points=np.float32(np.hstack((self.__points, [[x[0]], [y[0]]])));
+        self.__viewChs=viewChs;
+        self.__viewParams=viewParams;
         
     def __del__(self):
-        del(self.points);
+        del(self.__points);
         
     def isView(self, testVChs, testVParams):
-        return ((self.viewChs==testVChs) and (self.viewParams==testVParams));
+        return ((self.__viewChs==testVChs) and (self.__viewParams==testVParams));
     
     def getPoints(self):
-        return self.points;
+        return self.__points;
     
     def calcPointsInBoundary(self, dataX, dataY):
-        pathCodes=np.zeros(self.points.shape[1], dtype="int32");
+        pathCodes=np.zeros(self.__points.shape[1], dtype="int32");
         pathCodes[0]=Path.MOVETO;
         pathCodes[-1]=Path.CLOSEPOLY;
         pathCodes[1:-1]=Path.LINETO;
         
-        boundary=Path(self.points.T, pathCodes);
+        boundary=Path(self.__points.T, pathCodes);
         
         return boundary.contains_points(np.array([dataX, dataY]).T);
 
@@ -39,77 +39,77 @@ class Cluster(object):
 #         if(numClusters<=0):
 #             return None;
 #         
-#         data=clustersList[0].data;
-#         numSamples=data.getNumSamples();
-#         sBA=np.zeros(numSamples, dtype="bool");
+#         __data=clustersList[0].__data;
+#         numSamples=__data.getNumSamples();
+#         __sBA=np.zeros(numSamples, dtype="bool");
 #         for i in np.r_[0:numClusters]:
-#             sBA=sBA | clustersList[i].getSelectArray();
+#             __sBA=__sBA | clustersList[i].getSelectArray();
 #             
-#         return  Cluster(data, sBA);
+#         return  Cluster(__data, __sBA);
     def __init__(self, samples, selectArray, sourceClust=None, clustCount=None, boundaries=[]):
-        self.data=samples;
-        self.sourceCluster=sourceClust;
-        self.sampleClustCnt=clustCount;
-        self.sBA=[];
-        self.boundaries=boundaries;
+        self.__data=samples;
+        self.__sourceCluster=sourceClust;
+        self.__sampleClustCnt=clustCount;
+        self.__sBA=[];
+        self.__boundaries=boundaries;
         
-        self.sBA=np.copy(selectArray);
+        self.__sBA=np.copy(selectArray);
             
-        if(self.sampleClustCnt!=None):
-            self.sampleClustCnt.addClustCount(self.sBA);
+        if(self.__sampleClustCnt!=None):
+            self.__sampleClustCnt.addClustCount(self.__sBA);
             
     def __del__(self):
-        self.removeSelect(self.sBA);
-        del(self.sBA);
-        del(self.boundaries[:]);
+        self.removeSelect(self.__sBA);
+        del(self.__sBA);
+        del(self.__boundaries[:]);
         
     def getSelectArray(self):
-        return self.sBA;
+        return self.__sBA;
     
     def getWaveforms(self, chN=None):
-        waveforms=self.data.getWaveforms(chN);
+        waveforms=self.__data.getWaveforms(chN);
         if(chN==None):
-            return waveforms[:, self.sBA, :];
-        return waveforms[self.sBA, :];
+            return waveforms[:, self.__sBA, :];
+        return waveforms[self.__sBA, :];
     
     def getParam(self, chN, paramName):
-        return self.data.getParam(chN, paramName)[self.sBA];
+        return self.__data.getParam(chN, paramName)[self.__sBA];
     
     def modifySelect(self, selectMod):
-        removePoints=self.sBA & (~selectMod);
+        removePoints=self.__sBA & (~selectMod);
         self.removeSelect(removePoints);
     
-    def updateParentClustSelect(self):
-        if((self.sourceCluster!=None) and (self.sampleClustCnt!=None)):
-            self.sourceCluster.setSelect(self.sampleClustCnt.getNoClustSamples());
+    def __updateParentClustSelect(self):
+        if((self.__sourceCluster!=None) and (self.__sampleClustCnt!=None)):
+            self.__sourceCluster.setSelect(self.__sampleClustCnt.getNoClustSamples());
     
     def setSelect(self, selectMod):
-        self.removeSelect(self.sBA);
+        self.removeSelect(self.__sBA);
         self.addSelect(selectMod);
     
     def addSelect(self, selectMod):
-        if(self.sampleClustCnt!=None):
-            self.sampleClustCnt.addClustCount(selectMod & (~self.sBA));
-        self.sBA=self.sBA | selectMod;
-        self.updateParentClustSelect();
+        if(self.__sampleClustCnt!=None):
+            self.__sampleClustCnt.addClustCount(selectMod & (~self.__sBA));
+        self.__sBA=self.__sBA | selectMod;
+        self.__updateParentClustSelect();
         
     def removeSelect(self, selectMod):
-        if(self.sampleClustCnt!=None):
-            self.sampleClustCnt.minusClustCount(selectMod & (self.sBA));         
-        self.sBA=self.sBA & (~selectMod);
-        self.updateParentClustSelect();
+        if(self.__sampleClustCnt!=None):
+            self.__sampleClustCnt.minusClustCount(selectMod & (self.__sBA));         
+        self.__sBA=self.__sBA & (~selectMod);
+        self.__updateParentClustSelect();
         
     def addBoundary(self, boundary):
-        self.boundaries.append(boundary);
+        self.__boundaries.append(boundary);
     
     def getBoundaries(self, viewChs=[], viewParams=[]):
         if(len(viewChs)==0 or len(viewParams)==0):
-            return self.boundaries;
+            return self.__boundaries;
         
         retList=[];
-        for i in np.r_[0:len(self.boundaries)]:
-            if(self.boundaries[i].isView(viewChs, viewParams)):
-                retList.append(self.boundaries[i]);
+        for i in np.r_[0:len(self.__boundaries)]:
+            if(self.__boundaries[i].isView(viewChs, viewParams)):
+                retList.append(self.__boundaries[i]);
         
         return retList;
         

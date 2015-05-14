@@ -23,42 +23,44 @@ from ..data.samples import SamplesData;
 from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
 
+from ..data.dataset import DataSet;
+
 class ClusterPlotItem(object):
     def __init__(self, cluster, plot, pen=None):
-        self.cluster=cluster;
+        self.__cluster=cluster;
         if(pen==None):
-            self.pen=pg.mkPen("w");
+            self.__pen=pg.mkPen("w");
         else:
-            self.pen=pen;
-#         self.plotData=pg.ScatterPlotItem(x=[0, 1], y=[0, 1],
-#                                       symbol="s", pen=pg.mkPen("w"),
+            self.__pen=pen;
+#         self.__plotData=pg.ScatterPlotItem(x=[0, 1], y=[0, 1],
+#                                       symbol="s", __pen=pg.mkPen("w"),
 #                                       size=1);
-        self.plotData=fscatter.FastScatterPlotItem(x=[0], y=[0],
-                                      symbol="s", pen=self.pen,
+        self.__plotData=fscatter.FastScatterPlotItem(x=[0], y=[0],
+                                      symbol="s", pen=self.__pen,
                                       size=1, pointMode=True);
-        self.plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.pen);     
-        self.plot=plot;
+        self.__plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.__pen);     
+        self.__plot=plot;
         
     
     def setPlotData(self, xChN, yChN, xChParamT, yChParamT):
-        self.plotData.setData(x=self.cluster.getParam(xChN, xChParamT),
-                              y=self.cluster.getParam(yChN, yChParamT),
-                              symbol="s", pen=self.pen,
+        self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
+                              y=self.__cluster.getParam(yChN, yChParamT),
+                              symbol="s", pen=self.__pen,
                               size=1, pointMode=True);
-        boundaries=self.cluster.getBoundaries([xChN, yChN], [xChParamT, yChParamT]);
+        boundaries=self.__cluster.getBoundaries([xChN, yChN], [xChParamT, yChParamT]);
         if(len(boundaries)>0):
             points=boundaries[0].getPoints();
-            self.plotBoundaryData.setData(x=points[0, :], y=points[1, :]);
+            self.__plotBoundaryData.setData(x=points[0, :], y=points[1, :]);
         else:
-            self.plotBoundaryData.setData(x=[0], y=[0]);
+            self.__plotBoundaryData.setData(x=[0], y=[0]);
                               
     def addToPlot(self):
-        self.plot.addItem(self.plotData);
-        self.plot.addItem(self.plotBoundaryData);
+        self.__plot.addItem(self.__plotData);
+        self.__plot.addItem(self.__plotBoundaryData);
         
     def removeFromPlot(self):
-        self.plot.removeItem(self.plotData);
-        self.plot.removeItem(self.plotBoundaryData);
+        self.__plot.removeItem(self.__plotData);
+        self.__plot.removeItem(self.__plotBoundaryData);
         
 
 
@@ -72,112 +74,105 @@ class MainW(QMainWindow, Ui_MainW):
         self.setWindowFlags(Qt.CustomizeWindowHint
                             | Qt.WindowMinimizeButtonHint);
                             
-        self.app=app;
+        self.__app=app;
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
         
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
-        self.plotW=GraphicsLayoutWidget();
-        self.plotW.resize(sw-cpw-25, sh);
-        self.plotW.move(0, 0);
-#         self.plotW.resize(1500, 1000);
-        self.plotW.setFocusPolicy(Qt.StrongFocus);
-        self.plotW.setObjectName("GraphicsWindow");
-        self.plotW.setWindowFlags(Qt.CustomizeWindowHint
+        self.__plotW=GraphicsLayoutWidget();
+        self.__plotW.resize(sw-cpw-25, sh);
+        self.__plotW.move(0, 0);
+#         self.__plotW.resize(1500, 1000);
+        self.__plotW.setFocusPolicy(Qt.StrongFocus);
+        self.__plotW.setObjectName("GraphicsWindow");
+        self.__plotW.setWindowFlags(Qt.CustomizeWindowHint
                                   | Qt.WindowMinimizeButtonHint);
-        self.plotW.show();
+        self.__plotW.show();
         
-        self.plot=self.plotW.addPlot(enableMenu=False);
+        self.__plot=self.__plotW.addPlot(enableMenu=False);
         
-        self.plotScene=self.plot.scene();
-        self.plotScene.setMoveDistance(200);
+        self.__plotScene=self.__plot.scene();
+        self.__plotScene.setMoveDistance(200);
         
-        self.plotVBox=self.plot.getViewBox();
-        self.plotVBox.setMouseMode(pg.ViewBox.RectMode);
-        self.plotVBox.disableAutoRange();
+        self.__plotVBox=self.__plot.getViewBox();
+        self.__plotVBox.setMouseMode(pg.ViewBox.RectMode);
+        self.__plotVBox.disableAutoRange();
         
-        self.keyShortcuts=dict();
-        self.setupKeyShortcuts(self);
-        self.setupKeyShortcuts(self.plotW);
+        self.__keyShortcuts=dict();
+        self.__setupKeyShortcuts(self);
+        self.__setupKeyShortcuts(self.__plotW);
         self.enableKeyShortcuts(False);
         
-        self.hChList=[];
-        self.vChList=[];
-        self.hParamList=[];
-        self.vParamList=[];
-        self.selectDataRole=0;
-        self.hChN=None;
-        self.vChN=None;
-        self.hParamT=None;
-        self.vParamT=None;
-        self.workClustList=dict();
-        self.viewClustList=dict();
-        self.viewValid=False;
-        self.pens=[];
-        self.curPenInd=0;
-        self.setupPens();
+        self.__hChList=[];
+        self.__vChList=[];
+        self.__hParamList=[];
+        self.__vParamList=[];
+        self.__selectDataRole=0;
+        self.__hChN=None;
+        self.__vChN=None;
+        self.__hParamName=None;
+        self.__vParamName=None;
+        self.__workClustList=dict();
+        self.__viewClustList=dict();
+        self.__viewValid=False;
+        self.__pens=[];
+        self.__curPenInd=0;
+        self.__setupPens();
         
-        self.boundPoints=[];
-        self.drawMovingBound=False;
-        self.closedBound=False;
-        self.boundPlotItem=None;
-        self.movingBoundItem=None;
-        self.proxyConList=[];
-        self.curMousePos=np.zeros(2, dtype="float32");
-        self.initBound();
+        self.__boundPoints=[];
+        self.__drawMovingBound=False;
+        self.__closedBound=False;
+        self.__boundPlotItem=None;
+        self.__movingBoundItem=None;
+        self.__proxyConList=[];
+        self.__curMousePos=np.zeros(2, dtype="float32");
+        self.__initBound();
         
-        self.dataDir="";
-        self.data=None;
-        self.workingSet=None;
-        self.sampleClustCnt=None;
-        self.clusters=dict();
-        self.plotClusterItems=dict();
-        self.maxClustN=0;
-        self.maxClustID="";
-        self.workClustID="";
-        self.initClustID="";
-        self.dataValid=False;
+        self.__dataDir="";
+        self.__dataSet=None;
+        self.__plotClusterItems=dict();
+        self.__dataValid=False;
 
 
-    def setupPens(self):
-        self.pens.append(pg.mkPen(pg.mkColor("#FF4444"))); #red
-        self.pens.append(pg.mkPen(pg.mkColor("#4444FF"))); #blue
-        self.pens.append(pg.mkPen(pg.mkColor("#44FF44"))); #green
-        self.pens.append(pg.mkPen(pg.mkColor("#FF00FF"))); #magenta
-        self.pens.append(pg.mkPen(pg.mkColor("#00FFFF"))); #cyan
-        self.pens.append(pg.mkPen(pg.mkColor("#FFFF00"))); #yellow
-        self.pens.append(pg.mkPen(pg.mkColor("#9370DB"))); #medium purple
-        self.pens.append(pg.mkPen(pg.mkColor("#FF69B4"))); #hot pink
-        self.pens.append(pg.mkPen(pg.mkColor("#CD853F"))); #Peru
-        self.pens.append(pg.mkPen(pg.mkColor("#8A2BE2"))); #blue violet
+    def __setupPens(self):
+        self.__pens.append(pg.mkPen(pg.mkColor("#FF4444"))); #red
+        self.__pens.append(pg.mkPen(pg.mkColor("#4444FF"))); #blue
+        self.__pens.append(pg.mkPen(pg.mkColor("#44FF44"))); #green
+        self.__pens.append(pg.mkPen(pg.mkColor("#FF00FF"))); #magenta
+        self.__pens.append(pg.mkPen(pg.mkColor("#00FFFF"))); #cyan
+        self.__pens.append(pg.mkPen(pg.mkColor("#FFFF00"))); #yellow
+        self.__pens.append(pg.mkPen(pg.mkColor("#9370DB"))); #medium purple
+        self.__pens.append(pg.mkPen(pg.mkColor("#FF69B4"))); #hot pink
+        self.__pens.append(pg.mkPen(pg.mkColor("#CD853F"))); #Peru
+        self.__pens.append(pg.mkPen(pg.mkColor("#8A2BE2"))); #blue violet
         
     def getPen(self):
-        curPen=self.pens[self.curPenInd];
-        self.curPenInd=(self.curPenInd+1)%len(self.pens);
+        curPen=self.__pens[self.__curPenInd];
+        self.__curPenInd=(self.__curPenInd+1)%len(self.__pens);
         return curPen;  
 
-    def initBound(self):
-        self.boundPoints=np.zeros((2, 0));
-        self.drawMovingBound=False;
-        self.closedBound=False;
+    def __initBound(self):
+        self.__boundPoints=np.zeros((2, 0));
+        self.__drawMovingBound=False;
+        self.__closedBound=False;
         
-        if((self.boundPlotItem==None) or (self.movingBoundItem==None)):
-            self.boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
-            self.movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
+        if((self.__boundPlotItem==None) or (self.__movingBoundItem==None)):
+            self.__boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
+            self.__movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
         else:
-            self.boundPlotItem.setData(x=[0], y=[0]);
-            self.movingBoundItem.setData(x=[0], y=[0]);
+            self.__boundPlotItem.setData(x=[0], y=[0]);
+            self.__movingBoundItem.setData(x=[0], y=[0]);
             
-        self.plot.addItem(self.boundPlotItem);
-        self.plot.addItem(self.movingBoundItem);
+        self.__plot.addItem(self.__boundPlotItem);
+        self.__plot.addItem(self.__movingBoundItem);
             
-        if(len(self.proxyConList)<=0):
-            self.proxyConList.append(pg.SignalProxy(self.plot.scene().sigMouseClicked, 
+        if(len(self.__proxyConList)<=0):
+            self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseClicked, 
                                                     rateLimit=100, 
                                                     slot=self.plotMouseClicked));
-            self.proxyConList.append(pg.SignalProxy(self.plot.scene().sigMouseMoved,
+            self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseMoved,
                                                     rateLimit=100, slot=self.plotMouseMoved));
         
 
@@ -203,27 +198,27 @@ class MainW(QMainWindow, Ui_MainW):
         self.deleteButton.setEnabled(enable);
         
     def invalidateView(self):
-        self.viewValid=False;
+        self.__viewValid=False;
         self.enableClusterUI(False);
         
     def validateView(self):
-        self.viewValid=True;
+        self.__viewValid=True;
         self.enableClusterUI(True);
         
 
     def quit(self):
-        self.app.closeAllWindows();
+        self.__app.closeAllWindows();
         
     def loadFile(self):
         print("loading file");
         fileName=QFileDialog.getOpenFileName(self, self.tr("open spike file"), 
-                                             self.tr(self.dataDir), 
+                                             self.tr(self.__dataDir), 
                                              self.tr("spike files (*.spikes)"));
         fileName=fileName[0];
         if(fileName==""):
             return;
         
-        self.dataDir=os.path.dirname(fileName);
+        self.__dataDir=os.path.dirname(fileName);
         
         file=open(fileName, "rb");
         fileStat=os.stat(fileName);        
@@ -232,120 +227,89 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.clearSelect();
         print("calculating parameters");
-        self.data=SamplesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
+        self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
+                               data["timestamps"], None);
         print("done");
-        self.workingSet=np.zeros(self.data.getNumSamples(), dtype="bool");
-        self.workingSet[:]=True;
-
-        self.populateSelect();
-        self.addToClusterList(False, False);
-        self.initClustID=self.workClustID;
-        self.sampleClustCnt=SamplesClustCount(self.data.getNumSamples());
         
-        self.initBound();
+        (clustID, cluster)=self.__dataSet.initializeWorkingSet();
+        self.__addClusterToView(clustID, cluster);
+        self.populateSelect();
+        
+        self.__initBound();
         self.enableViewUI(True);
         self.enableClusterUI(False);
         self.enableKeyShortcuts(True);
-        self.dataValid=True;
-        self.viewValid=False;
+        self.__dataValid=True;
+        self.__viewValid=False;
         
         del(data);
         
+    def __addClusterToView(self, clustID, cluster, pen=None):
+        self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);
         
-    def addToClusterList(self, copy, isNotInitClust, clustBounds=[], pointsBA=[], pen=None):
-        self.maxClustID=str(self.maxClustN);
-        if(isNotInitClust):
-            self.clusters[self.maxClustID]=Cluster(self.data, pointsBA, self.clusters[self.initClustID], 
-                                                   self.sampleClustCnt, clustBounds);
-        else:
-            self.clusters[self.maxClustID]=Cluster(self.data, self.workingSet, None, None,
-                                                   clustBounds);
-                                                   
-        self.plotClusterItems[self.maxClustID]=ClusterPlotItem(self.clusters[self.maxClustID], 
-                                                               self.plot, pen);
+        self.__workClustList[clustID]=QListWidgetItem(clustID);
+        self.__workClustList[clustID].setData(self.__selectDataRole, clustID);
+        self.workClusterSelect.addItem(self.__workClustList[clustID]);
         
-        self.workClustList[self.maxClustID]=QListWidgetItem(str(self.maxClustID));
-        self.workClustList[self.maxClustID].setData(self.selectDataRole, self.maxClustID);
-        self.workClusterSelect.addItem(self.workClustList[self.maxClustID]);
+        self.__viewClustList[clustID]=QListWidgetItem(clustID);
+        self.__viewClustList[clustID].setData(self.__selectDataRole, clustID);
+        self.viewClustersSelect.addItem(self.__viewClustList[clustID]);
+        self.__viewClustList[clustID].setSelected(True);
         
-        self.viewClustList[self.maxClustID]=QListWidgetItem(str(self.maxClustID));
-        self.viewClustList[self.maxClustID].setData(self.selectDataRole, self.maxClustID);
-        self.viewClustersSelect.addItem(self.viewClustList[self.maxClustID]);
-        self.viewClustList[self.maxClustID].setSelected(True);
-        
-        
-#         if((len(pointsBA)>0) and self.workClustID!=""):
-#             if(self.workClustID==self.initClustID):
-# #                 self.clusters[self.initClustID].setSelect(self.sampleClustCnt.getNoClustSamples());
-#                 self.clusters[self.initClustID].removeSelect(pointsBA);
-#             elif(not copy):    
-#                 self.clusters[self.workClustID].removeSelect(pointsBA);
-
-        if((len(pointsBA)>0) and (self.workClustID!="") and (not copy)): 
-            self.clusters[self.workClustID].removeSelect(pointsBA);
-        
-        if(self.workClustID==""):
-            self.workClustID=self.maxClustID;
-            selWorkClust=self.workClusterSelect.selectedItems();
-            self.workClustList[self.workClustID].setSelected(True);
-            if(len(selWorkClust)>0):
-                selWorkClust[0].setSelected(False);
+        workClustID=self.__dataSet.getWorkClustID();
+        if(not (self.__workClustList[workClustID].isSelected())):
+            self.__workClustList[workClustID].setSelected(True);
             self.changeWorkCluster();
-            
-            
-        self.maxClustN=self.maxClustN+1;
     
         
-    def removeFromClusterList(self, ind):
-        if(ind==self.initClustID):
+    def __removeCluster(self, ind):
+        (success, workClustID)=self.__dataSet.deleteCluster(ind);
+        
+        if(not success):
             return;
-            
-        row=self.workClusterSelect.row(self.workClustList[ind]);
+        
+        row=self.workClusterSelect.row(self.__workClustList[ind]);
         self.workClusterSelect.takeItem(row);
-        del(self.workClustList[ind]);
+        del(self.__workClustList[ind]);
         
-        row=self.viewClustersSelect.row(self.viewClustList[ind]);
+        row=self.viewClustersSelect.row(self.__viewClustList[ind]);
         self.viewClustersSelect.takeItem(row);
-        del(self.viewClustList[ind]);
+        del(self.__viewClustList[ind]);
         
-        del(self.plotClusterItems[ind]);
+        del(self.__plotClusterItems[ind]);
         
-        del(self.clusters[ind]);
-        
-        self.workClustID=self.initClustID;
-        
-        self.workClustList[self.workClustID].setSelected(True);
+        self.__workClustList[workClustID].setSelected(True);
         self.changeWorkCluster();
 
         
     def clearSelect(self):
         self.hChannelSelect.clear();
-        self.hChList[:]=[];
+        self.__hChList[:]=[];
         self.hParamSelect.clear();
-        self.hParamList[:]=[];
+        self.__hParamList[:]=[];
         self.vChannelSelect.clear();
-        self.vChList[:]=[];
+        self.__vChList[:]=[];
         self.vParamSelect.clear();
-        self.vParamList[:]=[];
+        self.__vParamList[:]=[];
         self.workClusterSelect.clear();
-        self.workClustList.clear();
+        self.__workClustList.clear();
         self.viewClustersSelect.clear();
-        self.viewClustList.clear();
+        self.__viewClustList.clear();
     
     def populateSelect(self):
-        numChannels=self.data.getNumChannels();
-        self.hChList=[None]*numChannels;
-        self.vChList=[None]*numChannels;
+        numChannels=self.__dataSet.getSamples().getNumChannels();
+        self.__hChList=[None]*numChannels;
+        self.__vChList=[None]*numChannels;
         for i in np.r_[0:numChannels]:
-            self.hChList[i]=QListWidgetItem(str(i));
-            self.hChList[i].setData(self.selectDataRole, i);
-            self.hChannelSelect.addItem(self.hChList[i]);
+            self.__hChList[i]=QListWidgetItem(str(i));
+            self.__hChList[i].setData(self.__selectDataRole, i);
+            self.hChannelSelect.addItem(self.__hChList[i]);
             
-            self.vChList[i]=QListWidgetItem(str(i));
-            self.vChList[i].setData(self.selectDataRole, i);
-            self.vChannelSelect.addItem(self.vChList[i]);
+            self.__vChList[i]=QListWidgetItem(str(i));
+            self.__vChList[i].setData(self.__selectDataRole, i);
+            self.vChannelSelect.addItem(self.__vChList[i]);
             
-        paramNames=self.data.getParamNames();
+        paramNames=self.__dataSet.getSamples().getParamNames();
         
         ignoredParamNames=["peakTime", "valleyTime", "PVWidth"];
         
@@ -367,94 +331,84 @@ class MainW(QMainWindow, Ui_MainW):
             modParamNames.append(i);
         
         numParams=len(modParamNames);
-        self.hParamList=[None]*numParams;
-        self.vParamList=[None]*numParams;
+        self.__hParamList=[None]*numParams;
+        self.__vParamList=[None]*numParams;
         for i in np.r_[0:numParams]:
-            self.hParamList[i]=QListWidgetItem(modParamNames[i]);
-            self.hParamList[i].setData(self.selectDataRole, modParamNames[i]);
-            self.hParamSelect.addItem(self.hParamList[i]);
+            self.__hParamList[i]=QListWidgetItem(modParamNames[i]);
+            self.__hParamList[i].setData(self.__selectDataRole, modParamNames[i]);
+            self.hParamSelect.addItem(self.__hParamList[i]);
             
-            self.vParamList[i]=QListWidgetItem(modParamNames[i]);
-            self.vParamList[i].setData(self.selectDataRole, modParamNames[i]);
-            self.vParamSelect.addItem(self.vParamList[i]);
+            self.__vParamList[i]=QListWidgetItem(modParamNames[i]);
+            self.__vParamList[i].setData(self.__selectDataRole, modParamNames[i]);
+            self.vParamSelect.addItem(self.__vParamList[i]);
             
         
-    def setupKeyShortcuts(self, widget):
+    def __setupKeyShortcuts(self, widget):
         widgetName=widget.objectName();
-        self.keyShortcuts[widgetName]=[];
+        self.__keyShortcuts[widgetName]=[];
         
-        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
                                                        widget, self.updatePlotView));
-        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
                                                        widget, self.deleteCluster));
-        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
                                                        widget, self.refineCluster));
-        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
                                                        widget, self.addCluster));
-        self.keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
                                                widget, self.copyCluster));                                                       
                                           
         
     def enableKeyShortcuts(self, enable):
-        keys=self.keyShortcuts.keys();
+        keys=self.__keyShortcuts.keys();
         
         for i in keys:
-            numKeys=len(self.keyShortcuts[i]);            
+            numKeys=len(self.__keyShortcuts[i]);            
             for j in np.r_[0:numKeys]:
-                self.keyShortcuts[i][j].setEnabled(enable);
+                self.__keyShortcuts[i][j].setEnabled(enable);
                 
                 
     def updatePlotView(self):
-        if(not self.dataValid):
+        if(not self.__dataValid):
             return;
         hChSel=self.hChannelSelect.selectedItems();
         vChSel=self.vChannelSelect.selectedItems();
         hParamSel=self.hParamSelect.selectedItems();
         vParamSel=self.vParamSelect.selectedItems();
         
-        self.plot.clear();
-        self.initBound();
+        self.__plot.clear();
+        self.__initBound();
         
         if((len(hChSel)==0) or (len(vChSel)==0) or (len(hParamSel)==0) or (len(vParamSel)==0)):
             return;
-        self.hChN=hChSel[0].data(self.selectDataRole);
-        self.vChN=vChSel[0].data(self.selectDataRole);
-        self.hParamT=hParamSel[0].data(self.selectDataRole);
-        self.vParamT=vParamSel[0].data(self.selectDataRole);
+        self.__hChN=hChSel[0].data(self.__selectDataRole);
+        self.__vChN=vChSel[0].data(self.__selectDataRole);
+        self.__hParamName=hParamSel[0].data(self.__selectDataRole);
+        self.__vParamName=vParamSel[0].data(self.__selectDataRole);
 
-        self.viewClustList[self.workClustID].setSelected(True);
+        workClustID=self.__dataSet.getWorkClustID();
+        self.__viewClustList[workClustID].setSelected(True);
+        self.__workClustList[workClustID].setSelected(True);
         viewClustItems=self.viewClustersSelect.selectedItems();
         for item in viewClustItems[::-1]:
-            clustID=item.data(self.selectDataRole);        
-            self.plotClusterItems[clustID].setPlotData(self.hChN, self.vChN, self.hParamT, self.vParamT);
-            self.plotClusterItems[clustID].addToPlot();
+            clustID=item.data(self.__selectDataRole);        
+            self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, self.__hParamName, self.__vParamName);
+            self.__plotClusterItems[clustID].addToPlot();
          
-        self.plotVBox.autoRange();
+        self.__plotVBox.autoRange();
         self.validateView();
         
-    
-    def calcPointsInBound(self):
-        viewChs=[self.hChN, self.vChN];
-        viewParams=[self.hParamT, self.vParamT];
-        clustBound=Boundary(self.boundPoints[0, :], self.boundPoints[1, :],
-                            viewChs, viewParams);                            
-        pointsBA=clustBound.calcPointsInBoundary(self.data.getParam(self.hChN, self.hParamT),
-                                                 self.data.getParam(self.vChN, self.vParamT));
-                                                 
-        workingPoints=self.clusters[self.workClustID].getSelectArray();                                                                                      
-        if(self.workClustID==self.initClustID):
-            workingPoints=self.workingSet;
-        
-        clusterPointsBA=pointsBA & workingPoints;
-        self.initBound();
-        return (clustBound, clusterPointsBA);
         
     def addClustCommon(self, copy):
-        if((not self.closedBound) or (not self.dataValid) or (not self.viewValid)):
+        if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
             return;
-        (clustBound, clusterPointsBA)=self.calcPointsInBound();
-        if(np.sum(clusterPointsBA)>0):
-            self.addToClusterList(copy, True, [clustBound], clusterPointsBA, self.getPen());
+        (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
+                                  self.__hParamName, self.__vParamName,
+                                  self.__boundPoints[0, :], self.__boundPoints[1, :]);
+        if(clustID!=None):
+            self.__addClusterToView(clustID, cluster, self.getPen());
+
+        self.__initBound();
         self.updatePlotView();
     
     def addCluster(self):
@@ -464,80 +418,78 @@ class MainW(QMainWindow, Ui_MainW):
         self.addClustCommon(True);
     
     def deleteCluster(self):
-        if((not self.dataValid) or (not self.viewValid)):
+        if((not self.__dataValid) or (not self.__viewValid)):
             return;
-        self.removeFromClusterList(self.workClustID);
+        workClustID=self.__dataSet.getWorkClustID();
+        self.__removeCluster(workClustID);
         self.updatePlotView();
-        
-        
+       
     
     def refineCluster(self):
-        if((not self.closedBound) or (not self.dataValid) or (not self.viewValid)):
-            return;
-        if(self.workClustID==self.initClustID):
+        if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
             return;
         
-        viewChs=[self.hChN, self.vChN];
-        viewParams=[self.hParamT, self.vParamT];
-        clustBound=Boundary(self.boundPoints[0, :], self.boundPoints[1, :],
-                            viewChs, viewParams);
-                            
-        self.clusters[self.workClustID].addBoundary(clustBound);
-        clusterPointsBA=clustBound.calcPointsInBoundary(self.data.getParam(self.hChN, self.hParamT),
-                                                        self.data.getParam(self.vChN, self.vParamT));
-        self.clusters[self.workClustID].modifySelect(clusterPointsBA);
-        self.initBound();
+        viewChs=[self.__hChN, self.__vChN];
+        viewParams=[self.__hParamName, self.__vParamName];
+        
+        self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
+                                     self.__hParamName, self.__vParamName,
+                                     self.__boundPoints[0, :], self.__boundPoints[1, :]);
+        
+        self.__initBound();
         self.updatePlotView();
         
         
     def changeWorkCluster(self):
         selectItem=self.workClusterSelect.selectedItems();
-        self.workClustID=selectItem[0].data(self.selectDataRole);
-        self.viewClustList[self.workClustID].setSelected(True);
+        workClustID=selectItem[0].data(self.__selectDataRole);
+        self.__viewClustList[workClustID].setSelected(True);
+        self.__dataSet.setWorkClustID(workClustID);
+        self.updatePlotView();
 
     
     def plotMouseClicked(self, evt):
-#         print(str(self.closedBound)+" "+str(self.drawMovingBound));
-        if((not self.viewValid) or (self.closedBound)):
+#         print(str(self.__closedBound)+" "+str(self.__drawMovingBound));
+        if((not self.__viewValid) or (self.__closedBound)):
             return;
-        numPoints=self.boundPoints.shape[1];
+        numPoints=self.__boundPoints.shape[1];
         if(evt[0].button()==Qt.MouseButton.RightButton):
             if(numPoints<3):
                 return;
             
-            self.boundPoints=np.hstack((self.boundPoints, 
-                                        [[self.boundPoints[0, 0]], [self.boundPoints[1, 0]]]));
-            self.boundPlotItem.setData(x=self.boundPoints[0, :], y=self.boundPoints[1, :]);
-            self.movingBoundItem.setData(x=[0], y=[0]);
+            self.__boundPoints=np.hstack((self.__boundPoints, 
+                                        [[self.__boundPoints[0, 0]], [self.__boundPoints[1, 0]]]));
+            self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
+            self.__movingBoundItem.setData(x=[0], y=[0]);
             
-            self.closedBound=True;
-            self.drawMovingBound=False;
+            self.__closedBound=True;
+            self.__drawMovingBound=False;
             return;
         
         pos=evt[0].scenePos();
-        mousePoint=self.plotVBox.mapSceneToView(pos);
+        mousePoint=self.__plotVBox.mapSceneToView(pos);
         
         point=[[mousePoint.x()], [mousePoint.y()]];
-        self.boundPoints=np.hstack((self.boundPoints, point));
-        self.boundPlotItem.setData(x=self.boundPoints[0, :], y=self.boundPoints[1, :]);
+        self.__boundPoints=np.hstack((self.__boundPoints, point));
+        self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
         
-        self.drawMovingBound=True;
-        self.closedBound=False;
+        self.__drawMovingBound=True;
+        self.__closedBound=False;
         
             
     def plotMouseMoved(self, evt):
-        if(not self.viewValid):
+        if(not self.__viewValid):
             return;
         pos=evt[0];
-        if((not self.plot.sceneBoundingRect().contains(pos)) 
-           or (not self.drawMovingBound) or (self.closedBound)):
+        if((not self.__plot.sceneBoundingRect().contains(pos)) 
+           or (not self.__drawMovingBound) or (self.__closedBound)):
             return;
         
-        mousePoint=self.plotVBox.mapSceneToView(pos);
-        self.curMousePos[0]=mousePoint.x();
-        self.curMousePos[1]=mousePoint.y();
-        self.movingBoundItem.setData(x=[self.boundPoints[0, -1], mousePoint.x()],
-                                     y=[self.boundPoints[1, -1], mousePoint.y()]);
+        mousePoint=self.__plotVBox.mapSceneToView(pos);
+        self.__curMousePos[0]=mousePoint.x();
+        self.__curMousePos[1]=mousePoint.y();
+        self.__movingBoundItem.setData(x=[self.__boundPoints[0, -1], mousePoint.x()],
+                                     y=[self.__boundPoints[1, -1], mousePoint.y()]);
 
     
     
