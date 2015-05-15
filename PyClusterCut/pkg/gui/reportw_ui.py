@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'reportw.ui'
 #
-# Created: Thu May 14 22:19:12 2015
+# Created: Thu May 14 23:34:18 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,10 +12,15 @@ from PySide import QtCore, QtGui
 class Ui_ReportW(object):
     def setupUi(self, ReportW):
         ReportW.setObjectName("ReportW")
-        ReportW.resize(823, 463)
+        ReportW.resize(502, 330)
         self.reportDisp = QtGui.QTextEdit(ReportW)
-        self.reportDisp.setGeometry(QtCore.QRect(0, 10, 821, 451))
+        self.reportDisp.setGeometry(QtCore.QRect(0, 0, 501, 321))
+        font = QtGui.QFont()
+        font.setFamily("Courier")
+        font.setPointSize(12)
+        self.reportDisp.setFont(font)
         self.reportDisp.setReadOnly(True)
+        self.reportDisp.setTabStopWidth(30)
         self.reportDisp.setAcceptRichText(False)
         self.reportDisp.setObjectName("reportDisp")
 

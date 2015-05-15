@@ -16,6 +16,9 @@ class SamplesClustCount(object):
     
     def getNClustSamples(self, numClusts):
         return self.__sampleNumClust==numClusts;
+    
+    def getMinClustSamples(self, numClusts):
+        return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
     def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):

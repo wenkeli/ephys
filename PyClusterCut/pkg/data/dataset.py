@@ -111,12 +111,30 @@ class DataSet(object):
     def getWorkClustID(self):
         return self.__workClustID;
     
+    def getInitClustID(self):
+        return self.__initClustID;
     
     def getWorkingCluster(self):
         return self.getCluster(self.__workClustID);
 
-
+    def getClusterInds(self):
+        keys=self.__clusters.keys();
+        keys.sort(key=int);
+        return keys;
     
+    def compareClustersOverlap(self, ind, compInd):
+        indSelArray=self.__clusters[ind].getSelectArray();
+        compIndSelArray=self.__clusters[compInd].getSelectArray();
+        indNumPoints=np.sum(indSelArray);
+        overlapNumPoints=np.sum(indSelArray & compIndSelArray);
+        return (indNumPoints, overlapNumPoints);
+    
+    def computeClusterOverlap(self, ind):
+        indSelArray=self.__clusters[ind].getSelectArray();
+        overlapPoints=self.__sampleClustCnt.getMinClustSamples(2);
+        indNumPoints=np.sum(indSelArray);
+        overlapNumPoints=np.sum(indSelArray & overlapPoints);
+        return (indNumPoints, overlapNumPoints);
 
     def getCluster(self, id):
         return self.__clusters[id];

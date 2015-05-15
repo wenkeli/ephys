@@ -107,6 +107,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
         self.__setupKeyShortcuts(self.__plotW);
+        self.__setupKeyShortcuts(self.__reportW);
         self.enableKeyShortcuts(False);
         
         self.__hChList=[];
@@ -193,6 +194,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewClustersSelect.setEnabled(enable);
         
         self.viewButton.setEnabled(enable);
+        self.reportClusterButton.setEnabled(enable);
         
         
     def enableClusterUI(self, enable):
@@ -200,7 +202,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
-        self.reportClusterButton.setEnabled(enable);
+
         
     def invalidateView(self):
         self.__viewValid=False;
@@ -463,7 +465,27 @@ class MainW(QMainWindow, Ui_MainW):
             
     def generateReport(self):
         self.__reportDisp.clear();
+#         self.__reportDisp.insertPlainText("testtesttest1234test1234\n");
+#         self.__reportDisp.insertPlainText("\ttest1\n");
+        clustInds=self.__dataSet.getClusterInds();
+        initClustID=self.__dataSet.getInitClustID();
+        clustInds.remove(initClustID);
         
+        for i in clustInds:
+            (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
+            percOverlap=numOverlap/float(numPoints)*100;
+            output="cluster "+str(i)+": "+str(numPoints)+" samples, overlap: "+str(numOverlap)+" samples, "+str(percOverlap)+"%\n";
+            self.__reportDisp.insertPlainText(output);
+            for j in clustInds:
+                if(i==j):
+                    continue;
+                (numPoints, numOverlap)=self.__dataSet.compareClustersOverlap(i, j);
+                percOverlap=numOverlap/float(numPoints)*100;
+                if(numOverlap<=0):
+                    continue;
+                output="\toverlap cluster "+str(j)+": "+str(numOverlap)+" samples, "+str(percOverlap)+"%\n";
+                self.__reportDisp.insertPlainText(output);
+            self.__reportDisp.insertPlainText("\n");
             
 
     
