@@ -14,6 +14,7 @@ import pyqtgraph as pg;
 from pyqtgraph.widgets.GraphicsLayoutWidget import GraphicsLayoutWidget;
 
 from mainw_ui import Ui_MainW;
+from reportw import ReportW;
 
 import FastScatterPlotItem as fscatter;
 
@@ -78,6 +79,9 @@ class MainW(QMainWindow, Ui_MainW):
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
+        
+        self.__reportW=ReportW();
+        self.__reportDisp=self.__reportW.getReportDisp();
         
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
@@ -196,6 +200,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
+        self.reportClusterButton.setEnabled(enable);
         
     def invalidateView(self):
         self.__viewValid=False;
@@ -356,7 +361,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
                                                        widget, self.addCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
-                                               widget, self.copyCluster));                                                       
+                                               widget, self.copyCluster));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+                                               widget, self.showReport));                                                               
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -446,6 +453,18 @@ class MainW(QMainWindow, Ui_MainW):
         self.__viewClustList[workClustID].setSelected(True);
         self.__dataSet.setWorkClustID(workClustID);
         self.updatePlotView();
+        
+    def showReport(self):
+        if(self.__reportW.isVisible()):
+            self.__reportW.hide();
+        else:
+            self.__reportW.show();
+            self.generateReport();
+            
+    def generateReport(self):
+        self.__reportDisp.clear();
+        
+            
 
     
     def plotMouseClicked(self, evt):

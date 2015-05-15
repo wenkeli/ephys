@@ -421,7 +421,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>724</y>
+     <y>694</y>
     </hint>
     <hint type="destinationlabel">
      <x>226</x>
@@ -468,8 +468,8 @@
    <slot>refineCluster()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>662</y>
+     <x>188</x>
+     <y>664</y>
     </hint>
     <hint type="destinationlabel">
      <x>144</x>
@@ -580,8 +580,8 @@
    <slot>deleteCluster()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>196</x>
-     <y>652</y>
+     <x>130</x>
+     <y>664</y>
     </hint>
     <hint type="destinationlabel">
      <x>178</x>
@@ -596,12 +596,28 @@
    <slot>copyCluster()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>690</y>
+     <x>148</x>
+     <y>694</y>
     </hint>
     <hint type="destinationlabel">
      <x>107</x>
      <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reportClusterButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>showReport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>183</x>
+     <y>624</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>253</x>
+     <y>595</y>
     </hint>
    </hints>
   </connection>
@@ -616,5 +632,6 @@
   <slot>invalidateView()</slot>
   <slot>deleteCluster()</slot>
   <slot>copyCluster()</slot>
+  <slot>showReport()</slot>
  </slots>
 </ui>
