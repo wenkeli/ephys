@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>84</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -38,7 +38,7 @@
      <x>170</x>
      <y>10</y>
      <width>84</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="text">
@@ -330,7 +330,7 @@
     <string>Delet</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="clearWaveButton">
+  <widget class="QPushButton" name="clearWavePlotsButton">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -362,7 +362,7 @@
     <string>Reprt</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="waveButton">
+  <widget class="QPushButton" name="nextWavesButton">
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -375,7 +375,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;View the next 100 waveforms of the working cluster&lt;/p&gt;&lt;p&gt;Keyboard shortcut: W&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Wave</string>
+    <string>nWav</string>
    </property>
   </widget>
   <widget class="QPushButton" name="undoButton">
@@ -392,6 +392,22 @@
    </property>
    <property name="text">
     <string>Undo</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="prevWavesButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>610</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;View the previous 100 waveforms of the working cluster&lt;/p&gt;&lt;p&gt;Keyboard shortcut: Q&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>pwav</string>
    </property>
   </widget>
  </widget>
@@ -581,7 +597,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>130</x>
-     <y>664</y>
+     <y>663</y>
     </hint>
     <hint type="destinationlabel">
      <x>178</x>
@@ -621,6 +637,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>prevWavesButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>drawPrevWaves()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>625</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>14</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nextWavesButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>drawNextWaves()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>619</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearWavePlotsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>clearWavePlots()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>621</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>657</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -633,5 +697,8 @@
   <slot>deleteCluster()</slot>
   <slot>copyCluster()</slot>
   <slot>showReport()</slot>
+  <slot>drawPrevWaves()</slot>
+  <slot>drawNextWaves()</slot>
+  <slot>clearWavePlots()</slot>
  </slots>
 </ui>

@@ -29,6 +29,9 @@ from ..data.dataset import DataSet;
 class ClusterPlotItem(object):
     def __init__(self, cluster, plot, pen=None):
         self.__cluster=cluster;
+        self.__numSelPoints=None;
+        
+        self.__calcNumSelPoints();
         if(pen==None):
             self.__pen=pg.mkPen("w");
         else:
@@ -36,6 +39,8 @@ class ClusterPlotItem(object):
 #         self.__plotData=pg.ScatterPlotItem(x=[0, 1], y=[0, 1],
 #                                       symbol="s", __pen=pg.mkPen("w"),
 #                                       size=1);
+        
+
         self.__plotData=fscatter.FastScatterPlotItem(x=[0], y=[0],
                                       symbol="s", pen=self.__pen,
                                       size=1, pointMode=True);
@@ -48,6 +53,8 @@ class ClusterPlotItem(object):
                               y=self.__cluster.getParam(yChN, yChParamT),
                               symbol="s", pen=self.__pen,
                               size=1, pointMode=True);
+        self.__calcNumSelPoints();
+        
         boundaries=self.__cluster.getBoundaries([xChN, yChN], [xChParamT, yChParamT]);
         if(len(boundaries)>0):
             points=boundaries[0].getPoints();
@@ -63,7 +70,21 @@ class ClusterPlotItem(object):
         self.__plot.removeItem(self.__plotData);
         self.__plot.removeItem(self.__plotBoundaryData);
         
-
+    def getPen(self):
+        return self.__pen;
+    
+    def __calcNumSelPoints(self):
+        sBA=self.__cluster.getSelectArray();
+        self.__numSelPoints=np.cumsum(sBA);
+        
+    def getSelPointsByRange(self, startInd, endInd):
+        sBA=self.__cluster.getSelectArray();
+        return sBA & ((self.__numSelPoints>=startInd) & (self.__numSelPoints<endInd));
+    
+    def getTotalSelPoints(self):
+        return self.__numSelPoints[-1];
+        
+        
 
 class MainW(QMainWindow, Ui_MainW):
     def __init__(self, app, parent=None):
@@ -75,6 +96,11 @@ class MainW(QMainWindow, Ui_MainW):
         self.setWindowFlags(Qt.CustomizeWindowHint
                             | Qt.WindowMinimizeButtonHint);
                             
+        self.__dataDir="";
+        self.__dataSet=None;
+        self.__plotClusterItems=dict();
+        self.__dataValid=False;
+                            
         self.__app=app;
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
@@ -85,17 +111,19 @@ class MainW(QMainWindow, Ui_MainW):
         
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
+        
         self.__plotW=GraphicsLayoutWidget();
         self.__plotW.resize(sw-cpw-25, sh);
         self.__plotW.move(0, 0);
 #         self.__plotW.resize(1500, 1000);
         self.__plotW.setFocusPolicy(Qt.StrongFocus);
-        self.__plotW.setObjectName("GraphicsWindow");
+        self.__plotW.setObjectName("plotWindow");
         self.__plotW.setWindowFlags(Qt.CustomizeWindowHint
-                                  | Qt.WindowMinimizeButtonHint);
+                                    | Qt.WindowMinimizeButtonHint);
         self.__plotW.show();
         
-        self.__plot=self.__plotW.addPlot(enableMenu=False);
+        self.__plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
+#         self.__plotW.ci.layout.setColumnMaximumWidth(1, 25);
         
         self.__plotScene=self.__plot.scene();
         self.__plotScene.setMoveDistance(200);
@@ -103,6 +131,13 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotVBox=self.__plot.getViewBox();
         self.__plotVBox.setMouseMode(pg.ViewBox.RectMode);
         self.__plotVBox.disableAutoRange();
+        
+        self.__wavePlotLayout=self.__plotW.addLayout(0, 1, 1, 1);
+        self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
+        self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
+        self.__wavePlots=[];
+        self.__waveStartInd=0;
+        self.__waveforms=[];
         
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
@@ -135,10 +170,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.__curMousePos=np.zeros(2, dtype="float32");
         self.__initBound();
         
-        self.__dataDir="";
-        self.__dataSet=None;
-        self.__plotClusterItems=dict();
-        self.__dataValid=False;
 
 
     def __setupPens(self):
@@ -163,12 +194,18 @@ class MainW(QMainWindow, Ui_MainW):
         self.__drawMovingBound=False;
         self.__closedBound=False;
         
-        if((self.__boundPlotItem==None) or (self.__movingBoundItem==None)):
-            self.__boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
-            self.__movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen="w");
+        if(self.__dataValid):
+            workClustID=self.__dataSet.getWorkClustID();
+            drawPen=self.__plotClusterItems[workClustID].getPen();
         else:
-            self.__boundPlotItem.setData(x=[0], y=[0]);
-            self.__movingBoundItem.setData(x=[0], y=[0]);
+            drawPen="w";
+        
+        if((self.__boundPlotItem==None) or (self.__movingBoundItem==None)):
+            self.__boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
+            self.__movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
+        else:
+            self.__boundPlotItem.setData(x=[0], y=[0], pen=drawPen);
+            self.__movingBoundItem.setData(x=[0], y=[0], pen=drawPen);
             
         self.__plot.addItem(self.__boundPlotItem);
         self.__plot.addItem(self.__movingBoundItem);
@@ -202,6 +239,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
+        self.nextWavesButton.setEnabled(enable);
+        self.prevWavesButton.setEnabled(enable);
+        self.clearWavePlotsButton.setEnabled(enable);
 
         
     def invalidateView(self):
@@ -250,6 +290,22 @@ class MainW(QMainWindow, Ui_MainW):
         self.__viewValid=False;
         
         del(data);
+        
+        numWavePlots=len(self.__wavePlots);
+        if(numWavePlots>0):
+            for i in np.r_[0:numWavePlots]:
+                self.__wavePlotLayout.removeItem(self.__wavePlots[i]);
+                del(self.__wavePlots[i]);
+            self.__wavePlots=[];
+        
+        numChannels=self.__dataSet.getSamples().getNumChannels();
+        for i in np.r_[0:numChannels]:
+            wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
+            self.__wavePlots.append(wavePlot);
+        
+        self.__waveforms=self.__dataSet.getSamples().getWaveforms();
+        self.__waveStartInd=0;
+            
         
     def __addClusterToView(self, clustID, cluster, pen=None):
         self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);
@@ -366,6 +422,12 @@ class MainW(QMainWindow, Ui_MainW):
                                                widget, self.copyCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
                                                widget, self.showReport));                                                               
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Q")),
+                                               widget, self.drawPrevWaves));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("W")),
+                                               widget, self.drawNextWaves));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("E")),
+                                               widget, self.clearWavePlots));        
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -456,6 +518,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataSet.setWorkClustID(workClustID);
         self.updatePlotView();
         
+        self.__waveStartInd=0;
+        
     def showReport(self):
         if(self.__reportW.isVisible()):
             self.__reportW.hide();
@@ -487,7 +551,38 @@ class MainW(QMainWindow, Ui_MainW):
                 self.__reportDisp.insertPlainText(output);
             self.__reportDisp.insertPlainText("\n");
             
+    def drawPrevWaves(self):
+        if((not self.__viewValid) or (not self.__dataValid)):
+            return;
+        self.__waveStartInd=self.__waveStartInd-100;
+        if(self.__waveStartInd<0):
+            self.__waveStartInd=0;
+        self.__drawWavesCommon();
+        
+    def drawNextWaves(self):
+        if((not self.__viewValid) or (not self.__dataValid)):
+            return;
+        workClustID=self.__dataSet.getWorkClustID();
+        totalPoints=self.__plotClusterItems[workClustID].getTotalSelPoints();
+        self.__waveStartInd=self.__waveStartInd+100;
+        if(self.__waveStartInd+100>=totalPoints):
+            self.__waveStartInd=totalPoints-100;
+        self.__drawWavesCommon();
+    
+    def __drawWavesCommon(self):
+        workClustID=self.__dataSet.getWorkClustID();
+        drawPen=self.__plotClusterItems[workClustID].getPen();
+        sBA=self.__plotClusterItems[workClustID].getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+100);       
+        for i in np.r_[0:len(self.__wavePlots)]:
+            waves=self.__waveforms[i, sBA, :];
+            for j in np.r_[0:waves.shape[0]]:
+                self.__wavePlots[i].plot(waves[j, :], pen=drawPen);
 
+        
+    def clearWavePlots(self):
+        for i in np.r_[0:len(self.__wavePlots)]:
+            self.__wavePlots[i].clear();
+        
     
     def plotMouseClicked(self, evt):
 #         print(str(self.__closedBound)+" "+str(self.__drawMovingBound));
