@@ -137,7 +137,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
         self.__wavePlots=[];
         self.__waveStartInd=0;
-        self.__waveforms=[];
         
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
@@ -302,8 +301,7 @@ class MainW(QMainWindow, Ui_MainW):
         for i in np.r_[0:numChannels]:
             wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
             self.__wavePlots.append(wavePlot);
-        
-        self.__waveforms=self.__dataSet.getSamples().getWaveforms();
+            
         self.__waveStartInd=0;
             
         
@@ -554,33 +552,33 @@ class MainW(QMainWindow, Ui_MainW):
     def drawPrevWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
             return;
+        self.__drawWavesCommon();
         self.__waveStartInd=self.__waveStartInd-100;
         if(self.__waveStartInd<0):
             self.__waveStartInd=0;
-        self.__drawWavesCommon();
         
     def drawNextWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
             return;
+        self.__drawWavesCommon();
         workClustID=self.__dataSet.getWorkClustID();
         totalPoints=self.__plotClusterItems[workClustID].getTotalSelPoints();
         self.__waveStartInd=self.__waveStartInd+100;
         if(self.__waveStartInd+100>=totalPoints):
             self.__waveStartInd=totalPoints-100;
-        self.__drawWavesCommon();
     
     def __drawWavesCommon(self):
         workClustID=self.__dataSet.getWorkClustID();
         drawPen=self.__plotClusterItems[workClustID].getPen();
         sBA=self.__plotClusterItems[workClustID].getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+100);       
         for i in np.r_[0:len(self.__wavePlots)]:
-            waves=self.__waveforms[i, sBA, :];
-            for j in np.r_[0:waves.shape[0]]:
-                self.__wavePlots[i].plot(waves[j, :], pen=drawPen);
+            (nPts, waves, xval, connectArr)=self.__dataSet.getSamples().getWaveforms(sBA, i);
+            self.__wavePlots[i].plot(xval.flatten(), waves.flatten(), pen=drawPen, connect=connectArr.flatten());
 
         
     def clearWavePlots(self):
         for i in np.r_[0:len(self.__wavePlots)]:
+            self.__wavePlots[i].getViewBox().autoRange();
             self.__wavePlots[i].clear();
         
     

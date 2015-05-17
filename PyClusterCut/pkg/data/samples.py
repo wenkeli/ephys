@@ -150,10 +150,13 @@ class SamplesData(object):
         else:
             return self.__params[paramName][chN, :];
     
-    def getWaveforms(self, chN=None):
-        if(chN==None):
-            return self.__waveforms;
-        return self.__waveforms[chN, :, :];
+    def getWaveforms(self, sBA, chN):
+        numSel=np.sum(sBA);
+        xVals=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
+        connectArr=np.zeros(xVals.shape, dtype="bool");
+        connectArr[:]=True;
+        connectArr[:, self.__numPtsPerCh-1]=False;
+        return (self.__numPtsPerCh, self.__waveforms[chN, sBA, :], xVals, connectArr);
     
     def getNumChannels(self):
         return self.__numChs;
