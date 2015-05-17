@@ -7,6 +7,7 @@ import PySide;
 from PySide.QtGui import QMainWindow, QApplication;
 from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
 from PySide.QtGui import QKeySequence, QKeySequence, QShortcut, QFileDialog;
+from PySide.QtGui import QBrush, QColor;
 
 from PySide.QtCore import Qt, QRect;
 
@@ -70,7 +71,7 @@ class ClusterPlotItem(object):
         self.__plot.removeItem(self.__plotData);
         self.__plot.removeItem(self.__plotBoundaryData);
         
-    def getPen(self):
+    def getCurPen(self):
         return self.__pen;
     
     def __calcNumSelPoints(self):
@@ -156,8 +157,10 @@ class MainW(QMainWindow, Ui_MainW):
         self.__workClustList=dict();
         self.__viewClustList=dict();
         self.__viewValid=False;
+        self.__colors=[];
         self.__pens=[];
-        self.__curPenInd=0;
+        self.__brushes=[];
+        self.__curColorInd=0;
         self.__setupPens();
         
         self.__boundPoints=[];
@@ -172,21 +175,30 @@ class MainW(QMainWindow, Ui_MainW):
 
 
     def __setupPens(self):
-        self.__pens.append(pg.mkPen(pg.mkColor("#FF4444"))); #red
-        self.__pens.append(pg.mkPen(pg.mkColor("#4444FF"))); #blue
-        self.__pens.append(pg.mkPen(pg.mkColor("#44FF44"))); #green
-        self.__pens.append(pg.mkPen(pg.mkColor("#FF00FF"))); #magenta
-        self.__pens.append(pg.mkPen(pg.mkColor("#00FFFF"))); #cyan
-        self.__pens.append(pg.mkPen(pg.mkColor("#FFFF00"))); #yellow
-        self.__pens.append(pg.mkPen(pg.mkColor("#9370DB"))); #medium purple
-        self.__pens.append(pg.mkPen(pg.mkColor("#FF69B4"))); #hot pink
-        self.__pens.append(pg.mkPen(pg.mkColor("#CD853F"))); #Peru
-        self.__pens.append(pg.mkPen(pg.mkColor("#8A2BE2"))); #blue violet
+        self.__colors.append(pg.mkColor("#FF4444")); #red
+        self.__colors.append(pg.mkColor("#4444FF")); #blue
+        self.__colors.append(pg.mkColor("#44FF44")); #green
+        self.__colors.append(pg.mkColor("#FF00FF")); #magenta
+        self.__colors.append(pg.mkColor("#00FFFF")); #cyan
+        self.__colors.append(pg.mkColor("#FFFF00")); #yellow
+        self.__colors.append(pg.mkColor("#9370DB")); #medium purple
+        self.__colors.append(pg.mkColor("#FF69B4")); #hot pink
+        self.__colors.append(pg.mkColor("#CD853F")); #Peru
+        self.__colors.append(pg.mkColor("#8A2BE2")); #blue violet
         
-    def getPen(self):
-        curPen=self.__pens[self.__curPenInd];
-        self.__curPenInd=(self.__curPenInd+1)%len(self.__pens);
-        return curPen;  
+        for i in self.__colors:
+            self.__pens.append(pg.mkPen(i));
+            brushColor=QColor(i);
+            brushColor.setAlphaF(0.8);
+            self.__brushes.append(QBrush(brushColor));
+        
+    def getCurColor(self):
+        curPen=self.__pens[self.__curColorInd];
+        curColor=self.__colors[self.__curColorInd];
+        curBrush=self.__brushes[self.__curColorInd];
+        
+        self.__curColorInd=(self.__curColorInd+1)%len(self.__pens);
+        return (curColor, curPen, curBrush);  
 
     def __initBound(self):
         self.__boundPoints=np.zeros((2, 0));
@@ -195,7 +207,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         if(self.__dataValid):
             workClustID=self.__dataSet.getWorkClustID();
-            drawPen=self.__plotClusterItems[workClustID].getPen();
+            drawPen=self.__plotClusterItems[workClustID].getCurPen();
         else:
             drawPen="w";
         
@@ -305,15 +317,19 @@ class MainW(QMainWindow, Ui_MainW):
         self.__waveStartInd=0;
             
         
-    def __addClusterToView(self, clustID, cluster, pen=None):
+    def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
         self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);
         
         self.__workClustList[clustID]=QListWidgetItem(clustID);
         self.__workClustList[clustID].setData(self.__selectDataRole, clustID);
+        if(brush!=None):
+            self.__workClustList[clustID].setBackground(brush);
         self.workClusterSelect.addItem(self.__workClustList[clustID]);
         
         self.__viewClustList[clustID]=QListWidgetItem(clustID);
         self.__viewClustList[clustID].setData(self.__selectDataRole, clustID);
+        if(brush!=None):
+            self.__viewClustList[clustID].setBackground(brush);
         self.viewClustersSelect.addItem(self.__viewClustList[clustID]);
         self.__viewClustList[clustID].setSelected(True);
         
@@ -475,7 +491,8 @@ class MainW(QMainWindow, Ui_MainW):
                                   self.__hParamName, self.__vParamName,
                                   self.__boundPoints[0, :], self.__boundPoints[1, :]);
         if(clustID!=None):
-            self.__addClusterToView(clustID, cluster, self.getPen());
+            (color, pen, brush)=self.getCurColor();
+            self.__addClusterToView(clustID, cluster, pen, brush);
 
         self.__initBound();
         self.updatePlotView();
@@ -569,7 +586,7 @@ class MainW(QMainWindow, Ui_MainW):
     
     def __drawWavesCommon(self):
         workClustID=self.__dataSet.getWorkClustID();
-        drawPen=self.__plotClusterItems[workClustID].getPen();
+        drawPen=self.__plotClusterItems[workClustID].getCurPen();
         sBA=self.__plotClusterItems[workClustID].getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+100);       
         for i in np.r_[0:len(self.__wavePlots)]:
             (nPts, waves, xval, connectArr)=self.__dataSet.getSamples().getWaveforms(sBA, i);
