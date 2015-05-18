@@ -569,10 +569,11 @@ class MainW(QMainWindow, Ui_MainW):
     def drawPrevWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
             return;
-        self.__drawWavesCommon();
         self.__waveStartInd=self.__waveStartInd-100;
         if(self.__waveStartInd<0):
             self.__waveStartInd=0;
+            
+        self.__drawWavesCommon();
         
     def drawNextWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
