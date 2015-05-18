@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sat May 16 21:28:08 2015
+# Created: Mon May 18 15:40:01 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,7 +95,7 @@ class Ui_MainW(object):
         self.clearWavePlotsButton.setGeometry(QtCore.QRect(120, 600, 41, 25))
         self.clearWavePlotsButton.setObjectName("clearWavePlotsButton")
         self.reportClusterButton = QtGui.QPushButton(MainW)
-        self.reportClusterButton.setGeometry(QtCore.QRect(170, 600, 41, 25))
+        self.reportClusterButton.setGeometry(QtCore.QRect(90, 660, 41, 25))
         self.reportClusterButton.setObjectName("reportClusterButton")
         self.nextWavesButton = QtGui.QPushButton(MainW)
         self.nextWavesButton.setGeometry(QtCore.QRect(70, 600, 41, 25))
@@ -106,6 +106,12 @@ class Ui_MainW(object):
         self.prevWavesButton = QtGui.QPushButton(MainW)
         self.prevWavesButton.setGeometry(QtCore.QRect(20, 600, 41, 25))
         self.prevWavesButton.setObjectName("prevWavesButton")
+        self.resetWaveNButton = QtGui.QPushButton(MainW)
+        self.resetWaveNButton.setGeometry(QtCore.QRect(170, 600, 41, 25))
+        self.resetWaveNButton.setObjectName("resetWaveNButton")
+        self.numWavesIncBox = QtGui.QSpinBox(MainW)
+        self.numWavesIncBox.setGeometry(QtCore.QRect(20, 570, 81, 22))
+        self.numWavesIncBox.setObjectName("numWavesIncBox")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -118,13 +124,14 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.vChannelSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
         QtCore.QObject.connect(self.hParamSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
         QtCore.QObject.connect(self.vParamSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
-        QtCore.QObject.connect(self.viewClustersSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.invalidateView)
+        QtCore.QObject.connect(self.viewClustersSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.viewClustersChanged)
         QtCore.QObject.connect(self.deleteButton, QtCore.SIGNAL("clicked()"), MainW.deleteCluster)
         QtCore.QObject.connect(self.copyButton, QtCore.SIGNAL("clicked()"), MainW.copyCluster)
         QtCore.QObject.connect(self.reportClusterButton, QtCore.SIGNAL("clicked()"), MainW.showReport)
         QtCore.QObject.connect(self.prevWavesButton, QtCore.SIGNAL("clicked()"), MainW.drawPrevWaves)
         QtCore.QObject.connect(self.nextWavesButton, QtCore.SIGNAL("clicked()"), MainW.drawNextWaves)
         QtCore.QObject.connect(self.clearWavePlotsButton, QtCore.SIGNAL("clicked()"), MainW.clearWavePlots)
+        QtCore.QObject.connect(self.resetWaveNButton, QtCore.SIGNAL("clicked()"), MainW.resetWaveInd)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -162,7 +169,7 @@ class Ui_MainW(object):
         self.deleteButton.setText(QtGui.QApplication.translate("MainW", "Delet", None, QtGui.QApplication.UnicodeUTF8))
         self.clearWavePlotsButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>clear the waveform view window</p><p>Keyboard shortcut: E</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.clearWavePlotsButton.setText(QtGui.QApplication.translate("MainW", "clEar", None, QtGui.QApplication.UnicodeUTF8))
-        self.reportClusterButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: R</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.reportClusterButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: X</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "Reprt", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the next 100 waveforms of the working cluster</p><p>Keyboard shortcut: W</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setText(QtGui.QApplication.translate("MainW", "nWav", None, QtGui.QApplication.UnicodeUTF8))
@@ -170,4 +177,7 @@ class Ui_MainW(object):
         self.undoButton.setText(QtGui.QApplication.translate("MainW", "Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the previous 100 waveforms of the working cluster</p><p>Keyboard shortcut: Q</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setText(QtGui.QApplication.translate("MainW", "pwav", None, QtGui.QApplication.UnicodeUTF8))
+        self.resetWaveNButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: X</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.resetWaveNButton.setText(QtGui.QApplication.translate("MainW", "Reset", None, QtGui.QApplication.UnicodeUTF8))
+        self.numWavesIncBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>set the number of waves to display each time pwav and nWav buttons are clicked.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 

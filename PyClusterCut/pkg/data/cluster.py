@@ -55,7 +55,7 @@ class Cluster(object):
         
         self.__sBA=np.copy(selectArray);
             
-        if(self.__sampleClustCnt!=None):
+        if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.addClustCount(self.__sBA);
             
     def __del__(self):
@@ -66,21 +66,23 @@ class Cluster(object):
     def getSelectArray(self):
         return self.__sBA;
     
-    def getWaveforms(self, chN=None):
-        waveforms=self.__data.getWaveforms(chN);
-        if(chN==None):
-            return waveforms[:, self.__sBA, :];
-        return waveforms[self.__sBA, :];
+    def getWaveforms(self, sBA=None, chN=None):
+        if(sBA is None):
+            sBA=self.__sBA;
+        return self.__data.getWaveforms(sBA, chN);
     
     def getParam(self, chN, paramName):
         return self.__data.getParam(chN, paramName)[self.__sBA];
+    
+    def getNumChannels(self):
+        return self.__data.getNumChannels();
     
     def modifySelect(self, selectMod):
         removePoints=self.__sBA & (~selectMod);
         self.removeSelect(removePoints);
     
     def __updateParentClustSelect(self):
-        if((self.__sourceCluster!=None) and (self.__sampleClustCnt!=None)):
+        if((self.__sourceCluster is not None) and (self.__sampleClustCnt is not None)):
             self.__sourceCluster.setSelect(self.__sampleClustCnt.getNoClustSamples());
     
     def setSelect(self, selectMod):
@@ -88,13 +90,13 @@ class Cluster(object):
         self.addSelect(selectMod);
     
     def addSelect(self, selectMod):
-        if(self.__sampleClustCnt!=None):
+        if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.addClustCount(selectMod & (~self.__sBA));
         self.__sBA=self.__sBA | selectMod;
         self.__updateParentClustSelect();
         
     def removeSelect(self, selectMod):
-        if(self.__sampleClustCnt!=None):
+        if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.minusClustCount(selectMod & (self.__sBA));         
         self.__sBA=self.__sBA & (~selectMod);
         self.__updateParentClustSelect();

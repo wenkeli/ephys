@@ -24,7 +24,7 @@ class DataSet(object):
         if(self.__workingSetInit):
             return;
         
-        if(set!=None):
+        if(set is not None):
             self.__workingSet=np.copy(set);
             
         self.__addClusterToList(False, False);

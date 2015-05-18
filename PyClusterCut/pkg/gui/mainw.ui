@@ -362,14 +362,14 @@
   <widget class="QPushButton" name="reportClusterButton">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>600</y>
+     <x>90</x>
+     <y>660</y>
      <width>41</width>
      <height>25</height>
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: R&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: X&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Reprt</string>
@@ -421,6 +421,35 @@
    </property>
    <property name="text">
     <string>pwav</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="resetWaveNButton">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>600</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: X&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="numWavesIncBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>570</y>
+     <width>81</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set the number of waves to display each time pwav and nWav buttons are clicked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
  </widget>
@@ -565,8 +594,8 @@
      <y>142</y>
     </hint>
     <hint type="destinationlabel">
-     <x>133</x>
-     <y>425</y>
+     <x>142</x>
+     <y>368</y>
     </hint>
    </hints>
   </connection>
@@ -581,8 +610,8 @@
      <y>317</y>
     </hint>
     <hint type="destinationlabel">
-     <x>159</x>
-     <y>431</y>
+     <x>136</x>
+     <y>428</y>
     </hint>
    </hints>
   </connection>
@@ -590,15 +619,15 @@
    <sender>viewClustersSelect</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainW</receiver>
-   <slot>invalidateView()</slot>
+   <slot>viewClustersChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>207</x>
-     <y>501</y>
+     <x>197</x>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
-     <x>128</x>
-     <y>507</y>
+     <x>138</x>
+     <y>477</y>
     </hint>
    </hints>
   </connection>
@@ -641,8 +670,8 @@
    <slot>showReport()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>183</x>
-     <y>624</y>
+     <x>103</x>
+     <y>684</y>
     </hint>
     <hint type="destinationlabel">
      <x>253</x>
@@ -698,6 +727,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>resetWaveNButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>resetWaveInd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>200</x>
+     <y>610</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>576</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -713,5 +758,7 @@
   <slot>drawPrevWaves()</slot>
   <slot>drawNextWaves()</slot>
   <slot>clearWavePlots()</slot>
+  <slot>resetWaveInd()</slot>
+  <slot>viewClustersChanged()</slot>
  </slots>
 </ui>

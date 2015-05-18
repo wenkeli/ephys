@@ -33,7 +33,7 @@ class ClusterPlotItem(object):
         self.__numSelPoints=None;
         
         self.__calcNumSelPoints();
-        if(pen==None):
+        if(pen is None):
             self.__pen=pg.mkPen("w");
         else:
             self.__pen=pen;
@@ -47,6 +47,7 @@ class ClusterPlotItem(object):
                                       size=1, pointMode=True);
         self.__plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.__pen);     
         self.__plot=plot;
+        self.__waveStartInd=0;
         
     
     def setPlotData(self, xChN, yChN, xChParamT, yChParamT):
@@ -78,11 +79,37 @@ class ClusterPlotItem(object):
         sBA=self.__cluster.getSelectArray();
         self.__numSelPoints=np.cumsum(sBA);
         
-    def getSelPointsByRange(self, startInd, endInd):
+    def getPrevWaves(self, indIncSize):
+        if(self.__waveStartInd<=0):
+            return (None, None, None, None, None);
+        self.__waveStartInd=self.__waveStartInd-indIncSize;
+        if(self.__waveStartInd+indIncSize>=self.__getTotalSelPoints()):
+            self.__waveStartInd=self.__getTotalSelPoints()-indIncSize;
+#         self.__waveStartInd=self.__waveStartInd%self.__getTotalSelPoints();
+        if(self.__waveStartInd<=0):
+            self.__waveStartInd=0;
+        sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
+        
+        (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
+        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArr);
+        
+    def getNextWaves(self, indIncSize):
+        if(self.__waveStartInd>=self.__getTotalSelPoints()):
+            return (None, None, None, None, None);
+        sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
+        self.__waveStartInd=self.__waveStartInd+indIncSize;
+        
+        (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
+        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArr);
+    
+    def resetWaveInd(self):
+        self.__waveStartInd=0;
+    
+    def __getSelPointsByRange(self, startInd, endInd):
         sBA=self.__cluster.getSelectArray();
         return sBA & ((self.__numSelPoints>=startInd) & (self.__numSelPoints<endInd));
     
-    def getTotalSelPoints(self):
+    def __getTotalSelPoints(self):
         return self.__numSelPoints[-1];
         
         
@@ -137,7 +164,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
         self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
         self.__wavePlots=[];
-        self.__waveStartInd=0;
+        self.numWavesIncBox.setMinimum(1);
+        self.numWavesIncBox.setMaximum(1000000);
+        self.numWavesIncBox.setValue(100);
         
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
@@ -211,7 +240,7 @@ class MainW(QMainWindow, Ui_MainW):
         else:
             drawPen="w";
         
-        if((self.__boundPlotItem==None) or (self.__movingBoundItem==None)):
+        if((self.__boundPlotItem is None) or (self.__movingBoundItem is None)):
             self.__boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
             self.__movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
         else:
@@ -253,6 +282,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.nextWavesButton.setEnabled(enable);
         self.prevWavesButton.setEnabled(enable);
         self.clearWavePlotsButton.setEnabled(enable);
+        self.resetWaveNButton.setEnabled(enable);
+        self.numWavesIncBox.setEnabled(enable);
 
         
     def invalidateView(self):
@@ -314,21 +345,19 @@ class MainW(QMainWindow, Ui_MainW):
             wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
             self.__wavePlots.append(wavePlot);
             
-        self.__waveStartInd=0;
-            
         
     def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
         self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);
         
         self.__workClustList[clustID]=QListWidgetItem(clustID);
         self.__workClustList[clustID].setData(self.__selectDataRole, clustID);
-        if(brush!=None):
+        if(brush is not None):
             self.__workClustList[clustID].setBackground(brush);
         self.workClusterSelect.addItem(self.__workClustList[clustID]);
         
         self.__viewClustList[clustID]=QListWidgetItem(clustID);
         self.__viewClustList[clustID].setData(self.__selectDataRole, clustID);
-        if(brush!=None):
+        if(brush is not None):
             self.__viewClustList[clustID].setBackground(brush);
         self.viewClustersSelect.addItem(self.__viewClustList[clustID]);
         self.__viewClustList[clustID].setSelected(True);
@@ -434,14 +463,16 @@ class MainW(QMainWindow, Ui_MainW):
                                                        widget, self.addCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
                                                widget, self.copyCluster));
-        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("X")),
                                                widget, self.showReport));                                                               
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Q")),
                                                widget, self.drawPrevWaves));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("W")),
                                                widget, self.drawNextWaves));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("E")),
-                                               widget, self.clearWavePlots));        
+                                               widget, self.clearWavePlots));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
+                                               widget, self.resetWaveInd));                                
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -490,7 +521,7 @@ class MainW(QMainWindow, Ui_MainW):
         (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
                                   self.__hParamName, self.__vParamName,
                                   self.__boundPoints[0, :], self.__boundPoints[1, :]);
-        if(clustID!=None):
+        if(clustID is not None):
             (color, pen, brush)=self.getCurColor();
             self.__addClusterToView(clustID, cluster, pen, brush);
 
@@ -531,9 +562,24 @@ class MainW(QMainWindow, Ui_MainW):
         workClustID=selectItem[0].data(self.__selectDataRole);
         self.__viewClustList[workClustID].setSelected(True);
         self.__dataSet.setWorkClustID(workClustID);
-        self.updatePlotView();
+#         self.updatePlotView();
+        self.invalidateView();
         
-        self.__waveStartInd=0;
+    def viewClustersChanged(self):
+        selectItems=self.viewClustersSelect.selectedItems();
+        workClustID=self.__dataSet.getWorkClustID();
+        if(not self.__viewClustList[workClustID].isSelected()):
+            if(len(selectItems)<=0):
+                workClustID=self.__dataSet.getInitClustID();
+            else:
+                workClustID=selectItems[0].data(self.__selectDataRole);
+            self.__dataSet.setWorkClustID(workClustID);
+            self.__workClustList[workClustID].setSelected(True);
+            self.__viewClustList[workClustID].setSelected(True);
+            
+        self.invalidateView();
+        
+
         
     def showReport(self):
         if(self.__reportW.isVisible()):
@@ -552,56 +598,59 @@ class MainW(QMainWindow, Ui_MainW):
         
         for i in clustInds:
             (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
-            percOverlap=numOverlap/float(numPoints)*100;
-            output="cluster "+str(i)+": "+str(numPoints)+" samples, overlap: "+str(numOverlap)+" samples, "+str(percOverlap)+"%\n";
+            percOverlap=int(numOverlap/float(numPoints)*1000);
+            percOverlap=percOverlap/10.0;
+            output="cluster "+str(i)+": "+str(numPoints)+" pts, overlap: "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
             self.__reportDisp.insertPlainText(output);
             for j in clustInds:
                 if(i==j):
                     continue;
                 (numPoints, numOverlap)=self.__dataSet.compareClustersOverlap(i, j);
-                percOverlap=numOverlap/float(numPoints)*100;
+                percOverlap=int(numOverlap/float(numPoints)*1000);
+                percOverlap=percOverlap/10.0;
                 if(numOverlap<=0):
                     continue;
-                output="\toverlap cluster "+str(j)+": "+str(numOverlap)+" samples, "+str(percOverlap)+"%\n";
+                output="\toverlap cluster "+str(j)+": "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
                 self.__reportDisp.insertPlainText(output);
             self.__reportDisp.insertPlainText("\n");
             
     def drawPrevWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
             return;
-        self.__waveStartInd=self.__waveStartInd-100;
-        if(self.__waveStartInd<0):
-            self.__waveStartInd=0;
-            
-        self.__drawWavesCommon();
+        
+        workClustID=self.__dataSet.getWorkClustID();
+        drawPen=self.__plotClusterItems[workClustID].getCurPen();
+        
+        (nChs, nptsPerCh, waves, xvals, conArr)=self.__plotClusterItems[workClustID].getPrevWaves(self.numWavesIncBox.value());
+        self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
         
     def drawNextWaves(self):
         if((not self.__viewValid) or (not self.__dataValid)):
             return;
-        self.__drawWavesCommon();
-        workClustID=self.__dataSet.getWorkClustID();
-        totalPoints=self.__plotClusterItems[workClustID].getTotalSelPoints();
-        self.__waveStartInd=self.__waveStartInd+100;
-        if(self.__waveStartInd+100>=totalPoints):
-            self.__waveStartInd=totalPoints-100;
-    
-    def __drawWavesCommon(self):
+        
         workClustID=self.__dataSet.getWorkClustID();
         drawPen=self.__plotClusterItems[workClustID].getCurPen();
-        sBA=self.__plotClusterItems[workClustID].getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+100);       
-        for i in np.r_[0:len(self.__wavePlots)]:
-            (nPts, waves, xval, connectArr)=self.__dataSet.getSamples().getWaveforms(sBA, i);
-            self.__wavePlots[i].plot(xval.flatten(), waves.flatten(), pen=drawPen, connect=connectArr.flatten());
-
+        
+        (nChs, nptsPerCh, waves, xvals, conArr)=self.__plotClusterItems[workClustID].getNextWaves(self.numWavesIncBox.value());
+        self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
+    
+    def __drawWavesCommon(self, nChs, waves, xvals, conArr, drawPen):   
+        for i in np.r_[0:nChs]:
+            self.__wavePlots[i].plot(xvals.flatten(), waves[i, :, :].flatten(), 
+                                     pen=drawPen, connect=conArr.flatten());
+            self.__wavePlots[i].getViewBox().autoRange();
         
     def clearWavePlots(self):
         for i in np.r_[0:len(self.__wavePlots)]:
             self.__wavePlots[i].getViewBox().autoRange();
             self.__wavePlots[i].clear();
+            
+    def resetWaveInd(self):
+        workClustID=self.__dataSet.getWorkClustID();
+        self.__plotClusterItems[workClustID].resetWaveInd();
         
     
     def plotMouseClicked(self, evt):
-#         print(str(self.__closedBound)+" "+str(self.__drawMovingBound));
         if((not self.__viewValid) or (self.__closedBound)):
             return;
         numPoints=self.__boundPoints.shape[1];

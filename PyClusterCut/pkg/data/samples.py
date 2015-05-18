@@ -64,7 +64,7 @@ class SamplesData(object):
         self.__triggerCh=np.zeros(self.__numSamples, dtype="int32");
         self.__triggerCh[:]=-1;
         
-        if(triggerCh!=None):
+        if(triggerCh is not None):
             self.__triggerCh[:]=triggerCh;
             return;
         
@@ -150,12 +150,14 @@ class SamplesData(object):
         else:
             return self.__params[paramName][chN, :];
     
-    def getWaveforms(self, sBA, chN):
+    def getWaveforms(self, sBA, chN=None):
         numSel=np.sum(sBA);
         xVals=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
         connectArr=np.zeros(xVals.shape, dtype="bool");
         connectArr[:]=True;
         connectArr[:, self.__numPtsPerCh-1]=False;
+        if(chN is None):
+            return (self.__numPtsPerCh, self.__waveforms[:, sBA, :], xVals, connectArr);
         return (self.__numPtsPerCh, self.__waveforms[chN, sBA, :], xVals, connectArr);
     
     def getNumChannels(self):
