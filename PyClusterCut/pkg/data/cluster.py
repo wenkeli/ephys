@@ -50,7 +50,7 @@ class Cluster(object):
         self.__data=samples;
         self.__sourceCluster=sourceClust;
         self.__sampleClustCnt=clustCount;
-        self.__sBA=[];
+        self.__sBA=None;
         self.__boundaries=boundaries;
         
         self.__sBA=np.copy(selectArray);

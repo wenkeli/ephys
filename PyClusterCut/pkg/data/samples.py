@@ -21,7 +21,7 @@ class SamplesClustCount(object):
         return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
-    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz=30000, triggerChs=None):
+    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz, triggerChs=None):
         self.__waveforms=[];
         self.__timestamps=[];
         
@@ -51,8 +51,7 @@ class SamplesData(object):
         
         self.__timestamps=np.zeros(timestamps.shape, dtype="uint64");
         self.__timestamps[:]=timestamps;
-        self.__params["time"]=self.__timestamps;
-        self.__paramType["time"]=0; #0 is channel independent
+
         
         self.__thresholds=np.zeros(thresholds.T.shape, dtype="float32");
         self.__thresholds[:]=thresholds.T;
@@ -95,6 +94,8 @@ class SamplesData(object):
     
     
     def __calcParams(self):
+        self.__params["time"]=self.__timestamps;
+        self.__paramType["time"]=0; #0 is channel independent
         self.__calcPeak();
         self.__calcValley();
         self.__calcPVWidth();
@@ -170,8 +171,5 @@ class SamplesData(object):
     
     def getNumSamples(self):
         return self.__numSamples;
-        
-    def getSampleTimes(self):
-        return self.__timestamps;
 
     

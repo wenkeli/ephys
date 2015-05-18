@@ -120,6 +120,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.setupUi(self);
         self.enableViewUI(False);
         self.enableClusterUI(False);
+        self.enableTimeSelectUI(False);
         self.setFocusPolicy(Qt.StrongFocus);
         self.setWindowFlags(Qt.CustomizeWindowHint
                             | Qt.WindowMinimizeButtonHint);
@@ -284,6 +285,15 @@ class MainW(QMainWindow, Ui_MainW):
         self.clearWavePlotsButton.setEnabled(enable);
         self.resetWaveNButton.setEnabled(enable);
         self.numWavesIncBox.setEnabled(enable);
+        
+        
+    def enableTimeSelectUI(self, enable):
+        self.timeSelLabel.setEnabled(enable);
+        self.timeSelStartLabel.setEnabled(enable);
+        self.timeSelEndLabel.setEnabled(enable);
+        self.timeSelButton.setEnabled(enable);
+        self.timeSelStartBox.setEnabled(enable);
+        self.timeSelEndBox.setEnabled(enable);
 
         
     def invalidateView(self):
@@ -317,21 +327,12 @@ class MainW(QMainWindow, Ui_MainW):
         self.clearSelect();
         print("calculating parameters");
         self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
-                               data["timestamps"], None);
+                               data["timestamps"], 30000, None);
         print("done");
-        
-        (clustID, cluster)=self.__dataSet.initializeWorkingSet();
-        self.__addClusterToView(clustID, cluster);
-        self.populateSelect();
-        
-        self.__initBound();
-        self.enableViewUI(True);
-        self.enableClusterUI(False);
-        self.enableKeyShortcuts(True);
-        self.__dataValid=True;
-        self.__viewValid=False;
-        
         del(data);
+        
+        dataValid=False;
+        viewValid=False;
         
         numWavePlots=len(self.__wavePlots);
         if(numWavePlots>0):
@@ -345,6 +346,37 @@ class MainW(QMainWindow, Ui_MainW):
             wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
             self.__wavePlots.append(wavePlot);
             
+        self.enableTimeSelectUI(True);
+        (startT, endT)=self.__dataSet.getSamplesStartEndTimes();
+        self.timeSelStartBox.setMinimum(startT);
+        self.timeSelEndBox.setMinimum(startT);
+        
+        self.timeSelStartBox.setMaximum(endT);
+        self.timeSelEndBox.setMaximum(endT);
+        
+        self.timeSelStartBox.setValue(startT);
+        self.timeSelEndBox.setValue(endT);
+    
+    
+    def selectTimeWindow(self):
+        startTime=self.timeSelStartBox.value();
+        endTime=self.timeSelEndBox.value();
+        if(endTime<=startTime):
+            return;
+        
+        (clustID, cluster)=self.__dataSet.initializeWorkingSet(startTime, endTime);
+        self.__addClusterToView(clustID, cluster);
+        self.populateSelect();
+        
+        self.__initBound();
+        self.enableViewUI(True);
+        self.enableClusterUI(False);
+        self.enableTimeSelectUI(False);
+        self.enableKeyShortcuts(True);
+        self.__dataValid=True;
+        self.__viewValid=False;
+
+
         
     def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
         self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);

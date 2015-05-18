@@ -4,10 +4,11 @@ from .samples import SamplesData, SamplesClustCount;
 from .cluster import Cluster, Boundary;
 
 class DataSet(object):
-    def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs):
-        self.__samples=SamplesData(waveforms, gains, thresholds, timestamps, triggerChs);
-        self.__workingSet=np.zeros(self.__samples.getNumSamples(), dtype="bool");
-        self.__workingSet[:]=True;
+    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz, triggerChs):
+        self.__samples=SamplesData(waveforms, gains, thresholds, timestamps, samplingHz, triggerChs);
+        self.__workingSet=None;
+        self.__workingSetStartTime=-1;
+        self.__workingSetEndTime=-1;
         
         self.__sampleClustCnt=SamplesClustCount(self.__samples.getNumSamples());
         
@@ -20,12 +21,19 @@ class DataSet(object):
         self.__workingSetInit=False;
         
         
-    def initializeWorkingSet(self, set=None):
+    def initializeWorkingSet(self, startTime=-1, endTime=-1):
         if(self.__workingSetInit):
             return;
         
-        if(set is not None):
-            self.__workingSet=np.copy(set);
+        timeStamps=self.__samples.getParam(0, "time");
+        if(startTime<0):
+            startTime=timeStamps[0];
+        if(endTime<0):
+            endTime=timeStamps[-1];
+            
+        self.__workingSet=(timeStamps>=startTime) & (timeStamps<=endTime);
+        self.__workingSetStartTime=startTime;
+        self.__workingSetEndTime=endTime;
             
         self.__addClusterToList(False, False);
         self.__initClustID=self.__workClustID;
@@ -34,6 +42,12 @@ class DataSet(object):
         
         return (self.__initClustID, self.__clusters[self.__initClustID]);
         
+    def getSamplesStartEndTimes(self):
+        timeStamps=self.__samples.getParam(0, "time");
+        return (timeStamps[0], timeStamps[-1]);
+    
+    def getWorkingStartEndTimes(self):
+        return (self.__workingSetStartTime, self.__workingSetEndTime);
         
     def __addClusterToList(self, copy, isNotInitClust, clustBounds=[], pointsBA=[]):
         self.__maxClustID=str(self.__maxClustN);
