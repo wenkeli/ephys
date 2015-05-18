@@ -21,7 +21,7 @@ class SamplesClustCount(object):
         return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
-    def __init__(self, waveforms, gains, thresholds, timestamps, triggerChs=None):
+    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz=30000, triggerChs=None):
         self.__waveforms=[];
         self.__timestamps=[];
         
@@ -36,6 +36,9 @@ class SamplesData(object):
         self.__numChs=0;
         self.__numPtsPerCh=0;
         self.__numSamples=0;
+        
+        self.__samplingHz=samplingHz;
+        self.__samplingUSec=1000000.0/self.__samplingHz;
         
         
         self.__numSamples=waveforms.shape[0];
@@ -138,6 +141,8 @@ class SamplesData(object):
 
         self.__params["peakAngle"]=(self.__waveforms[:, sampleInd, self.__params["peakTime"]]-
                                   self.__waveforms[:, sampleInd, self.__params["peakTime"]-stepSize]);
+        self.__params["peakAngle"]=self.__params["peakAngle"]/(self.__samplingUSec*stepSize);
+        self.__params["peakAngle"]=np.arctan(self.__params["peakAngle"])/(2*np.pi)*360;                       
         self.__paramType["peakAngle"]=1;
 
         
