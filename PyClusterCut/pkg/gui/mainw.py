@@ -289,17 +289,18 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewButton.setEnabled(enable);
         self.reportClusterButton.setEnabled(enable);
         
+        self.nextWavesButton.setEnabled(enable);
+        self.prevWavesButton.setEnabled(enable);
+        self.clearWavePlotsButton.setEnabled(enable);
+        self.resetWaveNButton.setEnabled(enable);
+        self.numWavesIncBox.setEnabled(enable);
+        
         
     def enableClusterUI(self, enable):
         self.addButton.setEnabled(enable);
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
-        self.nextWavesButton.setEnabled(enable);
-        self.prevWavesButton.setEnabled(enable);
-        self.clearWavePlotsButton.setEnabled(enable);
-        self.resetWaveNButton.setEnabled(enable);
-        self.numWavesIncBox.setEnabled(enable);
         
         
     def enableTimeSelectUI(self, enable):
@@ -398,6 +399,8 @@ class MainW(QMainWindow, Ui_MainW):
         
         clustInds=self.__dataSet.getClusterInds();
         initInd=self.__dataSet.getInitClustID();
+        workInd=self.__dataSet.getWorkClustID();
+        self.__dataSet.setWorkClustID(initInd);
         for i in clustInds:
             cluster=self.__dataSet.getCluster(i);
             pen=None;
@@ -405,6 +408,9 @@ class MainW(QMainWindow, Ui_MainW):
             if(i!=initInd):
                 (color, pen, brush)=self.getCurColor();
             self.__addClusterToView(i, cluster, pen, brush);
+        
+        self.__workClustList[workInd].setSelected(True);
+        self.changeWorkCluster();
         
         (startT, endT)=self.__dataSet.getWorkingStartEndTimes();
         self.__setTimeSelUI(startT, endT);
@@ -703,7 +709,7 @@ class MainW(QMainWindow, Ui_MainW):
             self.__reportDisp.insertPlainText("\n");
             
     def drawPrevWaves(self):
-        if((not self.__viewValid) or (not self.__dataValid)):
+        if(not self.__dataValid):
             return;
         
         workClustID=self.__dataSet.getWorkClustID();
@@ -713,7 +719,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
         
     def drawNextWaves(self):
-        if((not self.__viewValid) or (not self.__dataValid)):
+        if(not self.__dataValid):
             return;
         
         workClustID=self.__dataSet.getWorkClustID();
