@@ -477,8 +477,8 @@
     <rect>
      <x>200</x>
      <y>670</y>
-     <width>51</width>
-     <height>25</height>
+     <width>61</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -847,6 +847,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>saveFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>saveClusterData()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>214</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>144</x>
+     <y>42</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -865,5 +881,6 @@
   <slot>resetWaveInd()</slot>
   <slot>viewClustersChanged()</slot>
   <slot>selectTimeWindow()</slot>
+  <slot>saveClusterData()</slot>
  </slots>
 </ui>

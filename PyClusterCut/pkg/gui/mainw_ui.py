@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Mon May 18 17:50:13 2015
+# Created: Tue May 19 00:03:47 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -119,7 +119,7 @@ class Ui_MainW(object):
         self.timeSelStartBox.setGeometry(QtCore.QRect(60, 660, 131, 22))
         self.timeSelStartBox.setObjectName("timeSelStartBox")
         self.timeSelButton = QtGui.QPushButton(MainW)
-        self.timeSelButton.setGeometry(QtCore.QRect(200, 670, 51, 25))
+        self.timeSelButton.setGeometry(QtCore.QRect(200, 670, 61, 41))
         self.timeSelButton.setObjectName("timeSelButton")
         self.timeSelLabel = QtGui.QLabel(MainW)
         self.timeSelLabel.setGeometry(QtCore.QRect(90, 640, 91, 16))
@@ -154,6 +154,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.clearWavePlotsButton, QtCore.SIGNAL("clicked()"), MainW.clearWavePlots)
         QtCore.QObject.connect(self.resetWaveNButton, QtCore.SIGNAL("clicked()"), MainW.resetWaveInd)
         QtCore.QObject.connect(self.timeSelButton, QtCore.SIGNAL("clicked()"), MainW.selectTimeWindow)
+        QtCore.QObject.connect(self.saveFileButton, QtCore.SIGNAL("clicked()"), MainW.saveClusterData)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):

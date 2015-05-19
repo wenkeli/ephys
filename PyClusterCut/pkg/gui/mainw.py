@@ -1,5 +1,7 @@
 import os;
 
+import cPickle as pickle;
+
 import numpy as np;
 
 import PySide;
@@ -258,6 +260,19 @@ class MainW(QMainWindow, Ui_MainW):
             self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseMoved,
                                                     rateLimit=100, slot=self.plotMouseMoved));
         
+    def saveClusterData(self):
+        fileName=QFileDialog.getSaveFileName(self, self.tr("save cluster data set"), 
+                                             self.tr(self.__dataDir), 
+                                             self.tr("cluster data set (*.clusterdataset)"));
+        fileName=fileName[0];
+        if(fileName==""):
+            return;
+        
+        file=open(fileName, "wb");
+        pickle.dump(self.__dataSet, file, protocol=2);
+        
+        file.close();
+        
 
     def enableViewUI(self, enable):
         self.saveFileButton.setEnabled(enable);
@@ -310,27 +325,30 @@ class MainW(QMainWindow, Ui_MainW):
         
     def loadFile(self):
         print("loading file");
-        fileName=QFileDialog.getOpenFileName(self, self.tr("open spike file"), 
+        fileName=QFileDialog.getOpenFileName(self, self.tr("open data file"), 
                                              self.tr(self.__dataDir), 
-                                             self.tr("spike files (*.spikes)"));
+                                             self.tr("1. spike files (*.spikes);; 2. cluster data set (*.clusterdataset)"));
+        fileType=fileName[1];
         fileName=fileName[0];
+        
         if(fileName==""):
             return;
         
         self.__dataDir=os.path.dirname(fileName);
         
         file=open(fileName, "rb");
-        fileStat=os.stat(fileName);        
-        data=readSamples(file, fileStat.st_size, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+        self.clearSelect(); 
+        
+        if(fileType[0]=="1"):
+            print("spikes datafile");
+            self.__loadSpikesFile(fileName, file);
+            
+        if(fileType[0]=="2"):
+            print("cluster data set");
+            self.__loadClusterDataSetFile(file);     
+
         file.close();
-        
-        self.clearSelect();
-        print("calculating parameters");
-        self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
-                               data["timestamps"], 30000, None);
-        print("done");
-        del(data);
-        
+
         dataValid=False;
         viewValid=False;
         
@@ -346,8 +364,24 @@ class MainW(QMainWindow, Ui_MainW):
             wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
             self.__wavePlots.append(wavePlot);
             
-        self.enableTimeSelectUI(True);
+            
+    
+    def __loadSpikesFile(self, fileName, fh):
+        fileStat=os.stat(fileName);        
+        data=readSamples(fh, fileStat.st_size, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+        print("calculating parameters");
+        self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
+                               data["timestamps"], 30000, None);
+        print("done");
+        del(data);
+        
         (startT, endT)=self.__dataSet.getSamplesStartEndTimes();
+        self.__setTimeSelUI(startT, endT);
+        
+        
+        
+    def __setTimeSelUI(self, startT, endT):
+        self.enableTimeSelectUI(True);
         self.timeSelStartBox.setMinimum(startT);
         self.timeSelEndBox.setMinimum(startT);
         
@@ -356,7 +390,26 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.timeSelStartBox.setValue(startT);
         self.timeSelEndBox.setValue(endT);
-    
+        
+        
+              
+    def __loadClusterDataSetFile(self, fh):
+        self.__dataSet=pickle.load(fh);
+        
+        clustInds=self.__dataSet.getClusterInds();
+        initInd=self.__dataSet.getInitClustID();
+        for i in clustInds:
+            cluster=self.__dataSet.getCluster(i);
+            pen=None;
+            brush=None;
+            if(i!=initInd):
+                (color, pen, brush)=self.getCurColor();
+            self.__addClusterToView(i, cluster, pen, brush);
+        
+        (startT, endT)=self.__dataSet.getWorkingStartEndTimes();
+        self.__setTimeSelUI(startT, endT);
+        self.__setDataIsValid();
+        
     
     def selectTimeWindow(self):
         startTime=self.timeSelStartBox.value();
@@ -366,8 +419,12 @@ class MainW(QMainWindow, Ui_MainW):
         
         (clustID, cluster)=self.__dataSet.initializeWorkingSet(startTime, endTime);
         self.__addClusterToView(clustID, cluster);
-        self.populateSelect();
         
+        self.__setDataIsValid();
+        
+        
+    def __setDataIsValid(self):
+        self.populateSelect();
         self.__initBound();
         self.enableViewUI(True);
         self.enableClusterUI(False);
@@ -375,7 +432,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.enableKeyShortcuts(True);
         self.__dataValid=True;
         self.__viewValid=False;
-
 
         
     def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
