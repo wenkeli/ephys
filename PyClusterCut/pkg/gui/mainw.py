@@ -658,10 +658,11 @@ class MainW(QMainWindow, Ui_MainW):
     def changeWorkCluster(self):
         selectItem=self.workClusterSelect.selectedItems();
         workClustID=selectItem[0].data(self.__selectDataRole);
-        self.__viewClustList[workClustID].setSelected(True);
         self.__dataSet.setWorkClustID(workClustID);
-#         self.updatePlotView();
-        self.invalidateView();
+        self.__initBound();
+        if(not self.__viewClustList[workClustID].isSelected()):
+            self.__viewClustList[workClustID].setSelected(True);
+            self.invalidateView();
         
     def viewClustersChanged(self):
         selectItems=self.viewClustersSelect.selectedItems();
@@ -803,4 +804,6 @@ class MainW(QMainWindow, Ui_MainW):
         
         numPoints=self.__boundPoints.shape[1];
         self.__drawMovingBound=numPoints>0;
+        if(not self.__drawMovingBound):
+            self.__movingBoundItem.setData(x=[0], y=[0]);
         self.__closedBound=False;
