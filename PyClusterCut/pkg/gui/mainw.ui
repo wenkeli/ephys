@@ -540,6 +540,19 @@
     <string>num waves</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="exportHDF5Button">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>40</y>
+     <width>84</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>export HDF5</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
