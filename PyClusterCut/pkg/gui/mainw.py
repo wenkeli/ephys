@@ -61,10 +61,20 @@ class ClusterPlotItem(object):
         
         boundaries=self.__cluster.getBoundaries([xChN, yChN], [xChParamT, yChParamT]);
         if(len(boundaries)>0):
-            points=boundaries[0].getPoints();
-            self.__plotBoundaryData.setData(x=points[0, :], y=points[1, :]);
+            points=np.zeros((2, 0));
+            connArr=np.zeros(0, dtype="bool");
+            for i in boundaries:
+                curPoints=i.getPoints();
+                points=np.hstack((points, curPoints));
+                curCon=np.zeros(curPoints.shape[1], dtype="bool");
+                curCon[:-1]=True;
+                connArr=np.hstack((connArr, curCon));
+            self.__plotBoundaryData.setData(x=points[0, :], y=points[1, :], 
+                                            connect=connArr);
         else:
-            self.__plotBoundaryData.setData(x=[0], y=[0]);
+            self.__plotBoundaryData.setData(x=[0], y=[0], connect="all");
+            
+            
                               
     def addToPlot(self):
         self.__plot.addItem(self.__plotData);
