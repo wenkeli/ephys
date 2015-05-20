@@ -4,14 +4,15 @@ import matplotlib;
 matplotlib.use("Qt4Agg");
 import matplotlib.pyplot as pp;
 
-from ..fileIO.loadOpenEphysSpikes import readSamples;
+from ..fileIO.loadOpenEphysSpikes import readSamples, readSpikeFile;
 
-from ..data.spikes import SamplesData;
+from ..data.samples import SamplesData;
 
 import numpy as np;
 
     
-fileName="/mnt/FastData/spikes_data/mCD__2014-05-01_16-07-49__acq9/Tetrode10.spikes";
+# fileName="/mnt/FastData/spikes_data/mCD__2014-05-01_16-07-49__acq9/Tetrode10.spikes";
+fileName="/mnt/FastData/spikes_data/test__2015-05-19_14-48-44__1/TT9.spikes";
 
 file=open(fileName, "rb");
 
@@ -19,11 +20,12 @@ fileStat=os.stat(fileName);
 
 fileSize=fileStat.st_size;
 
-data=readSamples(file, fileSize, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+data=readSpikeFile(file, fileName);
 
 file.close();
 
-samples=SamplesData(data["waveforms"], data["gains"], data["thresholds"], data["timestamps"], None);
+samples=SamplesData(data["waveforms"], data["gains"], data["thresholds"], 
+                    data["timestamps"], data["samplingHz"], data["triggerChs"]);
 
 # fig=pp.figure(); ax=fig.add_axes([0.15, 0.15, 0.7, 0.7]);
 # ax.plot(data["waveforms"][100000:101000, :].T);

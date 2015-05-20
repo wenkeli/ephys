@@ -21,7 +21,7 @@ from reportw import ReportW;
 
 import FastScatterPlotItem as fscatter;
 
-from ..fileIO.loadOpenEphysSpikes import readSamples;
+from ..fileIO.loadOpenEphysSpikes import readSpikeFile, readSamples;
 
 from ..data.samples import SamplesData;
 from ..data.samples import SamplesClustCount;
@@ -380,11 +380,12 @@ class MainW(QMainWindow, Ui_MainW):
             
     
     def __loadSpikesFile(self, fileName, fh):
-        fileStat=os.stat(fileName);        
-        data=readSamples(fh, fileStat.st_size, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+#         fileStat=os.stat(fileName);        
+#         data=readSamples(fh, fileStat.st_size, 1024, "=Bq3H", "H", "H", 2, "H", 3, 4);
+        data=readSpikeFile(fh, fileName);
         print("calculating parameters");
         self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
-                               data["timestamps"], 30000, None);
+                               data["timestamps"], data["samplingHz"], data["triggerChs"]);
         print("done");
         del(data);
         

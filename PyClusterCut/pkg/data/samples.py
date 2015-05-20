@@ -21,7 +21,7 @@ class SamplesClustCount(object):
         return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
-    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz, triggerChs=None):
+    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz, triggerChs):
         self.__waveforms=[];
         self.__timestamps=[];
         
