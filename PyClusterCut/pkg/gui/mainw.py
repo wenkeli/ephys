@@ -289,6 +289,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewButton.setEnabled(enable);
         self.reportClusterButton.setEnabled(enable);
         
+        self.undoBoundaryButton.setEnabled(enable);
+        
         self.nextWavesButton.setEnabled(enable);
         self.prevWavesButton.setEnabled(enable);
         self.clearWavePlotsButton.setEnabled(enable);
@@ -548,25 +550,27 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName]=[];
         
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
-                                                       widget, self.updatePlotView));
+                                                         widget, self.updatePlotView));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
-                                                       widget, self.deleteCluster));
+                                                         widget, self.deleteCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("F")),
-                                                       widget, self.refineCluster));
+                                                         widget, self.refineCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
-                                                       widget, self.addCluster));
+                                                         widget, self.addCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
-                                               widget, self.copyCluster));
+                                                         widget, self.copyCluster));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Z")),
+                                                         widget, self.undoBoundaryStep));     
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("X")),
-                                               widget, self.showReport));                                                               
+                                                         widget, self.showReport));                                                               
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Q")),
-                                               widget, self.drawPrevWaves));
+                                                         widget, self.drawPrevWaves));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("W")),
-                                               widget, self.drawNextWaves));
+                                                         widget, self.drawNextWaves));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("E")),
-                                               widget, self.clearWavePlots));
+                                                         widget, self.clearWavePlots));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
-                                               widget, self.resetWaveInd));                                
+                                                         widget, self.resetWaveInd));                           
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -787,5 +791,16 @@ class MainW(QMainWindow, Ui_MainW):
                                      y=[self.__boundPoints[1, -1], mousePoint.y()]);
 
     
-    
-    
+    def undoBoundaryStep(self):
+        if(not self.__viewValid):
+            return;
+        numPoints=self.__boundPoints.shape[1];
+        if(numPoints<=0):
+            return;
+        
+        self.__boundPoints=self.__boundPoints[:, 0:-1];
+        self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
+        
+        numPoints=self.__boundPoints.shape[1];
+        self.__drawMovingBound=numPoints>0;
+        self.__closedBound=False;

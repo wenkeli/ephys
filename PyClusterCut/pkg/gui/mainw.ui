@@ -391,7 +391,7 @@
     <string>nWav</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="undoButton">
+  <widget class="QPushButton" name="undoBoundaryButton">
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -863,6 +863,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>undoBoundaryButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>undoBoundaryStep()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>46</x>
+     <y>613</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>12</x>
+     <y>628</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -882,5 +898,6 @@
   <slot>viewClustersChanged()</slot>
   <slot>selectTimeWindow()</slot>
   <slot>saveClusterData()</slot>
+  <slot>undoBoundaryStep()</slot>
  </slots>
 </ui>

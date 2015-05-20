@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Tue May 19 00:03:47 2015
+# Created: Tue May 19 21:16:35 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -100,9 +100,9 @@ class Ui_MainW(object):
         self.nextWavesButton = QtGui.QPushButton(MainW)
         self.nextWavesButton.setGeometry(QtCore.QRect(70, 540, 41, 25))
         self.nextWavesButton.setObjectName("nextWavesButton")
-        self.undoButton = QtGui.QPushButton(MainW)
-        self.undoButton.setGeometry(QtCore.QRect(40, 600, 41, 25))
-        self.undoButton.setObjectName("undoButton")
+        self.undoBoundaryButton = QtGui.QPushButton(MainW)
+        self.undoBoundaryButton.setGeometry(QtCore.QRect(40, 600, 41, 25))
+        self.undoBoundaryButton.setObjectName("undoBoundaryButton")
         self.prevWavesButton = QtGui.QPushButton(MainW)
         self.prevWavesButton.setGeometry(QtCore.QRect(20, 540, 41, 25))
         self.prevWavesButton.setObjectName("prevWavesButton")
@@ -155,6 +155,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.resetWaveNButton, QtCore.SIGNAL("clicked()"), MainW.resetWaveInd)
         QtCore.QObject.connect(self.timeSelButton, QtCore.SIGNAL("clicked()"), MainW.selectTimeWindow)
         QtCore.QObject.connect(self.saveFileButton, QtCore.SIGNAL("clicked()"), MainW.saveClusterData)
+        QtCore.QObject.connect(self.undoBoundaryButton, QtCore.SIGNAL("clicked()"), MainW.undoBoundaryStep)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -196,8 +197,8 @@ class Ui_MainW(object):
         self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "Reprt", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the next 100 waveforms of the working cluster</p><p>Keyboard shortcut: W</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setText(QtGui.QApplication.translate("MainW", "nWav", None, QtGui.QApplication.UnicodeUTF8))
-        self.undoButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo a step in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.undoButton.setText(QtGui.QApplication.translate("MainW", "Undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoBoundaryButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo a step in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoBoundaryButton.setText(QtGui.QApplication.translate("MainW", "Undo", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the previous 100 waveforms of the working cluster</p><p>Keyboard shortcut: Q</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setText(QtGui.QApplication.translate("MainW", "pwav", None, QtGui.QApplication.UnicodeUTF8))
         self.resetWaveNButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: X</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
