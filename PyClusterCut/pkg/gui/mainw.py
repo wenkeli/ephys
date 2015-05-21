@@ -293,7 +293,7 @@ class MainW(QMainWindow, Ui_MainW):
         if(fileName==""):
             return;
         
-        print("exporting..."):
+        print("exporting...");
         exportToHDF5(fileName, self.__dataSet);
         print("done");
         
