@@ -288,12 +288,15 @@ class MainW(QMainWindow, Ui_MainW):
     def exportData(self):
         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
                                              self.tr(self.__dataDir), 
-                                             self.tr("1. HDF5 (*.hdf5)"));
+                                             self.tr("1. HDF5 (*.h5)"));
         fileName=fileName[0];
         if(fileName==""):
             return;
         
+        print("exporting..."):
         exportToHDF5(fileName, self.__dataSet);
+        print("done");
+        
         
 
     def enableViewUI(self, enable):

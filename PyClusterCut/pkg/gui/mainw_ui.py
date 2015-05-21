@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Thu May 21 15:05:53 2015
+# Created: Thu May 21 15:11:48 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -134,7 +134,7 @@ class Ui_MainW(object):
         self.label_4.setGeometry(QtCore.QRect(10, 510, 81, 21))
         self.label_4.setObjectName("label_4")
         self.exportDataButton = QtGui.QPushButton(MainW)
-        self.exportDataButton.setGeometry(QtCore.QRect(170, 40, 84, 25))
+        self.exportDataButton.setGeometry(QtCore.QRect(170, 40, 81, 21))
         self.exportDataButton.setObjectName("exportDataButton")
 
         self.retranslateUi(MainW)

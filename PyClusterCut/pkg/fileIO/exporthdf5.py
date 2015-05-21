@@ -11,7 +11,7 @@ def exportToHDF5(fileName, dataSet):
     
     clustIDs=dataSet.getClusterInds();
     
-    paramKeys=dataSet.getSamples.getParamNames();
+    paramKeys=dataSet.getSamples().getParamNames();
     
     for i in clustIDs:
         if(i==initID):

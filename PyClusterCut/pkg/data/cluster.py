@@ -76,7 +76,7 @@ class Cluster(object):
     
     def getParamAllChs(self, paramName):
         nChs=self.getNumChannels();
-        paramdata=self._data.getParamAllChs(paramName);
+        paramdata=self.__data.getParamAllChs(paramName);
         if(paramdata.shape[0]==nChs):
             paramdata=paramdata[:, self.__sBA];
         else:
