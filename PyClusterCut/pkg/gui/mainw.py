@@ -23,6 +23,8 @@ import FastScatterPlotItem as fscatter;
 
 from ..fileIO.loadOpenEphysSpikes import readSpikeFile, readSamples;
 
+from ..fileIO.exporthdf5 import exportToHDF5;
+
 from ..data.samples import SamplesData;
 from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
@@ -283,9 +285,20 @@ class MainW(QMainWindow, Ui_MainW):
         
         file.close();
         
+    def exportData(self):
+        fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
+                                             self.tr(self.__dataDir), 
+                                             self.tr("1. HDF5 (*.hdf5)"));
+        fileName=fileName[0];
+        if(fileName==""):
+            return;
+        
+        exportToHDF5(fileName, self.__dataSet);
+        
 
     def enableViewUI(self, enable):
         self.saveFileButton.setEnabled(enable);
+        self.exportDataButton.setEnabled(enable);
         
         self.hChannelSelect.setEnabled(enable);
         self.hParamSelect.setEnabled(enable);

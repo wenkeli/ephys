@@ -155,6 +155,9 @@ class SamplesData(object):
             return self.__params[paramName];
         else:
             return self.__params[paramName][chN, :];
+        
+    def getParamAllChs(self, paramName):
+        return self.__params[paramName];
     
     def getWaveforms(self, sBA, chN=None):
         numSel=np.sum(sBA);

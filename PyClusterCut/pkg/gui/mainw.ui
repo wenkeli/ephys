@@ -540,7 +540,7 @@
     <string>num waves</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="exportHDF5Button">
+  <widget class="QPushButton" name="exportDataButton">
    <property name="geometry">
     <rect>
      <x>170</x>
@@ -550,7 +550,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>export HDF5</string>
+    <string>export data</string>
    </property>
   </widget>
  </widget>
@@ -892,6 +892,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>exportDataButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>exportData()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>74</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -912,5 +928,6 @@
   <slot>selectTimeWindow()</slot>
   <slot>saveClusterData()</slot>
   <slot>undoBoundaryStep()</slot>
+  <slot>exportData()</slot>
  </slots>
 </ui>

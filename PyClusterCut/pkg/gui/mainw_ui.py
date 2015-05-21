@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Wed May 20 17:47:06 2015
+# Created: Thu May 21 15:05:53 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -133,9 +133,9 @@ class Ui_MainW(object):
         self.label_4 = QtGui.QLabel(MainW)
         self.label_4.setGeometry(QtCore.QRect(10, 510, 81, 21))
         self.label_4.setObjectName("label_4")
-        self.exportHDF5Button = QtGui.QPushButton(MainW)
-        self.exportHDF5Button.setGeometry(QtCore.QRect(170, 40, 84, 25))
-        self.exportHDF5Button.setObjectName("exportHDF5Button")
+        self.exportDataButton = QtGui.QPushButton(MainW)
+        self.exportDataButton.setGeometry(QtCore.QRect(170, 40, 84, 25))
+        self.exportDataButton.setObjectName("exportDataButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -159,6 +159,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.timeSelButton, QtCore.SIGNAL("clicked()"), MainW.selectTimeWindow)
         QtCore.QObject.connect(self.saveFileButton, QtCore.SIGNAL("clicked()"), MainW.saveClusterData)
         QtCore.QObject.connect(self.undoBoundaryButton, QtCore.SIGNAL("clicked()"), MainW.undoBoundaryStep)
+        QtCore.QObject.connect(self.exportDataButton, QtCore.SIGNAL("clicked()"), MainW.exportData)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -213,5 +214,5 @@ class Ui_MainW(object):
         self.timeSelStartLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">start</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">end</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainW", "num waves", None, QtGui.QApplication.UnicodeUTF8))
-        self.exportHDF5Button.setText(QtGui.QApplication.translate("MainW", "export HDF5", None, QtGui.QApplication.UnicodeUTF8))
+        self.exportDataButton.setText(QtGui.QApplication.translate("MainW", "export data", None, QtGui.QApplication.UnicodeUTF8))
 
