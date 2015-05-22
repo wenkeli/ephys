@@ -22,7 +22,10 @@ def exportToHDF5(fileName, dataSet):
         clustGrp=fout.create_group(i);
         
         for j in paramKeys:
-            clustGrp.create_dataset(j, data=cluster.getParamAllChs(j));
+            param=cluster.getParamAllChs(j);
+            if(len(param.shape)>=2):
+                param=param.T;
+            clustGrp.create_dataset(j, data=param);
         
     fout.flush();
     fout.close();
