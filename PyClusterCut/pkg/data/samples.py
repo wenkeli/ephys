@@ -122,7 +122,7 @@ class SamplesData(object):
         self.__paramType["valley"]=1;
     
     def __calcPVWidth(self):
-        self.__params["PVWidth"]=self.__params["valleyTime"]-self.__params["peakTime"];
+        self.__params["PVWidth"]=(self.__params["valleyTime"]-self.__params["peakTime"])*self.__samplingUSec;
         self.__paramType["PVWidth"]=0;
         
     def __calcPeakEnergy(self):
