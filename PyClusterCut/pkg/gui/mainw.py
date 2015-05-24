@@ -274,7 +274,7 @@ class MainW(QMainWindow, Ui_MainW):
         
     def saveClusterData(self):
         fileName=QFileDialog.getSaveFileName(self, self.tr("save cluster data set"), 
-                                             self.tr(self.__dataDir), 
+                                             self.tr(os.path.join(self.__dataDir,self.__dataName+".clusterdataset")), 
                                              self.tr("cluster data set (*.clusterdataset)"));
         fileName=fileName[0];
         if(fileName==""):
@@ -287,7 +287,7 @@ class MainW(QMainWindow, Ui_MainW):
         
     def exportData(self):
         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
-                                             self.tr(self.__dataDir), 
+                                             self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
                                              self.tr("1. individual clusters HDF5 (*.h5);; 2. all clusters HDF5 (*.h5)"));
         fileType=fileName[1];
         fileName=fileName[0];
@@ -370,6 +370,8 @@ class MainW(QMainWindow, Ui_MainW):
             return;
         
         self.__dataDir=os.path.dirname(fileName);
+        self.__dataName=os.path.basename(fileName);
+        (self.__dataName, ext)=os.path.splitext(self.__dataName);
         
         file=open(fileName, "rb");
         self.clearSelect(); 
