@@ -131,7 +131,7 @@ class DataSet(object):
     def getWorkingCluster(self):
         return self.getCluster(self.__workClustID);
 
-    def getClusterInds(self):
+    def getClusterIDs(self):
         keys=self.__clusters.keys();
         keys.sort(key=int);
         return keys;

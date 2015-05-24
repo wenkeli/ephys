@@ -1,3 +1,5 @@
+import os;
+
 import h5py;
 
 import numpy as np;
@@ -9,14 +11,12 @@ def exportToHDF5(fileName, dataSet):
     
     initID=dataSet.getInitClustID();
     
-    clustIDs=dataSet.getClusterInds();
+    clustIDs=dataSet.getClusterIDs();
+    clustIDs.remove(initID);
     
     paramKeys=dataSet.getSamples().getParamNames();
     
     for i in clustIDs:
-        if(i==initID):
-            continue;
-        
         cluster=dataSet.getCluster(i);
         
         clustGrp=fout.create_group(i);
@@ -29,3 +29,28 @@ def exportToHDF5(fileName, dataSet):
         
     fout.flush();
     fout.close();
+
+def exportToHDF5PerCluster(fileName, dataSet):
+    fName, fExt=os.path.splitext(fileName);
+    
+    initID=dataSet.getInitClustID();
+    clustIDs=dataSet.getClusterIDs();
+    clustIDs.remove(initID);
+    
+    paramKeys=dataSet.getSamples().getParamNames();
+    
+    for i in clustIDs:
+        fout=h5py.File(fName+".C_"+str(i)+fExt);
+        cluster=dataSet.getCluster(i);
+        for j in paramKeys:
+            param=cluster.getParamAllChs(j);
+            if(len(param.shape)>=2):
+                param=param.T;
+            fout.create_dataset(j, data=param);
+        fout.flush();
+        fout.close();
+
+
+    
+    
+    

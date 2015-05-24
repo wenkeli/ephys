@@ -23,7 +23,7 @@ import FastScatterPlotItem as fscatter;
 
 from ..fileIO.loadOpenEphysSpikes import readSpikeFile, readSamples;
 
-from ..fileIO.exporthdf5 import exportToHDF5;
+from ..fileIO.exporthdf5 import exportToHDF5, exportToHDF5PerCluster;
 
 from ..data.samples import SamplesData;
 from ..data.samples import SamplesClustCount;
@@ -288,13 +288,19 @@ class MainW(QMainWindow, Ui_MainW):
     def exportData(self):
         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
                                              self.tr(self.__dataDir), 
-                                             self.tr("1. HDF5 (*.h5)"));
+                                             self.tr("1. individual clusters HDF5 (*.h5);; 2. all clusters HDF5 (*.h5)"));
+        fileType=fileName[1];
         fileName=fileName[0];
         if(fileName==""):
             return;
         
         print("exporting...");
-        exportToHDF5(fileName, self.__dataSet);
+        if(fileType[0]=="1"):
+            print("individual cluster per HDF5");
+            exportToHDF5PerCluster(fileName, self.__dataSet);
+        elif(fileType[0]=="2"):
+            print("single HDF5");
+            exportToHDF5(fileName, self.__dataSet);
         print("done");
         
         
@@ -425,19 +431,19 @@ class MainW(QMainWindow, Ui_MainW):
     def __loadClusterDataSetFile(self, fh):
         self.__dataSet=pickle.load(fh);
         
-        clustInds=self.__dataSet.getClusterInds();
-        initInd=self.__dataSet.getInitClustID();
-        workInd=self.__dataSet.getWorkClustID();
-        self.__dataSet.setWorkClustID(initInd);
-        for i in clustInds:
+        clustIDs=self.__dataSet.getClusterIDs();
+        initID=self.__dataSet.getInitClustID();
+        workID=self.__dataSet.getWorkClustID();
+        self.__dataSet.setWorkClustID(initID);
+        for i in clustIDs:
             cluster=self.__dataSet.getCluster(i);
             pen=None;
             brush=None;
-            if(i!=initInd):
+            if(i!=initID):
                 (color, pen, brush)=self.getCurColor();
             self.__addClusterToView(i, cluster, pen, brush);
         
-        self.__workClustList[workInd].setSelected(True);
+        self.__workClustList[workID].setSelected(True);
         self.changeWorkCluster();
         
         (startT, endT)=self.__dataSet.getWorkingStartEndTimes();
@@ -490,21 +496,21 @@ class MainW(QMainWindow, Ui_MainW):
             self.changeWorkCluster();
     
         
-    def __removeCluster(self, ind):
-        (success, workClustID)=self.__dataSet.deleteCluster(ind);
+    def __removeCluster(self, id):
+        (success, workClustID)=self.__dataSet.deleteCluster(id);
         
         if(not success):
             return;
         
-        row=self.workClusterSelect.row(self.__workClustList[ind]);
+        row=self.workClusterSelect.row(self.__workClustList[id]);
         self.workClusterSelect.takeItem(row);
-        del(self.__workClustList[ind]);
+        del(self.__workClustList[id]);
         
-        row=self.viewClustersSelect.row(self.__viewClustList[ind]);
+        row=self.viewClustersSelect.row(self.__viewClustList[id]);
         self.viewClustersSelect.takeItem(row);
-        del(self.__viewClustList[ind]);
+        del(self.__viewClustList[id]);
         
-        del(self.__plotClusterItems[ind]);
+        del(self.__plotClusterItems[id]);
         
         self.__workClustList[workClustID].setSelected(True);
         self.changeWorkCluster();
@@ -717,23 +723,23 @@ class MainW(QMainWindow, Ui_MainW):
         self.__reportDisp.clear();
 #         self.__reportDisp.insertPlainText("testtesttest1234test1234\n");
 #         self.__reportDisp.insertPlainText("\ttest1\n");
-        clustInds=self.__dataSet.getClusterInds();
+        clustIDs=self.__dataSet.getClusterIDs();
         initClustID=self.__dataSet.getInitClustID();
-        clustInds.remove(initClustID);
+        clustIDs.remove(initClustID);
         
         output="clusters: ";
-        for i in clustInds:
+        for i in clustIDs:
             output=output+str(i)+" ";
         output=output+"\n";
         self.__reportDisp.insertPlainText(output);
         
-        for i in clustInds:
+        for i in clustIDs:
             (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
             percOverlap=int(numOverlap/float(numPoints)*1000);
             percOverlap=percOverlap/10.0;
             output="cluster "+str(i)+": "+str(numPoints)+" pts, overlap: "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
             self.__reportDisp.insertPlainText(output);
-            for j in clustInds:
+            for j in clustIDs:
                 if(i==j):
                     continue;
                 (numPoints, numOverlap)=self.__dataSet.compareClustersOverlap(i, j);
