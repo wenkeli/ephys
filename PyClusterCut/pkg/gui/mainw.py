@@ -721,6 +721,12 @@ class MainW(QMainWindow, Ui_MainW):
         initClustID=self.__dataSet.getInitClustID();
         clustInds.remove(initClustID);
         
+        output="clusters: ";
+        for i in clustInds:
+            output=output+str(i)+" ";
+        output=output+"\n";
+        self.__reportDisp.insertPlainText(output);
+        
         for i in clustInds:
             (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
             percOverlap=int(numOverlap/float(numPoints)*1000);
