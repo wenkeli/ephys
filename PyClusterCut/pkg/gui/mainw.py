@@ -273,12 +273,14 @@ class MainW(QMainWindow, Ui_MainW):
                                                     rateLimit=100, slot=self.plotMouseMoved));
         
     def saveClusterData(self):
-        fileName=QFileDialog.getSaveFileName(self, self.tr("save cluster data set"), 
-                                             self.tr(os.path.join(self.__dataDir,self.__dataName+".clusterdataset")), 
-                                             self.tr("cluster data set (*.clusterdataset)"));
-        fileName=fileName[0];
-        if(fileName==""):
-            return;
+#         fileName=QFileDialog.getSaveFileName(self, self.tr("save cluster data set"), 
+#                                              self.tr(os.path.join(self.__dataDir,self.__dataName+".clusterdataset")), 
+#                                              self.tr("cluster data set (*.clusterdataset)"));
+#         fileName=fileName[0];
+#         if(fileName==""):
+#             return;
+
+        fileName=os.path.join(self.__dataDir,self.__dataName+".clusterdataset");
         
         file=open(fileName, "wb");
         pickle.dump(self.__dataSet, file, protocol=2);
@@ -286,21 +288,24 @@ class MainW(QMainWindow, Ui_MainW):
         file.close();
         
     def exportData(self):
-        fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
-                                             self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
-                                             self.tr("1. individual clusters HDF5 (*.h5);; 2. all clusters HDF5 (*.h5)"));
-        fileType=fileName[1];
-        fileName=fileName[0];
-        if(fileName==""):
-            return;
+#         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
+#                                              self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
+#                                              self.tr("1. individual clusters HDF5 (*.h5);; 2. all clusters HDF5 (*.h5)"));
+#         fileType=fileName[1];
+#         fileName=fileName[0];
+#         if(fileName==""):
+#             return;
+
+        fileName=os.path.join(self.__dataDir,self.__dataName+".h5");
         
         print("exporting...");
-        if(fileType[0]=="1"):
-            print("individual cluster per HDF5");
-            exportToHDF5PerCluster(fileName, self.__dataSet);
-        elif(fileType[0]=="2"):
-            print("single HDF5");
-            exportToHDF5(fileName, self.__dataSet);
+        exportToHDF5PerCluster(fileName, self.__dataSet);
+#         if(fileType[0]=="1"):
+#             print("individual cluster per HDF5");
+#             exportToHDF5PerCluster(fileName, self.__dataSet);
+#         elif(fileType[0]=="2"):
+#             print("single HDF5");
+#             exportToHDF5(fileName, self.__dataSet);
         print("done");
         
         
