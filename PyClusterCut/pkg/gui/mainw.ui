@@ -32,7 +32,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;load a data file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;load a data file. The data file can be an open-ephys .spikes file (version 0.2 and 0.4 compatible), or a .clusterdataset file, which is the saved work from this program.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>load file</string>
@@ -46,6 +46,9 @@
      <width>84</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;save the work progress. The file is saved with the extension .clusterdataset, and is saved in the same directory that the data was originally loaded from.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>save file</string>
@@ -314,17 +317,17 @@
   <widget class="QPushButton" name="copyButton">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>600</y>
+     <x>80</x>
+     <y>570</y>
      <width>41</width>
      <height>25</height>
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also&lt;/p&gt;&lt;p&gt;keyboard shortcut: S&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Copy</string>
+    <string>copy</string>
    </property>
   </widget>
   <widget class="QPushButton" name="deleteButton">
@@ -372,7 +375,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: X&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Reprt</string>
+    <string>reprt</string>
    </property>
   </widget>
   <widget class="QPushButton" name="nextWavesButton">
@@ -549,8 +552,24 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;export cluster parameters to hdf5 format for import into other programs. Each cut cluster is a single file, in the directory that the data file was originally loaded from. The waveforms are not exported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>export data</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="exportWavesButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>40</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>export waves</string>
    </property>
   </widget>
  </widget>
@@ -908,6 +927,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>exportWavesButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>exportWaveforms()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>123</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>44</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -929,5 +964,6 @@
   <slot>saveClusterData()</slot>
   <slot>undoBoundaryStep()</slot>
   <slot>exportData()</slot>
+  <slot>exportWaveforms()</slot>
  </slots>
 </ui>

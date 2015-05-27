@@ -2,6 +2,8 @@ import os;
 
 import cPickle as pickle;
 
+import h5py;
+
 import numpy as np;
 
 import PySide;
@@ -52,6 +54,8 @@ class ClusterPlotItem(object):
         self.__plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.__pen);     
         self.__plot=plot;
         self.__waveStartInd=0;
+        self.__selDispWaves=np.zeros(self.__cluster.getSelectArray().shape, dtype="bool");
+        
         
     
     def setPlotData(self, xChN, yChN, xChParamT, yChParamT):
@@ -103,6 +107,7 @@ class ClusterPlotItem(object):
         if(self.__waveStartInd<=0):
             self.__waveStartInd=0;
         sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
+        self.__selDispWaves=self.__selDispWaves | sBA;
         
         (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
         return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArr);
@@ -111,6 +116,8 @@ class ClusterPlotItem(object):
         if(self.__waveStartInd>=self.__getTotalSelPoints()):
             return (None, None, None, None, None);
         sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
+        self.__selDispWaves=self.__selDispWaves | sBA;
+        
         self.__waveStartInd=self.__waveStartInd+indIncSize;
         
         (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
@@ -118,6 +125,18 @@ class ClusterPlotItem(object):
     
     def resetWaveInd(self):
         self.__waveStartInd=0;
+        
+    def clearSelDispWaves(self):
+        self.__selDispWaves[:]=False;
+        
+    def getSelDispWaves(self):
+        (nptsPerCh, waves, xvals, conArr)=self.__cluster.getWaveforms(None, None);
+        
+        wAvg=np.average(waves, 1);
+        wSEM=np.std(waves, 1)/np.sqrt(waves.shape[1]);
+        
+        (nptsPerCh, waves, xvals, conArr)=self.__cluster.getWaveforms(self.__selDispWaves, None);
+        return (waves, wAvg, wSEM);
     
     def __getSelPointsByRange(self, startInd, endInd):
         sBA=self.__cluster.getSelectArray();
@@ -307,12 +326,38 @@ class MainW(QMainWindow, Ui_MainW):
 #             print("single HDF5");
 #             exportToHDF5(fileName, self.__dataSet);
         print("done");
+     
+    
+    def exportWaveforms(self):
+        fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
+                                             self.tr(self.__dataDir), 
+                                             self.tr("HDF5 (*.h5)"));
+#         fileType=fileName[1];
+        fileName=fileName[0];
+        if(fileName==""):
+            return;
         
+        fout=h5py.File(fileName, "w");
+        
+        clusterIDs=self.__plotClusterItems.keys();
+        
+        for i in clusterIDs:
+            (waves, wAvg, wSEM)=self.__plotClusterItems[i].getSelDispWaves();
+            if(waves.size<=0):
+                continue;
+            clustGrp=fout.create_group("c_"+i);
+            clustGrp.create_dataset("waveforms", data=waves.transpose(1, 0, 2));
+            clustGrp.create_dataset("waveAverage", data=wAvg.T);
+            clustGrp.create_dataset("waveSEM", data=wSEM.T);
+            
+        fout.flush();
+        fout.close();
         
 
     def enableViewUI(self, enable):
         self.saveFileButton.setEnabled(enable);
         self.exportDataButton.setEnabled(enable);
+        self.exportWavesButton.setEnabled(enable);
         
         self.hChannelSelect.setEnabled(enable);
         self.hParamSelect.setEnabled(enable);
@@ -596,7 +641,7 @@ class MainW(QMainWindow, Ui_MainW):
                                                          widget, self.refineCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("A")),
                                                          widget, self.addCluster));
-        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("S")),
                                                          widget, self.copyCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Z")),
                                                          widget, self.undoBoundaryStep));     
@@ -788,6 +833,10 @@ class MainW(QMainWindow, Ui_MainW):
         for i in np.r_[0:len(self.__wavePlots)]:
             self.__wavePlots[i].getViewBox().autoRange();
             self.__wavePlots[i].clear();
+            
+            clustIDs=self.__plotClusterItems.keys();
+            for i in clustIDs:
+                self.__plotClusterItems[i].clearSelDispWaves();
             
     def resetWaveInd(self):
         workClustID=self.__dataSet.getWorkClustID();

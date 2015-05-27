@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sun May 24 18:00:39 2015
+# Created: Wed May 27 15:19:49 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -86,7 +86,7 @@ class Ui_MainW(object):
         self.refineButton.setGeometry(QtCore.QRect(180, 570, 41, 25))
         self.refineButton.setObjectName("refineButton")
         self.copyButton = QtGui.QPushButton(MainW)
-        self.copyButton.setGeometry(QtCore.QRect(140, 600, 41, 25))
+        self.copyButton.setGeometry(QtCore.QRect(80, 570, 41, 25))
         self.copyButton.setObjectName("copyButton")
         self.deleteButton = QtGui.QPushButton(MainW)
         self.deleteButton.setGeometry(QtCore.QRect(130, 570, 41, 25))
@@ -136,6 +136,9 @@ class Ui_MainW(object):
         self.exportDataButton = QtGui.QPushButton(MainW)
         self.exportDataButton.setGeometry(QtCore.QRect(170, 40, 81, 21))
         self.exportDataButton.setObjectName("exportDataButton")
+        self.exportWavesButton = QtGui.QPushButton(MainW)
+        self.exportWavesButton.setGeometry(QtCore.QRect(70, 40, 91, 21))
+        self.exportWavesButton.setObjectName("exportWavesButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -160,12 +163,14 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.saveFileButton, QtCore.SIGNAL("clicked()"), MainW.saveClusterData)
         QtCore.QObject.connect(self.undoBoundaryButton, QtCore.SIGNAL("clicked()"), MainW.undoBoundaryStep)
         QtCore.QObject.connect(self.exportDataButton, QtCore.SIGNAL("clicked()"), MainW.exportData)
+        QtCore.QObject.connect(self.exportWavesButton, QtCore.SIGNAL("clicked()"), MainW.exportWaveforms)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
         MainW.setWindowTitle(QtGui.QApplication.translate("MainW", "control", None, QtGui.QApplication.UnicodeUTF8))
-        self.openFileButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>load a data file</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.openFileButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>load a data file. The data file can be an open-ephys .spikes file (version 0.2 and 0.4 compatible), or a .clusterdataset file, which is the saved work from this program.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.openFileButton.setText(QtGui.QApplication.translate("MainW", "load file", None, QtGui.QApplication.UnicodeUTF8))
+        self.saveFileButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>save the work progress. The file is saved with the extension .clusterdataset, and is saved in the same directory that the data was originally loaded from.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.saveFileButton.setText(QtGui.QApplication.translate("MainW", "save file", None, QtGui.QApplication.UnicodeUTF8))
         self.hParamSelect.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>select the parameter to display on the horizontal axis</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.hChannelSelect.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>select the channel to display on the horizontal axis</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
@@ -191,14 +196,14 @@ class Ui_MainW(object):
         self.addButton.setText(QtGui.QApplication.translate("MainW", "Add", None, QtGui.QApplication.UnicodeUTF8))
         self.refineButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>refine the selected working cluster with points in the boundaries, All the points outside of the boundary is returned to the parent cluster that the cluster was created from.</p><p>keyboard shortcut: R</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.refineButton.setText(QtGui.QApplication.translate("MainW", "reFine", None, QtGui.QApplication.UnicodeUTF8))
-        self.copyButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also</p><p>keyboard shortcut: C</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.copyButton.setText(QtGui.QApplication.translate("MainW", "Copy", None, QtGui.QApplication.UnicodeUTF8))
+        self.copyButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster also</p><p>keyboard shortcut: S</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.copyButton.setText(QtGui.QApplication.translate("MainW", "copy", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>delete the selected working cluster, all the points will be returned to the parent cluster that the cluster was created from.</p><p>keyboard shortcut: D</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.deleteButton.setText(QtGui.QApplication.translate("MainW", "Delet", None, QtGui.QApplication.UnicodeUTF8))
         self.clearWavePlotsButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>clear the waveform view window</p><p>Keyboard shortcut: E</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.clearWavePlotsButton.setText(QtGui.QApplication.translate("MainW", "clEar", None, QtGui.QApplication.UnicodeUTF8))
         self.reportClusterButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>produce a report of cluster overlaps, click again to high window</p><p>Keyboard shortcut: X</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "Reprt", None, QtGui.QApplication.UnicodeUTF8))
+        self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "reprt", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the next 100 waveforms of the working cluster</p><p>Keyboard shortcut: W</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setText(QtGui.QApplication.translate("MainW", "nWav", None, QtGui.QApplication.UnicodeUTF8))
         self.undoBoundaryButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo a step in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
@@ -214,5 +219,7 @@ class Ui_MainW(object):
         self.timeSelStartLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">start</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">end</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainW", "num waves", None, QtGui.QApplication.UnicodeUTF8))
+        self.exportDataButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export cluster parameters to hdf5 format for import into other programs. Each cut cluster is a single file, in the directory that the data file was originally loaded from. The waveforms are not exported.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportDataButton.setText(QtGui.QApplication.translate("MainW", "export data", None, QtGui.QApplication.UnicodeUTF8))
+        self.exportWavesButton.setText(QtGui.QApplication.translate("MainW", "export waves", None, QtGui.QApplication.UnicodeUTF8))
 
