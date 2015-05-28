@@ -16,7 +16,7 @@ def readEventFile(fileName):
 
     print("version: "+str(version));
     
-    data=readEvents(fh, fHeaderSize, fsize, "=qh4BH", 0, 5);
+    data=readEvents(fh, fsize, fHeaderSize, "=qh4BH", 0, 5);
     
     fh.close();
     return data;
