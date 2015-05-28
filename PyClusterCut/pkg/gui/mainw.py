@@ -597,7 +597,7 @@ class MainW(QMainWindow, Ui_MainW):
             
         paramNames=self.__dataSet.getSamples().getParamNames();
         
-        ignoredParamNames=["peakTime", "valleyTime", "PVWidth"];
+        ignoredParamNames=["peakTime", "valleyTime", "PVWidth", "timestamp"];
         
         modParamNames=[];
         if("peak" in paramNames):

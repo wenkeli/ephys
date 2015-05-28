@@ -25,7 +25,7 @@ class DataSet(object):
         if(self.__workingSetInit):
             return;
         
-        timeStamps=self.__samples.getParam(0, "time");
+        timeStamps=self.__samples.getParam(0, "timestamp");
         if(startTime<0):
             startTime=timeStamps[0];
         if(endTime<0):
@@ -43,7 +43,7 @@ class DataSet(object):
         return (self.__initClustID, self.__clusters[self.__initClustID]);
         
     def getSamplesStartEndTimes(self):
-        timeStamps=self.__samples.getParam(0, "time");
+        timeStamps=self.__samples.getParam(0, "timestamp");
         return (timeStamps[0], timeStamps[-1]);
     
     def getWorkingStartEndTimes(self):
@@ -53,12 +53,13 @@ class DataSet(object):
         self.__maxClustID=str(self.__maxClustN);
          
         if(isNotInitClust):
-            self.__clusters[self.__maxClustID]=Cluster(self.__samples, pointsBA, 
-                                                   self.__clusters[self.__initClustID],
-                                                   self.__sampleClustCnt, clustBounds);
+            self.__clusters[self.__maxClustID]=Cluster(self.__samples, 
+                                                       (pointsBA & self.__workingSet), 
+                                                       self.__clusters[self.__initClustID],
+                                                       self.__sampleClustCnt, clustBounds);
         else:
             self.__clusters[self.__maxClustID]=Cluster(self.__samples, self.__workingSet,
-                                                        None, None, clustBounds);
+                                                       None, None, clustBounds);
             self.__workClustID=self.__maxClustID;
                                                    
         if((len(pointsBA)>0) and (self.__workClustID!="") and (not copy)):

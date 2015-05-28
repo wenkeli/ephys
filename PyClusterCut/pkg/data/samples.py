@@ -49,7 +49,7 @@ class SamplesData(object):
         self.__waveforms=self.__waveforms.reshape((self.__numSamples, self.__numChs, self.__numPtsPerCh));
         self.__waveforms=self.__waveforms.transpose(1, 0, 2);
         
-        self.__timestamps=np.zeros(timestamps.shape, dtype="uint64");
+        self.__timestamps=np.zeros(timestamps.shape, dtype="float64");
         self.__timestamps[:]=timestamps;
 
         
@@ -94,14 +94,15 @@ class SamplesData(object):
     
     
     def __calcParams(self):
-        self.__params["time"]=self.__timestamps;
-        self.__paramType["time"]=0; #0 is channel independent
+        self.__params["timestamp"]=self.__timestamps;
+        self.__paramType["timestamp"]=0; #0 is channel independent
         self.__calcPeak();
         self.__calcValley();
         self.__calcPVWidth();
         self.__calcPeakEnergy();
         self.__calcValleyEnergy();
         self.__calcPeakAngle();
+        self.__calcTime();
         
     def __calcPeak(self, peakTime=8):
         self.__params["peak"]=self.__waveforms[:, :, peakTime];
@@ -145,6 +146,9 @@ class SamplesData(object):
         self.__params["peakAngle"]=self.__params["peakAngle"]/(self.__samplingUSec*stepSize);
         self.__params["peakAngle"]=np.arctan(self.__params["peakAngle"])/(2*np.pi)*360;                       
         self.__paramType["peakAngle"]=1;
+        
+    def __calcTime(self):
+        self.__params["time"]=np.float64(self.__timestamps)/self.__samplingHz;
 
         
     def getParamNames(self):

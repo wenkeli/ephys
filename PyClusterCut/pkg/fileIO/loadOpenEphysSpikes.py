@@ -66,7 +66,7 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
     
     retData=dict();
     
-    retData["timestamps"]=np.zeros(numSpikes, dtype="uint64");
+    retData["timestamps"]=np.zeros(numSpikes, dtype="int64");
     retData["waveforms"]=np.zeros((numSpikes, totalSampleSize), dtype="float32");
     retData["gains"]=np.zeros((numSpikes, nChs), dtype="float32");
     retData["thresholds"]=np.zeros((numSpikes, nChs), dtype="float32");
