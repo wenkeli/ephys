@@ -149,6 +149,7 @@ class SamplesData(object):
         
     def __calcTime(self):
         self.__params["time"]=np.float64(self.__timestamps)/self.__samplingHz;
+        self.__paramType["time"]=0;
 
         
     def getParamNames(self):
