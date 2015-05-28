@@ -44,12 +44,12 @@ def readEvents(fh, fsize, fHeaderSize, eventFStr, timeStampInd, posInd, chInd, e
     
     for i in np.r_[0:numEvents]:
         event=struct.unpack(eventFStr, fh.read(eventSize));
-        retData["timestamps"][i]=(event[timeStampInd]+event[posInd])/np.float64(sampleRate);
+        retData["timestamps"][i]=(event[timeStampInd])/np.float64(sampleRate);
         retData["eventChs"][i]=event[chInd];
         retData["eventIDs"][i]=event[eIDInd];
         
-        print(event);
-        print(str(retData["timestamps"][i]));
+#         print(event);
+#         print(str(retData["timestamps"][i]));
         
 
         if(i%100==0):
