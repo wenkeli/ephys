@@ -21,7 +21,7 @@ class SamplesClustCount(object):
         return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
-    def __init__(self, waveforms, gains, thresholds, timestamps, samplingHz, triggerChs):
+    def __init__(self, waveforms, thresholds, timestamps, samplingHz, triggerChs):
         self.__waveforms=[];
         self.__timestamps=[];
         
@@ -52,17 +52,14 @@ class SamplesData(object):
         self.__timestamps=np.zeros(timestamps.shape, dtype="float64");
         self.__timestamps[:]=timestamps;
 
-        
-        self.__thresholds=np.zeros(thresholds.T.shape, dtype="float32");
-        self.__thresholds[:]=thresholds.T;
-        
-        self.__gains=np.zeros(gains.T.shape, dtype="float32");
-        self.__gains[:]=gains.T;
-        
-        self.__calcTriggerChannel(triggerChs);
+        if(thresholds is not None):        
+            self.__calcTriggerChannel(triggerChs, thresholds.T);
+        else:
+            self.__calcTriggerChannel(triggerCh, None);
+            
         self.__calcParams();
         
-    def __calcTriggerChannel(self, triggerCh, triggerEndPoint=9):
+    def __calcTriggerChannel(self, triggerCh, thresholds, triggerEndPoint=9):
         self.__triggerCh=np.zeros(self.__numSamples, dtype="int32");
         self.__triggerCh[:]=-1;
         
@@ -72,8 +69,8 @@ class SamplesData(object):
         
         appendCol=np.zeros(self.__numSamples, dtype="bool")[np.newaxis].T;
         for i in np.r_[0:self.__numChs]:
-            aboveThresh=self.__waveforms[i, :, 0:triggerEndPoint]>=(self.__thresholds[i, :][np.newaxis].T);
-            belowThresh=self.__waveforms[i, :, 0:triggerEndPoint-1]<(self.__thresholds[i, :][np.newaxis].T);
+            aboveThresh=self.__waveforms[i, :, 0:triggerEndPoint]>=(thresholds[i, :][np.newaxis].T);
+            belowThresh=self.__waveforms[i, :, 0:triggerEndPoint-1]<(thresholds[i, :][np.newaxis].T);
             
             belowThresh=np.hstack((appendCol, belowThresh));
             
@@ -87,8 +84,6 @@ class SamplesData(object):
         
         self.__waveforms=self.__waveforms[:, validEvents, :];
         self.__timestamps=self.__timestamps[validEvents];
-        self.__thresholds=self.__thresholds[:, validEvents];
-        self.__gains=self.__gains[:, validEvents];
         
         self.__triggerCh=self.__triggerCh[validEvents];
     

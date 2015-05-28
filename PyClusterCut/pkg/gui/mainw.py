@@ -457,7 +457,7 @@ class MainW(QMainWindow, Ui_MainW):
 #         fileStat=os.stat(fileName);        
         data=readSpikeFile(fh, fileName);
         print("calculating parameters");
-        self.__dataSet=DataSet(data["waveforms"], data["gains"], data["thresholds"],
+        self.__dataSet=DataSet(data["waveforms"], data["thresholds"],
                                data["timestamps"], data["samplingHz"], data["triggerChs"]);
         print("done");
         del(data);
