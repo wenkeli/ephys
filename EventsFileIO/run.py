@@ -18,6 +18,6 @@ if __name__ =="__main__":
     fName, fExt=os.path.splitext(fileName);
      
     data=readEventFile(fileName);
-    events=Events(data["timestamps"], data["eventChs"]);
+    events=Events(data["timestamps"], data["eventChs"], data["eventIDs"]);
     exportEventsHDF5(fName+".h5", events);
     
