@@ -100,12 +100,15 @@ class SamplesData(object):
         self.__calcTime();
         
     def __calcPeak(self, peakTime=8):
-        self.__params["peak"]=self.__waveforms[:, :, peakTime];
+        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+1)], 2);
+        peakLocalInds=peakLocalInds[self.__triggerCh, np.r_[0:self.__numSamples]];
+        self.__params["peakTime"]=peakLocalInds+peakTime-1;
+        self.__paramType["peakTime"]=0;
+
+        self.__params["peak"]=self.__waveforms[:, np.r_[0:self.__numSamples], self.__params["peakTime"]];
+#         self.__params["peak"]=self.__waveforms[:, :, peakTime];
         self.__paramType["peak"]=1;
         
-        self.__params["peakTime"]=np.zeros(self.__numSamples, dtype="uint32");
-        self.__params["peakTime"][:]=peakTime;
-        self.__paramType["peakTime"]=0;
         
     def __calcValley(self, valleyStart=10, valleyEnd=30):
 #         self.__params["valley"]=np.min(self.__waveforms[:, :, valleyStart:valleyEnd], 2);

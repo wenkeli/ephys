@@ -301,10 +301,10 @@ class MainW(QMainWindow, Ui_MainW):
 
         fileName=os.path.join(self.__dataDir,self.__dataName+".clusterdataset");
         
-        file=open(fileName, "wb");
-        pickle.dump(self.__dataSet, file, protocol=2);
+        fout=open(fileName, "wb");
+        pickle.dump(self.__dataSet, fout, protocol=2);
         
-        file.close();
+        fout.close();
         
     def exportData(self):
 #         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
@@ -409,8 +409,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__app.closeAllWindows();
         
     def loadFile(self):
-        print("loading file");
-        fileName=QFileDialog.getOpenFileName(self, self.tr("open data file"), 
+        print("loading fin");
+        fileName=QFileDialog.getOpenFileName(self, self.tr("open data fin"), 
                                              self.tr(self.__dataDir), 
                                              self.tr("1. spike files (*.spikes);; 2. cluster data set (*.clusterdataset)"));
         fileType=fileName[1];
@@ -423,21 +423,21 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataName=os.path.basename(fileName);
         (self.__dataName, ext)=os.path.splitext(self.__dataName);
         
-        file=open(fileName, "rb");
+        fin=open(fileName, "rb");
         self.clearSelect(); 
         
         if(fileType[0]=="1"):
             print("spikes datafile");
-            self.__loadSpikesFile(fileName, file);
+            self.__loadSpikesFile(fileName, fin);
             
         if(fileType[0]=="2"):
             print("cluster data set");
-            self.__loadClusterDataSetFile(file);     
+            self.__loadClusterDataSetFile(fin);     
 
-        file.close();
+        fin.close();
 
-        dataValid=False;
-        viewValid=False;
+        self.__dataValid=True;
+        self.__viewValid=False;
         
         numWavePlots=len(self.__wavePlots);
         if(numWavePlots>0):
@@ -548,21 +548,21 @@ class MainW(QMainWindow, Ui_MainW):
             self.changeWorkCluster();
     
         
-    def __removeCluster(self, id):
-        (success, workClustID)=self.__dataSet.deleteCluster(id);
+    def __removeCluster(self, clustID):
+        (success, workClustID)=self.__dataSet.deleteCluster(clustID);
         
         if(not success):
             return;
         
-        row=self.workClusterSelect.row(self.__workClustList[id]);
+        row=self.workClusterSelect.row(self.__workClustList[clustID]);
         self.workClusterSelect.takeItem(row);
-        del(self.__workClustList[id]);
+        del(self.__workClustList[clustID]);
         
-        row=self.viewClustersSelect.row(self.__viewClustList[id]);
+        row=self.viewClustersSelect.row(self.__viewClustList[clustID]);
         self.viewClustersSelect.takeItem(row);
-        del(self.__viewClustList[id]);
+        del(self.__viewClustList[clustID]);
         
-        del(self.__plotClusterItems[id]);
+        del(self.__plotClusterItems[clustID]);
         
         self.__workClustList[workClustID].setSelected(True);
         self.changeWorkCluster();
@@ -635,7 +635,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
                                                          widget, self.updatePlotView));
-        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("D")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Ctrl+D")),
                                                          widget, self.deleteCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("F")),
                                                          widget, self.refineCluster));
@@ -727,9 +727,6 @@ class MainW(QMainWindow, Ui_MainW):
     def refineCluster(self):
         if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
             return;
-        
-        viewChs=[self.__hChN, self.__vChN];
-        viewParams=[self.__hParamName, self.__vParamName];
         
         self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
                                      self.__hParamName, self.__vParamName,
