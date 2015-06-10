@@ -55,7 +55,7 @@ class SamplesData(object):
         if(thresholds is not None):        
             self.__calcTriggerChannel(triggerChs, thresholds.T);
         else:
-            self.__calcTriggerChannel(triggerCh, None);
+            self.__calcTriggerChannel(triggerChs, None);
             
         self.__calcParams();
         
