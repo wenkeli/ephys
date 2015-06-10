@@ -346,7 +346,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete the selected working cluster, all the points will be returned to the 0 (initial) cluster.&lt;/p&gt;&lt;p&gt;keyboard shortcut: D&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete the selected working cluster, all the points will be returned to the 0 (initial) cluster.&lt;/p&gt;&lt;p&gt;keyboard shortcut: ctrl+D&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Delet</string>
