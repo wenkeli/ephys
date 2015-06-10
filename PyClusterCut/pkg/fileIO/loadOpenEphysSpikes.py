@@ -79,36 +79,6 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
     for i in np.r_[0:numSpikes]:
         spike=struct.unpack(spikeFStr, fh.read(spikeSize));
         retData["timestamps"][i]=spike[1];
-#         print("spike start");
-#         print(int(spike[0]));
-#         print(spike[4]);
-#         print(spike[5]);
-#         print(spike[6]);
-#         print(spike[7]);
-#         print(spike[8]);
-#         print(spike[9]);
-#         print(spike[11]);
-#         print(spike[12]);
-#         print(spike[13]);
-#         print(spike[14]);
-#         print("\n");
-#         print(spike[15]);
-#         print(spike[15+40]);
-#         print(spike[15+40*2]);
-#         print(spike[15+40*3]);
-#         print("\n");
-#         print(spike[15+4*40]);
-#         print(spike[15+4*40+1]);
-#         print(spike[15+4*40+2]);
-#         print(spike[15+4*40+3]);
-#         print("\n");
-#         print(spike[15+4*40+4]);
-#         print(spike[15+4*40+5]);
-#         print(spike[15+4*40+6]);
-#         print(spike[15+4*40+7]);
-#         print("\n");
-#         print(spike[15+4*40+8]);
-#         print("\n");
         if(triggerChInd is not None):
             retData["triggerChs"]=spike[triggerChInd];
         retData["waveforms"][i, :]=spike[spikeDataInd:spikeDataInd+totalSampleSize];
@@ -117,7 +87,6 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
 
         if(i%10000==0):
             print(str(i));
-#             print(spike);
     
     retData["gains"]=retData["gains"]/1000.;
     retData["waveforms"]=(32768.-retData["waveforms"]);
