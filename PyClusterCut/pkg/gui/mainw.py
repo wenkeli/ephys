@@ -1,5 +1,7 @@
 import os;
 
+import gc;
+
 import cPickle as pickle;
 
 import h5py;
@@ -40,9 +42,7 @@ class MainW(QMainWindow, Ui_MainW):
     def __init__(self, app, parent=None):
         super(MainW, self).__init__(parent);
         self.setupUi(self);
-        self.enableViewUI(False);
-        self.enableClusterUI(False);
-        self.enableTimeSelectUI(False);
+        
         self.setFocusPolicy(Qt.StrongFocus);
         self.setWindowFlags(Qt.CustomizeWindowHint
                             | Qt.WindowMinimizeButtonHint);
@@ -105,7 +105,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__hChN=None;
         self.__vChN=None;
         self.__hParamName=None;
-        self.__vParamName=None; 
+        self.__vParamName=None;
+        self.__paramBounds=dict();
         self.__workClustList=dict();
         self.__viewClustList=dict();
         self.__viewValid=False;
@@ -123,8 +124,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__movingBoundItem=None;
         self.__proxyConList=[];
         self.__curMousePos=np.zeros(2, dtype="float32");
-        self.__initBound();
         
+        self.resetState();
+    
 
 
     def __setupPens(self):
@@ -332,6 +334,8 @@ class MainW(QMainWindow, Ui_MainW):
                                                            None, QApplication.UnicodeUTF8));
         self.exportDataButton.setText(QApplication.translate("MainW", "export data",
                                                              None, QApplication.UnicodeUTF8));
+                                                                                                     
+        gc.collect();
 
         
     
@@ -513,6 +517,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewClustersSelect.clear();
         self.__viewClustList.clear();
         self.__viewValid=False;
+        self.__paramBounds.clear();
     
     def populateSelect(self):
         numChannels=self.__dataSet.getSamples().getNumChannels();
@@ -559,6 +564,12 @@ class MainW(QMainWindow, Ui_MainW):
             self.__vParamList[i]=QListWidgetItem(modParamNames[i]);
             self.__vParamList[i].setData(self.__selectDataRole, modParamNames[i]);
             self.vParamSelect.addItem(self.__vParamList[i]);
+            
+        for i in modParamNames:
+            self.__paramBounds[i]=dict();
+            for j in np.r_[0:numChannels]:
+                bounds=self.__dataSet.getParamBounds(j, i);
+                self.__paramBounds[i][j]=bounds;
             
         
     def __setupKeyShortcuts(self, widget):
@@ -611,8 +622,8 @@ class MainW(QMainWindow, Ui_MainW):
         
         if((len(hChSel)==0) or (len(vChSel)==0) or (len(hParamSel)==0) or (len(vParamSel)==0)):
             return;
-        self.__hChN=hChSel[0].data(self.__selectDataRole);
-        self.__vChN=vChSel[0].data(self.__selectDataRole);
+        self.__hChN=int(hChSel[0].data(self.__selectDataRole));
+        self.__vChN=int(vChSel[0].data(self.__selectDataRole));
         self.__hParamName=hParamSel[0].data(self.__selectDataRole);
         self.__vParamName=vParamSel[0].data(self.__selectDataRole);
 
@@ -625,10 +636,11 @@ class MainW(QMainWindow, Ui_MainW):
             self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, self.__hParamName, self.__vParamName);
             self.__plotClusterItems[clustID].addToPlot();
         
+        xBound=self.__paramBounds[self.__hParamName][self.__hChN];
+        yBound=self.__paramBounds[self.__vParamName][self.__vChN];
+        self.__plotVBox.setXRange(xBound[0], xBound[1]);
+        self.__plotVBox.setYRange(yBound[0], yBound[1]);
         
-        
-        
-        self.__plotVBox.autoRange();
         self.validateView();
         
         

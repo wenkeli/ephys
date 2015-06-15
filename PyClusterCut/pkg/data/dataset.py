@@ -46,6 +46,10 @@ class DataSet(object):
         timeStamps=self.__samples.getParam(0, "timestamp");
         return (timeStamps[0], timeStamps[-1]);
     
+    def getParamBounds(self, chN, paramName):
+        param=self.__samples.getParam(chN, paramName)[self.__workingSet];
+        return [np.min(param), np.max(param)];
+    
     def getWorkingStartEndTimes(self):
         return (self.__workingSetStartTime, self.__workingSetEndTime);
         
