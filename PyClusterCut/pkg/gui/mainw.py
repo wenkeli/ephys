@@ -33,7 +33,7 @@ from ..data.cluster import Cluster, Boundary;
 
 from ..data.dataset import DataSet;
 
-from clusterplotitem import ClusterPlotItem;
+from .clusterplotitem import ClusterPlotItem;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -105,10 +105,11 @@ class MainW(QMainWindow, Ui_MainW):
         self.__hChN=None;
         self.__vChN=None;
         self.__hParamName=None;
-        self.__vParamName=None;
+        self.__vParamName=None; 
         self.__workClustList=dict();
         self.__viewClustList=dict();
         self.__viewValid=False;
+        
         self.__colors=[];
         self.__pens=[];
         self.__brushes=[];
@@ -195,6 +196,9 @@ class MainW(QMainWindow, Ui_MainW):
         
         fout.close();
         
+        self.saveFileButton.setText(QApplication.translate("MainW", "file saved!",
+                                                           None, QApplication.UnicodeUTF8));
+        
     def exportData(self):
 #         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
 #                                              self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
@@ -215,6 +219,8 @@ class MainW(QMainWindow, Ui_MainW):
 #             print("single HDF5");
 #             exportToHDF5(fileName, self.__dataSet);
         print("done");
+        self.exportDataButton.setText(QApplication.translate("MainW", "data exported!",
+                                                             None, QApplication.UnicodeUTF8));
      
     
     def exportWaveforms(self):
@@ -296,7 +302,39 @@ class MainW(QMainWindow, Ui_MainW):
 
     def quit(self):
         self.__app.closeAllWindows();
+    
+    def resetState(self):
+        self.enableClusterUI(False);
+        self.enableTimeSelectUI(False);
+        self.enableViewUI(False);
+        self.enableKeyShortcuts(False);
+        self.clearSelect();
         
+        self.__dataSet=None;
+        self.__plotClusterItems.clear();
+        self.__dataValid=False;
+        
+        self.clearSelect();
+        
+        self.__curColorInd=0;
+        
+        self.__initBound();
+        self.__plot.clear();
+        
+        numWavePlots=len(self.__wavePlots);
+        if(numWavePlots>0):
+            for i in np.r_[0:numWavePlots]:
+                self.__wavePlotLayout.removeItem(self.__wavePlots[0]);
+                del(self.__wavePlots[0]);
+            self.__wavePlots=[];
+            
+        self.saveFileButton.setText(QApplication.translate("MainW", "save file", 
+                                                           None, QApplication.UnicodeUTF8));
+        self.exportDataButton.setText(QApplication.translate("MainW", "export data",
+                                                             None, QApplication.UnicodeUTF8));
+
+        
+    
     def loadFile(self):
         print("loading fin");
         fileName=QFileDialog.getOpenFileName(self, self.tr("open data fin"), 
@@ -309,8 +347,11 @@ class MainW(QMainWindow, Ui_MainW):
             return;
         
         self.__dataDir=os.path.dirname(fileName);
-        self.__dataName=os.path.basename(fileName);
-        (self.__dataName, ext)=os.path.splitext(self.__dataName);
+        dataFName=os.path.basename(fileName);
+        (self.__dataName, ext)=os.path.splitext(dataFName);
+        self.__plotW.setWindowTitle(dataFName);
+        
+        self.resetState();
         
         fin=open(fileName, "rb");
         self.clearSelect(); 
@@ -324,16 +365,9 @@ class MainW(QMainWindow, Ui_MainW):
             self.__loadClusterDataSetFile(fin);     
 
         fin.close();
-
-        self.__dataValid=True;
-        self.__viewValid=False;
         
-        numWavePlots=len(self.__wavePlots);
-        if(numWavePlots>0):
-            for i in np.r_[0:numWavePlots]:
-                self.__wavePlotLayout.removeItem(self.__wavePlots[i]);
-                del(self.__wavePlots[i]);
-            self.__wavePlots=[];
+        if(self.__dataSet is None):
+            return;
         
         numChannels=self.__dataSet.getSamples().getNumChannels();
         for i in np.r_[0:numChannels]:
@@ -345,6 +379,10 @@ class MainW(QMainWindow, Ui_MainW):
     def __loadSpikesFile(self, fileName, fh):
 #         fileStat=os.stat(fileName);        
         data=readSpikeFile(fh, fileName);
+        if(data is None):
+            self.__dataSet=None;
+            return;
+        
         print("calculating parameters");
         self.__dataSet=DataSet(data["waveforms"], data["thresholds"],
                                data["timestamps"], data["samplingHz"], data["triggerChs"]);
@@ -460,16 +498,21 @@ class MainW(QMainWindow, Ui_MainW):
     def clearSelect(self):
         self.hChannelSelect.clear();
         self.__hChList[:]=[];
+        self.__hChN=None;
         self.hParamSelect.clear();
         self.__hParamList[:]=[];
+        self.__hParamName=None;
         self.vChannelSelect.clear();
         self.__vChList[:]=[];
+        self.__vchN=None;
         self.vParamSelect.clear();
         self.__vParamList[:]=[];
+        self.__vParamName=None
         self.workClusterSelect.clear();
         self.__workClustList.clear();
         self.viewClustersSelect.clear();
         self.__viewClustList.clear();
+        self.__viewValid=False;
     
     def populateSelect(self):
         numChannels=self.__dataSet.getSamples().getNumChannels();
@@ -581,7 +624,10 @@ class MainW(QMainWindow, Ui_MainW):
             clustID=item.data(self.__selectDataRole);        
             self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, self.__hParamName, self.__vParamName);
             self.__plotClusterItems[clustID].addToPlot();
-         
+        
+        
+        
+        
         self.__plotVBox.autoRange();
         self.validateView();
         
@@ -627,6 +673,8 @@ class MainW(QMainWindow, Ui_MainW):
         
     def changeWorkCluster(self):
         selectItem=self.workClusterSelect.selectedItems();
+        if(len(selectItem)<=0):
+            return;
         workClustID=selectItem[0].data(self.__selectDataRole);
         self.__dataSet.setWorkClustID(workClustID);
         self.__initBound();
@@ -636,7 +684,12 @@ class MainW(QMainWindow, Ui_MainW):
         
     def viewClustersChanged(self):
         selectItems=self.viewClustersSelect.selectedItems();
+        if(self.__dataSet is None):
+            return;
         workClustID=self.__dataSet.getWorkClustID();
+        
+        if((len(self.__viewClustList.keys())<=0) or (len(self.__workClustList.keys())<=0)):
+            return;
         if(not self.__viewClustList[workClustID].isSelected()):
             if(len(selectItems)<=0):
                 workClustID=self.__dataSet.getInitClustID();
@@ -709,11 +762,23 @@ class MainW(QMainWindow, Ui_MainW):
         (nChs, nptsPerCh, waves, xvals, conArr)=self.__plotClusterItems[workClustID].getNextWaves(self.numWavesIncBox.value());
         self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
     
-    def __drawWavesCommon(self, nChs, waves, xvals, conArr, drawPen):   
+    def __drawWavesCommon(self, nChs, waves, xvals, conArr, drawPen):
+        yMin=100000.0;
+        yMax=-100000.0;
         for i in np.r_[0:nChs]:
             self.__wavePlots[i].plot(xvals.flatten(), waves[i, :, :].flatten(), 
                                      pen=drawPen, connect=conArr.flatten());
             self.__wavePlots[i].getViewBox().autoRange();
+            boxRange=self.__wavePlots[i].getViewBox().viewRange();
+            boxMin=boxRange[1][0];
+            boxMax=boxRange[1][1];
+            if(boxMin<yMin):
+                yMin=boxMin;
+            if(boxMax>yMax):
+                yMax=boxMax;
+                
+        for i in np.r_[0:nChs]:
+            self.__wavePlots[i].getViewBox().setYRange(yMin, yMax);            
         
     def clearWavePlots(self):
         for i in np.r_[0:len(self.__wavePlots)]:

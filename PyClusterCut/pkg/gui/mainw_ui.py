@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Wed Jun 10 13:21:28 2015
+# Created: Mon Jun 15 16:26:12 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ class Ui_MainW(object):
         self.openFileButton.setGeometry(QtCore.QRect(10, 10, 84, 21))
         self.openFileButton.setObjectName("openFileButton")
         self.saveFileButton = QtGui.QPushButton(MainW)
-        self.saveFileButton.setGeometry(QtCore.QRect(170, 10, 84, 21))
+        self.saveFileButton.setGeometry(QtCore.QRect(150, 10, 101, 21))
         self.saveFileButton.setObjectName("saveFileButton")
         self.hParamSelect = QtGui.QListWidget(MainW)
         self.hParamSelect.setGeometry(QtCore.QRect(130, 90, 121, 101))
@@ -134,10 +134,10 @@ class Ui_MainW(object):
         self.label_4.setGeometry(QtCore.QRect(10, 510, 81, 21))
         self.label_4.setObjectName("label_4")
         self.exportDataButton = QtGui.QPushButton(MainW)
-        self.exportDataButton.setGeometry(QtCore.QRect(170, 40, 81, 21))
+        self.exportDataButton.setGeometry(QtCore.QRect(150, 40, 101, 21))
         self.exportDataButton.setObjectName("exportDataButton")
         self.exportWavesButton = QtGui.QPushButton(MainW)
-        self.exportWavesButton.setGeometry(QtCore.QRect(70, 40, 91, 21))
+        self.exportWavesButton.setGeometry(QtCore.QRect(50, 40, 91, 21))
         self.exportWavesButton.setObjectName("exportWavesButton")
 
         self.retranslateUi(MainW)

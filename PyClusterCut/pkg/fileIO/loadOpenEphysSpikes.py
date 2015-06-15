@@ -18,7 +18,10 @@ def readSpikeFile(fh, fileName):
     elif(version==0.2):
         print("loading version 0.2 file");
         data=readSamples(fh, fsize, fHeaderSize, "=Bq3H", "H", "H", "1H", "H", 3, 4, None);
-        
+    
+    if(data is None):
+        return data;
+    
     data["samplingHz"]=sampleRate;
     
     return data;
@@ -29,6 +32,8 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
               spikeDataFStr, nChInd, nSampleInd, triggerChInd):
     
     fh.seek(fHeaderSize);
+    if(fsize<=fHeaderSize):
+        return None;
     
     spikeHeaderSize=struct.calcsize(spikeHeadFStr);
     

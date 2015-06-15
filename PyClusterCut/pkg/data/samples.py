@@ -159,6 +159,10 @@ class SamplesData(object):
         else:
             return self.__params[paramName][chN, :];
         
+#     def getParamRange(self, chN, paramName):
+#         if(self.__paramType[paramName]==0):
+#     
+        
     def getParamAllChs(self, paramName):
         return self.__params[paramName];
     
