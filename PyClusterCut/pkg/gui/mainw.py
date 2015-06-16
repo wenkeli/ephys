@@ -333,14 +333,17 @@ class MainW(QMainWindow, Ui_MainW):
                 del(self.__wavePlots[0]);
             self.__wavePlots=[];
             
-        self.saveFileButton.setText(QApplication.translate("MainW", "save file", 
+        self.resetFileButtonTexts();
+                                                                                                     
+        gc.collect();
+        
+        
+    def resetFileButtonTexts(self):
+        self.saveFileButton.setText(QApplication.translate("MainW", "save file",
                                                            None, QApplication.UnicodeUTF8));
         self.exportDataButton.setText(QApplication.translate("MainW", "export data",
                                                              None, QApplication.UnicodeUTF8));
-                                                                                                     
-        gc.collect();
 
-        
     
     def loadFile(self):
         print("loading fin");
@@ -664,6 +667,8 @@ class MainW(QMainWindow, Ui_MainW):
     def addClustCommon(self, copy):
         if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
             return;
+        self.resetFileButtonTexts();
+        
         (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
                                   self.__hParamName, self.__vParamName,
                                   self.__boundPoints[0, :], self.__boundPoints[1, :]);
@@ -683,6 +688,8 @@ class MainW(QMainWindow, Ui_MainW):
     def deleteCluster(self):
         if((not self.__dataValid) or (not self.__viewValid)):
             return;
+        self.resetFileButtonTexts();
+        
         workClustID=self.__dataSet.getWorkClustID();
         self.__removeCluster(workClustID);
         self.updatePlotView();
@@ -691,6 +698,7 @@ class MainW(QMainWindow, Ui_MainW):
     def refineCluster(self):
         if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
             return;
+        self.resetFileButtonTexts();
         
         self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
                                      self.__hParamName, self.__vParamName,

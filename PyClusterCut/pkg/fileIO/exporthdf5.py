@@ -40,7 +40,7 @@ def exportToHDF5PerCluster(fileName, dataSet):
     paramKeys=dataSet.getSamples().getParamNames();
     
     for i in clustIDs:
-        fout=h5py.File(fName+".C_"+str(i)+fExt);
+        fout=h5py.File(fName+".C_"+str(i)+fExt, "w");
         cluster=dataSet.getCluster(i);
         for j in paramKeys:
             param=cluster.getParamAllChs(j);
