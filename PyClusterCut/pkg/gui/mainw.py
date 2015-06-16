@@ -75,6 +75,8 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.__plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
 #         self.__plotW.ci.layout.setColumnMaximumWidth(1, 25);
+
+        self.__plotType=0;
         
         self.__plotScene=self.__plot.scene();
         self.__plotScene.setMoveDistance(200);
@@ -458,7 +460,7 @@ class MainW(QMainWindow, Ui_MainW):
 
         
     def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
-        self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen);
+        self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen, brush);
         
         self.__workClustList[clustID]=QListWidgetItem(clustID);
         self.__workClustList[clustID].setData(self.__selectDataRole, clustID);
@@ -577,7 +579,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName]=[];
         
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("V")),
-                                                         widget, self.updatePlotView));
+                                                         widget, self.plotPoints));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
+                                                         widget, self.plotLargePoints));    
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Ctrl+D")),
                                                          widget, self.deleteCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("F")),
@@ -608,7 +612,16 @@ class MainW(QMainWindow, Ui_MainW):
             for j in np.r_[0:numKeys]:
                 self.__keyShortcuts[i][j].setEnabled(enable);
                 
-                
+    
+    def plotPoints(self):
+        self.__plotType=0;
+        self.updatePlotView();
+        
+    def plotLargePoints(self):
+        self.__plotType=1;
+        self.updatePlotView();
+    
+    
     def updatePlotView(self):
         if(not self.__dataValid):
             return;
@@ -633,8 +646,11 @@ class MainW(QMainWindow, Ui_MainW):
         viewClustItems=self.viewClustersSelect.selectedItems();
         for item in viewClustItems[::-1]:
             clustID=item.data(self.__selectDataRole);        
-            self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, self.__hParamName, self.__vParamName);
-            self.__plotClusterItems[clustID].addToPlot();
+            self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, 
+                                                         self.__hParamName, 
+                                                         self.__vParamName,
+                                                         self.__plotType);
+            self.__plotClusterItems[clustID].addToPlot(self.__plotType);
         
         xBound=self.__paramBounds[self.__hParamName][self.__hChN];
         yBound=self.__paramBounds[self.__vParamName][self.__vChN];

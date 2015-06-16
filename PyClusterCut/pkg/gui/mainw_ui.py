@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Mon Jun 15 16:26:12 2015
+# Created: Mon Jun 15 19:03:20 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,10 +139,12 @@ class Ui_MainW(object):
         self.exportWavesButton = QtGui.QPushButton(MainW)
         self.exportWavesButton.setGeometry(QtCore.QRect(50, 40, 91, 21))
         self.exportWavesButton.setObjectName("exportWavesButton")
+        self.viewLargeButton = QtGui.QPushButton(MainW)
+        self.viewLargeButton.setGeometry(QtCore.QRect(140, 600, 41, 25))
+        self.viewLargeButton.setObjectName("viewLargeButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
-        QtCore.QObject.connect(self.viewButton, QtCore.SIGNAL("clicked()"), MainW.updatePlotView)
         QtCore.QObject.connect(self.quitButton, QtCore.SIGNAL("clicked()"), MainW.quit)
         QtCore.QObject.connect(self.addButton, QtCore.SIGNAL("clicked()"), MainW.addCluster)
         QtCore.QObject.connect(self.refineButton, QtCore.SIGNAL("clicked()"), MainW.refineCluster)
@@ -164,6 +166,8 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.undoBoundaryButton, QtCore.SIGNAL("clicked()"), MainW.undoBoundaryStep)
         QtCore.QObject.connect(self.exportDataButton, QtCore.SIGNAL("clicked()"), MainW.exportData)
         QtCore.QObject.connect(self.exportWavesButton, QtCore.SIGNAL("clicked()"), MainW.exportWaveforms)
+        QtCore.QObject.connect(self.viewButton, QtCore.SIGNAL("clicked()"), MainW.plotPoints)
+        QtCore.QObject.connect(self.viewLargeButton, QtCore.SIGNAL("clicked()"), MainW.plotLargePoints)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -231,4 +235,6 @@ class Ui_MainW(object):
         self.exportDataButton.setText(QtGui.QApplication.translate("MainW", "export data", None, QtGui.QApplication.UnicodeUTF8))
         self.exportWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export the waveforms that are drawn on the plot currently to HDF5 format for analysis and display in other programs. The exported waveforms are organized into the clusters that they came from.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportWavesButton.setText(QtGui.QApplication.translate("MainW", "export waves", None, QtGui.QApplication.UnicodeUTF8))
+        self.viewLargeButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>update the data viewed in the plot window, draw in large points for visualizing stray isolated points.</p><p>Warning: this can be pretty slow, and the plot might take some time to update.</p><p>keyboard shortcut: C</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.viewLargeButton.setText(QtGui.QApplication.translate("MainW", "viewL", None, QtGui.QApplication.UnicodeUTF8))
 

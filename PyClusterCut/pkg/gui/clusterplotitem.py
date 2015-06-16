@@ -1,11 +1,16 @@
 import numpy as np;
 import pyqtgraph as pg;
+
+from PySide.QtGui import QBrush;
+
 import FastScatterPlotItem as fscatter;
+
+from pyqtgraph.graphicsItems.ScatterPlotItem import ScatterPlotItem;
 
 from ..data.cluster import Cluster;
 
 class ClusterPlotItem(object):
-    def __init__(self, cluster, plot, pen=None):
+    def __init__(self, cluster, plot, pen=None, brush=None):
         self.__cluster=cluster;
         self.__numSelPoints=None;
         
@@ -14,6 +19,11 @@ class ClusterPlotItem(object):
             self.__pen=pg.mkPen("w");
         else:
             self.__pen=pen;
+            
+        if(brush is None):
+            self.__brush=QBrush("w");
+        else:
+            self.__brush=brush;
 #         self.__plotData=pg.ScatterPlotItem(x=[0, 1], y=[0, 1],
 #                                       symbol="s", __pen=pg.mkPen("w"),
 #                                       size=1);
@@ -22,6 +32,8 @@ class ClusterPlotItem(object):
         self.__plotData=fscatter.FastScatterPlotItem(x=[0], y=[0],
                                       symbol="s", pen=self.__pen,
                                       size=1, pointMode=True);
+        self.__plotDataBigP=ScatterPlotItem(x=[0], y=[0], symbol="s",
+                                            pen=self.__pen, brush=self.__brush, size=2);
         self.__plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.__pen);     
         self.__plot=plot;
         self.__waveStartInd=0;
@@ -29,11 +41,17 @@ class ClusterPlotItem(object):
         
         
     
-    def setPlotData(self, xChN, yChN, xChParamT, yChParamT):
-        self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
-                              y=self.__cluster.getParam(yChN, yChParamT),
-                              symbol="s", pen=self.__pen,
-                              size=1, pointMode=True);
+    def setPlotData(self, xChN, yChN, xChParamT, yChParamT, plotType=0):
+        if(plotType==0):
+            self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
+                                  y=self.__cluster.getParam(yChN, yChParamT),
+                                  symbol="s", pen=self.__pen,
+                                  size=1, pointMode=True);
+        else:
+            self.__plotDataBigP.setData(x=self.__cluster.getParam(xChN, xChParamT),
+                                        y=self.__cluster.getParam(yChN, yChParamT),
+                                        symbol="s", pen=self.__pen, brush=self.__brush,
+                                        size=2);
         self.__calcNumSelPoints();
         
         boundaries=self.__cluster.getBoundaries([xChN, yChN], [xChParamT, yChParamT]);
@@ -53,12 +71,18 @@ class ClusterPlotItem(object):
             
             
                               
-    def addToPlot(self):
-        self.__plot.addItem(self.__plotData);
+    def addToPlot(self, plotType=0):
+        if(plotType==0):
+            self.__plot.addItem(self.__plotData);
+        else:
+            self.__plot.addItem(self.__plotDataBigP);
         self.__plot.addItem(self.__plotBoundaryData);
         
-    def removeFromPlot(self):
-        self.__plot.removeItem(self.__plotData);
+    def removeFromPlot(self, plotType=0):
+        if(plotType==0):
+            self.__plot.removeItem(self.__plotData);
+        else:
+            self.__plot.RemoveItem(self.__plotDataBigP);
         self.__plot.removeItem(self.__plotBoundaryData);
         
     def getCurPen(self):

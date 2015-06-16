@@ -599,6 +599,22 @@
     <string>export waves</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="viewLargeButton">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>600</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window, draw in large points for visualizing stray isolated points.&lt;/p&gt;&lt;p&gt;Warning: this can be pretty slow, and the plot might take some time to update.&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>viewL</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -615,22 +631,6 @@
     <hint type="destinationlabel">
      <x>105</x>
      <y>21</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>viewButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainW</receiver>
-   <slot>updatePlotView()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>230</x>
-     <y>624</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>226</x>
-     <y>809</y>
     </hint>
    </hints>
   </connection>
@@ -970,10 +970,41 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>viewButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>plotPoints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>614</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>524</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>viewLargeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>plotLargePoints()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>615</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>253</x>
+     <y>613</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
-  <slot>updatePlotView()</slot>
   <slot>quit()</slot>
   <slot>addCluster()</slot>
   <slot>refineCluster()</slot>
@@ -992,5 +1023,7 @@
   <slot>undoBoundaryStep()</slot>
   <slot>exportData()</slot>
   <slot>exportWaveforms()</slot>
+  <slot>plotPoints()</slot>
+  <slot>plotLargePoints()</slot>
  </slots>
 </ui>
