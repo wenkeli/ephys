@@ -112,7 +112,7 @@
   <widget class="QListWidget" name="workClusterSelect">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>350</y>
      <width>61</width>
      <height>151</height>
@@ -143,24 +143,24 @@
     <rect>
      <x>30</x>
      <y>70</y>
-     <width>51</width>
-     <height>16</height>
+     <width>61</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;electrode channel number&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>channel</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;channel&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="hLabel">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>130</y>
-     <width>16</width>
-     <height>16</height>
+     <x>9</x>
+     <y>90</y>
+     <width>21</width>
+     <height>101</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -176,10 +176,10 @@
   <widget class="QLabel" name="vLabel">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>240</y>
-     <width>16</width>
-     <height>16</height>
+     <x>9</x>
+     <y>205</y>
+     <width>21</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -195,9 +195,9 @@
   <widget class="QLabel" name="paramLabel">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>130</x>
      <y>70</y>
-     <width>71</width>
+     <width>121</width>
      <height>20</height>
     </rect>
    </property>
@@ -205,7 +205,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;parameters for the waveforms&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>parameter</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;parameter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="viewingClusterLabel">
@@ -232,7 +232,7 @@
     <rect>
      <x>30</x>
      <y>310</y>
-     <width>51</width>
+     <width>61</width>
      <height>41</height>
     </rect>
    </property>
@@ -268,7 +268,7 @@
   <widget class="QPushButton" name="quitButton">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>720</y>
      <width>63</width>
      <height>21</height>
@@ -349,7 +349,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete the selected working cluster, all the points will be returned to the 0 (initial) cluster.&lt;/p&gt;&lt;p&gt;keyboard shortcut: ctrl+D&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Delet</string>
+    <string>Delete</string>
    </property>
   </widget>
   <widget class="QPushButton" name="clearWavePlotsButton">
@@ -381,7 +381,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: X&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>reprt</string>
+    <string>report</string>
    </property>
   </widget>
   <widget class="QPushButton" name="nextWavesButton">
@@ -413,7 +413,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;undo a step in the boundary selection&lt;/p&gt;&lt;p&gt;Keyboard shortcut: Z&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Undo</string>
+    <string>undo</string>
    </property>
   </widget>
   <widget class="QPushButton" name="prevWavesButton">
@@ -506,17 +506,17 @@
   <widget class="QLabel" name="timeSelLabel">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>0</x>
      <y>640</y>
-     <width>91</width>
-     <height>16</height>
+     <width>261</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the time window for the samples to be worked on. Press select to set. Once set, cannot be changed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>Time selection</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Time selection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="timeSelStartLabel">
@@ -556,7 +556,7 @@
     <rect>
      <x>10</x>
      <y>510</y>
-     <width>81</width>
+     <width>71</width>
      <height>21</height>
     </rect>
    </property>
@@ -564,7 +564,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;number of waves to be displayed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>num waves</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;num waves&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="exportDataButton">
@@ -612,7 +612,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window, draw in large points for visualizing stray isolated points.&lt;/p&gt;&lt;p&gt;Warning: this can be pretty slow, and the plot might take some time to update.&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>viewL</string>
+    <string>viewb</string>
    </property>
   </widget>
  </widget>

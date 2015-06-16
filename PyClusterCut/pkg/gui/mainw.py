@@ -268,6 +268,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewClustersSelect.setEnabled(enable);
         
         self.viewButton.setEnabled(enable);
+        self.viewLargeButton.setEnabled(enable);
         self.reportClusterButton.setEnabled(enable);
         
         self.undoBoundaryButton.setEnabled(enable);
