@@ -36,6 +36,7 @@ from ..data.cluster import Cluster, Boundary;
 from ..data.dataset import DataSet;
 
 from .clusterplotitem import ClusterPlotItem;
+from uc2.utils.streamfilter import FilterType
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -48,6 +49,7 @@ class MainW(QMainWindow, Ui_MainW):
                             | Qt.WindowMinimizeButtonHint);
                             
         self.__dataDir="";
+        self.__dataFilter="";
         self.__dataSet=None;
         self.__plotClusterItems=dict();
         self.__dataValid=False;
@@ -335,10 +337,11 @@ class MainW(QMainWindow, Ui_MainW):
         print("loading fin");
         fileName=QFileDialog.getOpenFileName(self, self.tr("open data fin"), 
                                              self.tr(self.__dataDir), 
-                                             self.tr("1. spike files (*.spikes);; 2. cluster data set (*.clusterdataset)"));
+                                             self.tr("1. spike files (*.spikes);;2. cluster data set (*.clusterdataset)"),
+                                             self.__dataFilter);
         fileType=fileName[1];
+        self.__dataFilter=fileType;
         fileName=fileName[0];
-        
         if(fileName==""):
             return;
         
