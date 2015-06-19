@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Thu Jun 18 22:12:37 2015
+# Created: Thu Jun 18 22:30:10 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -123,7 +123,7 @@ class Ui_MainW(object):
         self.timeSelStartBox.setProperty("value", -1)
         self.timeSelStartBox.setObjectName("timeSelStartBox")
         self.timeSelButton = QtGui.QPushButton(MainW)
-        self.timeSelButton.setGeometry(QtCore.QRect(200, 670, 61, 41))
+        self.timeSelButton.setGeometry(QtCore.QRect(190, 690, 61, 41))
         self.timeSelButton.setObjectName("timeSelButton")
         self.timeSelLabel = QtGui.QLabel(MainW)
         self.timeSelLabel.setGeometry(QtCore.QRect(0, 640, 261, 20))
@@ -146,6 +146,9 @@ class Ui_MainW(object):
         self.viewLargeButton = QtGui.QPushButton(MainW)
         self.viewLargeButton.setGeometry(QtCore.QRect(140, 600, 41, 25))
         self.viewLargeButton.setObjectName("viewLargeButton")
+        self.timeResetButton = QtGui.QPushButton(MainW)
+        self.timeResetButton.setGeometry(QtCore.QRect(200, 660, 41, 21))
+        self.timeResetButton.setObjectName("timeResetButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -172,6 +175,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.exportWavesButton, QtCore.SIGNAL("clicked()"), MainW.exportWaveforms)
         QtCore.QObject.connect(self.viewButton, QtCore.SIGNAL("clicked()"), MainW.plotPoints)
         QtCore.QObject.connect(self.viewLargeButton, QtCore.SIGNAL("clicked()"), MainW.plotLargePoints)
+        QtCore.QObject.connect(self.timeResetButton, QtCore.SIGNAL("clicked()"), MainW.resetTimeWindow)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -224,7 +228,7 @@ class Ui_MainW(object):
         self.resetWaveNButton.setText(QtGui.QApplication.translate("MainW", "Reset", None, QtGui.QApplication.UnicodeUTF8))
         self.numWavesIncBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>set the number of waves to display each time pwav and nWav buttons are clicked.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>The end time point (as raw timestamp) for the time window selection. defaults to the last timestamp in the data, which is also the maximum that can be set.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.timeSelStartBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>set the starting time ponit (in raw timestamp) of the time window selection. Defaults to the first time stamp in the data, which is also the minimum that can be set.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.timeSelStartBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>set the starting time point (in raw timestamp) of the time window selection. Defaults to the first time stamp in the data, which is also the minimum that can be set.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>set the time window selection. This action is final.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelButton.setText(QtGui.QApplication.translate("MainW", "select", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelLabel.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>select the time window for the samples to be worked on. Press select to set. Once set, cannot be changed.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
@@ -241,4 +245,6 @@ class Ui_MainW(object):
         self.exportWavesButton.setText(QtGui.QApplication.translate("MainW", "export waves", None, QtGui.QApplication.UnicodeUTF8))
         self.viewLargeButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>update the data viewed in the plot window, draw in large points for visualizing stray isolated points.</p><p>Warning: this can be pretty slow, and the plot might take some time to update.</p><p>keyboard shortcut: C</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.viewLargeButton.setText(QtGui.QApplication.translate("MainW", "viewb", None, QtGui.QApplication.UnicodeUTF8))
+        self.timeResetButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>reset the time window selection to the max and minimum value.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.timeResetButton.setText(QtGui.QApplication.translate("MainW", "reset", None, QtGui.QApplication.UnicodeUTF8))
 

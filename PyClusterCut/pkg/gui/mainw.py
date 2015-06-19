@@ -292,6 +292,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.timeSelStartLabel.setEnabled(enable);
         self.timeSelEndLabel.setEnabled(enable);
         self.timeSelButton.setEnabled(enable);
+        self.timeResetButton.setEnabled(enable);
         self.timeSelStartBox.setEnabled(enable);
         self.timeSelEndBox.setEnabled(enable);
 
@@ -406,14 +407,15 @@ class MainW(QMainWindow, Ui_MainW):
         
     def __setTimeSelUI(self, startT, endT):
         self.enableTimeSelectUI(True);
+        tSSVal=self.timeSelStartBox.value();
+        tSEVal=self.timeSelEndBox.value();
+        
         self.timeSelStartBox.setMinimum(startT);
         self.timeSelEndBox.setMinimum(startT);
         
         self.timeSelStartBox.setMaximum(endT);
         self.timeSelEndBox.setMaximum(endT);
         
-        tSSVal=self.timeSelStartBox.value();
-        tSEVal=self.timeSelEndBox.value();
         if((tSSVal<startT) or (tSSVal>endT) or (tSEVal<startT) or (tSEVal>endT)):
             self.timeSelStartBox.setValue(startT);
             self.timeSelEndBox.setValue(endT);
@@ -442,6 +444,10 @@ class MainW(QMainWindow, Ui_MainW):
         self.__setTimeSelUI(startT, endT);
         self.__setDataIsValid();
         
+    def resetTimeWindow(self):
+        (startT, endT)=self.__dataSet.getSamplesStartEndTimes();
+        self.timeSelStartBox.setValue(startT);
+        self.timeSelEndBox.setValue(endT);
     
     def selectTimeWindow(self):
         startTime=self.timeSelStartBox.value();
@@ -543,7 +549,7 @@ class MainW(QMainWindow, Ui_MainW):
             
         paramNames=self.__dataSet.getSamples().getParamNames();
         
-        ignoredParamNames=["peakTime", "valleyTime", "PVWidth", "timestamp"];
+        ignoredParamNames=["peakTime", "valleyTime", "timestamp"];
         
         modParamNames=[];
         if("peak" in paramNames):

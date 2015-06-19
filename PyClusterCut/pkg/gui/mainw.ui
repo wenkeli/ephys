@@ -490,7 +490,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set the starting time ponit (in raw timestamp) of the time window selection. Defaults to the first time stamp in the data, which is also the minimum that can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set the starting time point (in raw timestamp) of the time window selection. Defaults to the first time stamp in the data, which is also the minimum that can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="minimum">
     <number>-1</number>
@@ -502,8 +502,8 @@
   <widget class="QPushButton" name="timeSelButton">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>670</y>
+     <x>190</x>
+     <y>690</y>
      <width>61</width>
      <height>41</height>
     </rect>
@@ -625,6 +625,22 @@
    </property>
    <property name="text">
     <string>viewb</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="timeResetButton">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>660</y>
+     <width>41</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;reset the time window selection to the max and minimum value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>reset</string>
    </property>
   </widget>
  </widget>
@@ -909,8 +925,8 @@
    <slot>selectTimeWindow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>215</x>
-     <y>688</y>
+     <x>205</x>
+     <y>708</y>
     </hint>
     <hint type="destinationlabel">
      <x>250</x>
@@ -1014,6 +1030,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>timeResetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>resetTimeWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>669</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>254</x>
+     <y>675</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -1037,5 +1069,6 @@
   <slot>exportWaveforms()</slot>
   <slot>plotPoints()</slot>
   <slot>plotLargePoints()</slot>
+  <slot>resetTimeWindow()</slot>
  </slots>
 </ui>
