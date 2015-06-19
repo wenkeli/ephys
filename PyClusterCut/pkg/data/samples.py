@@ -110,7 +110,7 @@ class SamplesData(object):
         self.__paramType["peak"]=1;
         
         
-    def __calcValley(self, valleyStart=10, valleyEnd=30):
+    def __calcValley(self, valleyStart=7, valleyEnd=35):
 #         self.__params["valley"]=np.min(self.__waveforms[:, :, valleyStart:valleyEnd], 2);
         self.__params["valleyTime"]=np.argmin(self.__waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
         self.__params["valleyTime"]=self.__params["valleyTime"][self.__triggerCh, np.r_[0:self.__numSamples]];
