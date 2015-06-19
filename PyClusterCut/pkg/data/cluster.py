@@ -65,7 +65,13 @@ class Cluster(object):
         del(self.__boundaries[:]);
         
     def getRating(self):
-        return self.__rating;
+        try:
+            rating=self.__rating;
+        except AttributeError:
+            self.__rating=-1;
+            rating=self.__rating;
+        return rating;
+    
     
     def setRating(self, rating):
         self.__rating=rating;
