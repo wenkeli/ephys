@@ -19,6 +19,9 @@ class Boundary(object):
     def isView(self, testVChs, testVParams):
         return ((self.__viewChs==testVChs) and (self.__viewParams==testVParams));
     
+    def getView(self):
+        return (self.__viewChs, self.__viewParams);
+    
     def getPoints(self):
         return self.__points;
     
@@ -31,6 +34,24 @@ class Boundary(object):
         boundary=Path(self.__points.T, pathCodes);
         
         return boundary.contains_points(np.array([dataX, dataY]).T);
+    
+class ClustHistStep(object):
+    def __init__(self, selectArr, boundary):
+        self.__sBA=selectArr;
+        self.__boundary=boundary;
+        
+    def getView(self):
+        if(self.__boundary is None):
+            return None;
+        return self.__boundary.getView();
+    
+    def getSelectArr(self):
+        return self.__sBA;
+    
+    def getBoundary(self):
+        return self.__boundary;
+    
+    
 
 class Cluster(object):
 #     @staticmethod
@@ -53,16 +74,29 @@ class Cluster(object):
         self.__sBA=None;
         self.__boundaries=boundaries;
         self.__rating=-1;
+        self.__history=None;
         
         self.__sBA=np.copy(selectArray);
             
         if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.addClustCount(self.__sBA);
+        self.__initHistory();
+        
+    def __initHistory(self):
+        self.__history=[];
+        if(len(self.__boundaries)>0):
+            self.__addToHist(self.__sBA, self.__boundaries[-1]);
+        else:
+            self.__addToHist(self.__sBA);
             
     def __del__(self):
-        self.removeSelect(self.__sBA);
+        self.__removeSelect(self.__sBA);
         del(self.__sBA);
         del(self.__boundaries[:]);
+        try:
+            del(self.__history[:]);
+        except AttributeError:
+            self.__history=[];
         
     def getRating(self):
         try:
@@ -100,31 +134,78 @@ class Cluster(object):
     def getNumChannels(self):
         return self.__data.getNumChannels();
     
-    def modifySelect(self, selectMod):
+    def __modifySelect(self, selectMod):
         removePoints=self.__sBA & (~selectMod);
-        self.removeSelect(removePoints);
+        self.__removeSelect(removePoints);
     
     def __updateParentClustSelect(self):
         if((self.__sourceCluster is not None) and (self.__sampleClustCnt is not None)):
-            self.__sourceCluster.setSelect(self.__sampleClustCnt.getNoClustSamples());
+            self.__sourceCluster.__setSelect(self.__sampleClustCnt.getNoClustSamples());
     
-    def setSelect(self, selectMod):
-        self.removeSelect(self.__sBA);
-        self.addSelect(selectMod);
+    def __validateHistory(self):
+        try:
+            histLen=len(self.__history);
+            if(histLen<=0):
+                self.__initHistory();
+        except AttributeError:
+            self.__initHistory();
+            
     
-    def addSelect(self, selectMod):
+    def removePoints(self, sBA, addToHist):
+        self.__validateHistory();
+        self.__removeSelect(sBA);
+        if(addToHist):
+            self.__addToHist(self.__sBA);
+    
+    def refineClust(self, clustBound, sBA):
+        self.__validateHistory();
+        self.__addBoundary(clustBound);
+        self.__modifySelect(sBA);
+        self.__addToHist(self.__sBA, clustBound);
+        
+    def stepBack(self):
+        self.__validateHistory();
+        if(len(self.__history)<=1):
+            return self.__history[-1].getView();
+        
+        step=self.__history.pop();
+        boundary=step.getBoundary();
+        if(boundary is not None):
+            self.__boundaries.remove(boundary);
+        
+        step=self.__history[-1];
+        sBA=step.getSelectArr();
+        self.__setSelect(sBA);
+        return step.getView();
+            
+        
+    def __addToHist(self, sBA, boundary=None):
+        histStep=ClustHistStep(sBA, boundary);
+        try:
+            self.__history.append(histStep);
+        except AttributeError:
+            self.__history=[];
+            self.__addToHist(self.__sBA, self.__boundaries[-1]);
+            self.__history.append(histStep);
+        
+    
+    def __setSelect(self, selectMod):
+        self.__removeSelect(self.__sBA);
+        self.__addSelect(selectMod);
+    
+    def __addSelect(self, selectMod):
         if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.addClustCount(selectMod & (~self.__sBA));
         self.__sBA=self.__sBA | selectMod;
         self.__updateParentClustSelect();
         
-    def removeSelect(self, selectMod):
+    def __removeSelect(self, selectMod):
         if(self.__sampleClustCnt is not None):
             self.__sampleClustCnt.minusClustCount(selectMod & (self.__sBA));         
         self.__sBA=self.__sBA & (~selectMod);
         self.__updateParentClustSelect();
         
-    def addBoundary(self, boundary):
+    def __addBoundary(self, boundary):
         self.__boundaries.append(boundary);
     
     def getBoundaries(self, viewChs=[], viewParams=[]):

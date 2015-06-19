@@ -184,15 +184,10 @@ class MainW(QMainWindow, Ui_MainW):
                                                     slot=self.plotMouseClicked));
             self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseMoved,
                                                     rateLimit=100, slot=self.plotMouseMoved));
+                                                    
+                                                    
         
     def saveClusterData(self):
-#         fileName=QFileDialog.getSaveFileName(self, self.tr("save cluster data set"), 
-#                                              self.tr(os.path.join(self.__dataDir,self.__dataName+".clusterdataset")), 
-#                                              self.tr("cluster data set (*.clusterdataset)"));
-#         fileName=fileName[0];
-#         if(fileName==""):
-#             return;
-
         fileName=os.path.join(self.__dataDir,self.__dataName+".clusterdataset");
         
         fout=open(fileName, "wb");
@@ -205,24 +200,11 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def exportData(self):
-#         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
-#                                              self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
-#                                              self.tr("1. individual clusters HDF5 (*.h5);; 2. all clusters HDF5 (*.h5)"));
-#         fileType=fileName[1];
-#         fileName=fileName[0];
-#         if(fileName==""):
-#             return;
-
         fileName=os.path.join(self.__dataDir,self.__dataName+".h5");
         
         print("exporting...");
         exportToHDF5PerCluster(fileName, self.__dataSet);
-#         if(fileType[0]=="1"):
-#             print("individual cluster per HDF5");
-#             exportToHDF5PerCluster(fileName, self.__dataSet);
-#         elif(fileType[0]=="2"):
-#             print("single HDF5");
-#             exportToHDF5(fileName, self.__dataSet);
+
         print("done");
         self.exportDataButton.setText(QApplication.translate("MainW", "data exported!",
                                                              None, QApplication.UnicodeUTF8));
@@ -232,7 +214,6 @@ class MainW(QMainWindow, Ui_MainW):
         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
                                              self.tr(self.__dataDir), 
                                              self.tr("HDF5 (*.h5)"));
-#         fileType=fileName[1];
         fileName=fileName[0];
         if(fileName==""):
             return;
@@ -288,6 +269,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
+        self.backButton.setEnabled(enable);
         
         
     def enableTimeSelectUI(self, enable):
@@ -519,17 +501,17 @@ class MainW(QMainWindow, Ui_MainW):
         
     def clearSelect(self):
         self.hChannelSelect.clear();
-        self.__hChList[:]=[];
+        self.__hChList=dict();
         self.__hChN=None;
         self.hParamSelect.clear();
-        self.__hParamList[:]=[];
+        self.__hParamList=dict();
         self.__hParamName=None;
         self.vChannelSelect.clear();
-        self.__vChList[:]=[];
+        self.__vChList=dict();
         self.__vchN=None;
         self.vParamSelect.clear();
-        self.__vParamList[:]=[];
-        self.__vParamName=None
+        self.__vParamList=dict();
+        self.__vParamName=None;
         self.workClusterSelect.clear();
         self.__workClustList.clear();
         self.viewClustersSelect.clear();
@@ -539,16 +521,16 @@ class MainW(QMainWindow, Ui_MainW):
     
     def populateSelect(self):
         numChannels=self.__dataSet.getSamples().getNumChannels();
-        self.__hChList=[None]*numChannels;
-        self.__vChList=[None]*numChannels;
+        self.__hChList=dict();
+        self.__vChList=dict();
         for i in np.r_[0:numChannels]:
-            self.__hChList[i]=QListWidgetItem(str(i));
-            self.__hChList[i].setData(self.__selectDataRole, i);
-            self.hChannelSelect.addItem(self.__hChList[i]);
+            self.__hChList[str(i)]=QListWidgetItem(str(i));
+            self.__hChList[str(i)].setData(self.__selectDataRole, i);
+            self.hChannelSelect.addItem(self.__hChList[str(i)]);
             
-            self.__vChList[i]=QListWidgetItem(str(i));
-            self.__vChList[i].setData(self.__selectDataRole, i);
-            self.vChannelSelect.addItem(self.__vChList[i]);
+            self.__vChList[str(i)]=QListWidgetItem(str(i));
+            self.__vChList[str(i)].setData(self.__selectDataRole, i);
+            self.vChannelSelect.addItem(self.__vChList[str(i)]);
             
         paramNames=self.__dataSet.getSamples().getParamNames();
         
@@ -564,30 +546,29 @@ class MainW(QMainWindow, Ui_MainW):
         if("time" in paramNames):
             modParamNames.append("time");
         
-        for i in paramNames:
-            if(i in ignoredParamNames):
+        for name in paramNames:
+            if(name in ignoredParamNames):
                 continue;
-            if(i in modParamNames):
+            if(name in modParamNames):
                 continue;
-            modParamNames.append(i);
+            modParamNames.append(name);
         
-        numParams=len(modParamNames);
-        self.__hParamList=[None]*numParams;
-        self.__vParamList=[None]*numParams;
-        for i in np.r_[0:numParams]:
-            self.__hParamList[i]=QListWidgetItem(modParamNames[i]);
-            self.__hParamList[i].setData(self.__selectDataRole, modParamNames[i]);
-            self.hParamSelect.addItem(self.__hParamList[i]);
+        self.__hParamList=dict();
+        self.__vParamList=dict();
+        for name in modParamNames:
+            self.__hParamList[name]=QListWidgetItem(name);
+            self.__hParamList[name].setData(self.__selectDataRole, name);
+            self.hParamSelect.addItem(self.__hParamList[name]);
             
-            self.__vParamList[i]=QListWidgetItem(modParamNames[i]);
-            self.__vParamList[i].setData(self.__selectDataRole, modParamNames[i]);
-            self.vParamSelect.addItem(self.__vParamList[i]);
+            self.__vParamList[name]=QListWidgetItem(name);
+            self.__vParamList[name].setData(self.__selectDataRole, name);
+            self.vParamSelect.addItem(self.__vParamList[name]);
             
-        for i in modParamNames:
-            self.__paramBounds[i]=dict();
+        for name in modParamNames:
+            self.__paramBounds[name]=dict();
             for j in np.r_[0:numChannels]:
-                bounds=self.__dataSet.getParamBounds(j, i);
-                self.__paramBounds[i][j]=bounds;
+                bounds=self.__dataSet.getParamBounds(j, name);
+                self.__paramBounds[name][j]=bounds;
             
         
     def __setupKeyShortcuts(self, widget):
@@ -598,7 +579,7 @@ class MainW(QMainWindow, Ui_MainW):
                                                          widget, self.plotPoints));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("C")),
                                                          widget, self.plotLargePoints));    
-        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Ctrl+D")),
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Shift+D")),
                                                          widget, self.deleteCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("F")),
                                                          widget, self.refineCluster));
@@ -606,6 +587,8 @@ class MainW(QMainWindow, Ui_MainW):
                                                          widget, self.addCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("S")),
                                                          widget, self.copyCluster));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Shift+G")),
+                                                         widget, self.stepBackCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Z")),
                                                          widget, self.undoBoundaryStep));     
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("X")),
@@ -635,6 +618,13 @@ class MainW(QMainWindow, Ui_MainW):
         
     def plotLargePoints(self):
         self.__plotType=1;
+        self.updatePlotView();
+        
+    def __setView(self, hChN, vChN, hParamName, vParamName):
+        self.__hChList[str(hChN)].setSelected(True);
+        self.__vChList[str(vChN)].setSelected(True);
+        self.__hParamList[hParamName].setSelected(True);
+        self.__vParamList[vParamName].setSelected(True);
         self.updatePlotView();
     
     
@@ -674,6 +664,15 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotVBox.setYRange(yBound[0], yBound[1]);
         
         self.validateView();
+        
+        
+    def stepBackCluster(self):
+        if(not self.__dataValid):
+            return;
+        view=self.__dataSet.stepBackCluster();
+        if(view is not None):
+            self.__setView(view[0][0], view[0][1], view[1][0], view[1][1]);
+        self.updatePlotView();
         
         
     def addClustCommon(self, copy):

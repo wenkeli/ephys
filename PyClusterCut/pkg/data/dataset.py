@@ -67,7 +67,8 @@ class DataSet(object):
             self.__workClustID=self.__maxClustID;
                                                    
         if((len(pointsBA)>0) and (self.__workClustID!="") and (not copy)):
-            self.__clusters[self.__workClustID].removeSelect(pointsBA);
+            self.__clusters[self.__workClustID].removePoints(pointsBA,
+                                                             self.__workClustID!=self.__initClustID);
                     
         self.__maxClustN=self.__maxClustN+1;
         
@@ -117,8 +118,14 @@ class DataSet(object):
         
         (clustBound, pointsBA)=self.__calcPointsInBoundary(hChN, vChN, hParam, vParam, 
                                                            boundX, boundY);
-        self.__clusters[self.__workClustID].addBoundary(clustBound);
-        self.__clusters[self.__workClustID].modifySelect(pointsBA);
+#         self.__clusters[self.__workClustID].addBoundary(clustBound);
+#         self.__clusters[self.__workClustID].modifySelect(pointsBA);
+        self.__clusters[self.__workClustID].refineClust(clustBound, pointsBA);
+    
+    def stepBackCluster(self):
+        if(self.__workClustID==self.__initClustID):
+            return None;
+        return self.__clusters[self.__workClustID].stepBack();
     
     
     def setWorkClustID(self, clustID):
