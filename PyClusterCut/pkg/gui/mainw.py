@@ -412,8 +412,11 @@ class MainW(QMainWindow, Ui_MainW):
         self.timeSelStartBox.setMaximum(endT);
         self.timeSelEndBox.setMaximum(endT);
         
-        self.timeSelStartBox.setValue(startT);
-        self.timeSelEndBox.setValue(endT);
+        tSSVal=self.timeSelStartBox.value();
+        tSEVal=self.timeSelEndBox.value();
+        if((tSSVal<startT) or (tSSVal>endT) or (tSEVal<startT) or (tSEVal>endT)):
+            self.timeSelStartBox.setValue(startT);
+            self.timeSelEndBox.setValue(endT);
         
         
               

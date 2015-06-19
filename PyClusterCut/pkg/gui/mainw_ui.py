@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Mon Jun 15 22:21:41 2015
+# Created: Thu Jun 18 22:12:37 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -114,9 +114,13 @@ class Ui_MainW(object):
         self.numWavesIncBox.setObjectName("numWavesIncBox")
         self.timeSelEndBox = QtGui.QSpinBox(MainW)
         self.timeSelEndBox.setGeometry(QtCore.QRect(60, 690, 131, 22))
+        self.timeSelEndBox.setMinimum(-1)
+        self.timeSelEndBox.setProperty("value", -1)
         self.timeSelEndBox.setObjectName("timeSelEndBox")
         self.timeSelStartBox = QtGui.QSpinBox(MainW)
         self.timeSelStartBox.setGeometry(QtCore.QRect(60, 660, 131, 22))
+        self.timeSelStartBox.setMinimum(-1)
+        self.timeSelStartBox.setProperty("value", -1)
         self.timeSelStartBox.setObjectName("timeSelStartBox")
         self.timeSelButton = QtGui.QPushButton(MainW)
         self.timeSelButton.setGeometry(QtCore.QRect(200, 670, 61, 41))
