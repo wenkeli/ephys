@@ -100,7 +100,7 @@ class SamplesData(object):
         self.__calcTime();
         
     def __calcPeak(self, peakTime=8):
-        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+1)], 2);
+        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-4):(peakTime+2)], 2);
         peakLocalInds=peakLocalInds[self.__triggerCh, np.r_[0:self.__numSamples]];
         self.__params["peakTime"]=peakLocalInds+peakTime-1;
         self.__paramType["peakTime"]=0;
