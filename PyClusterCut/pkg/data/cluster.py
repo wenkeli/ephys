@@ -52,6 +52,7 @@ class Cluster(object):
         self.__sampleClustCnt=clustCount;
         self.__sBA=None;
         self.__boundaries=boundaries;
+        self.__rating=-1;
         
         self.__sBA=np.copy(selectArray);
             
@@ -62,6 +63,12 @@ class Cluster(object):
         self.removeSelect(self.__sBA);
         del(self.__sBA);
         del(self.__boundaries[:]);
+        
+    def getRating(self):
+        return self.__rating;
+    
+    def setRating(self, rating):
+        self.__rating=rating;
         
     def getSelectArray(self):
         return self.__sBA;

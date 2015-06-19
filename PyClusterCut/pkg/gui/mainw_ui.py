@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Thu Jun 18 22:30:10 2015
+# Created: Thu Jun 18 22:57:15 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,7 +42,7 @@ class Ui_MainW(object):
         self.workClusterSelect.setGeometry(QtCore.QRect(30, 350, 61, 151))
         self.workClusterSelect.setObjectName("workClusterSelect")
         self.viewClustersSelect = QtGui.QListWidget(MainW)
-        self.viewClustersSelect.setGeometry(QtCore.QRect(170, 350, 61, 151))
+        self.viewClustersSelect.setGeometry(QtCore.QRect(120, 350, 61, 151))
         self.viewClustersSelect.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
         self.viewClustersSelect.setObjectName("viewClustersSelect")
         self.chLabel = QtGui.QLabel(MainW)
@@ -60,7 +60,7 @@ class Ui_MainW(object):
         self.paramLabel.setGeometry(QtCore.QRect(130, 70, 121, 20))
         self.paramLabel.setObjectName("paramLabel")
         self.viewingClusterLabel = QtGui.QLabel(MainW)
-        self.viewingClusterLabel.setGeometry(QtCore.QRect(170, 310, 61, 41))
+        self.viewingClusterLabel.setGeometry(QtCore.QRect(120, 310, 61, 41))
         self.viewingClusterLabel.setWordWrap(True)
         self.viewingClusterLabel.setObjectName("viewingClusterLabel")
         self.workingClusterLabel = QtGui.QLabel(MainW)
@@ -149,6 +149,15 @@ class Ui_MainW(object):
         self.timeResetButton = QtGui.QPushButton(MainW)
         self.timeResetButton.setGeometry(QtCore.QRect(200, 660, 41, 21))
         self.timeResetButton.setObjectName("timeResetButton")
+        self.clustRateBox = QtGui.QSpinBox(MainW)
+        self.clustRateBox.setGeometry(QtCore.QRect(190, 400, 61, 31))
+        self.clustRateBox.setMinimum(-1)
+        self.clustRateBox.setMaximum(5)
+        self.clustRateBox.setProperty("value", -1)
+        self.clustRateBox.setObjectName("clustRateBox")
+        self.clustRatelabel = QtGui.QLabel(MainW)
+        self.clustRatelabel.setGeometry(QtCore.QRect(190, 360, 61, 31))
+        self.clustRatelabel.setObjectName("clustRatelabel")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -176,6 +185,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.viewButton, QtCore.SIGNAL("clicked()"), MainW.plotPoints)
         QtCore.QObject.connect(self.viewLargeButton, QtCore.SIGNAL("clicked()"), MainW.plotLargePoints)
         QtCore.QObject.connect(self.timeResetButton, QtCore.SIGNAL("clicked()"), MainW.resetTimeWindow)
+        QtCore.QObject.connect(self.clustRateBox, QtCore.SIGNAL("valueChanged(int)"), MainW.updateClustRating)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -247,4 +257,5 @@ class Ui_MainW(object):
         self.viewLargeButton.setText(QtGui.QApplication.translate("MainW", "viewb", None, QtGui.QApplication.UnicodeUTF8))
         self.timeResetButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>reset the time window selection to the max and minimum value.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeResetButton.setText(QtGui.QApplication.translate("MainW", "reset", None, QtGui.QApplication.UnicodeUTF8))
+        self.clustRatelabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">cluster<br/>rating</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 

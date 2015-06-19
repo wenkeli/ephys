@@ -125,7 +125,7 @@
   <widget class="QListWidget" name="viewClustersSelect">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>120</x>
      <y>350</y>
      <width>61</width>
      <height>151</height>
@@ -211,7 +211,7 @@
   <widget class="QLabel" name="viewingClusterLabel">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>120</x>
      <y>310</y>
      <width>61</width>
      <height>41</height>
@@ -643,6 +643,38 @@
     <string>reset</string>
    </property>
   </widget>
+  <widget class="QSpinBox" name="clustRateBox">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>400</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-1</number>
+   </property>
+   <property name="maximum">
+    <number>5</number>
+   </property>
+   <property name="value">
+    <number>-1</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="clustRatelabel">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>360</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;cluster&lt;br/&gt;rating&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -797,7 +829,7 @@
    <slot>viewClustersChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>197</x>
+     <x>147</x>
      <y>497</y>
     </hint>
     <hint type="destinationlabel">
@@ -1046,6 +1078,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>clustRateBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainW</receiver>
+   <slot>updateClustRating(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>411</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>230</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -1070,5 +1118,6 @@
   <slot>plotPoints()</slot>
   <slot>plotLargePoints()</slot>
   <slot>resetTimeWindow()</slot>
+  <slot>updateClustRating(int)</slot>
  </slots>
 </ui>

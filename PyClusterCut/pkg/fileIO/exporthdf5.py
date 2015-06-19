@@ -21,6 +21,7 @@ def exportToHDF5(fileName, dataSet):
         
         clustGrp=fout.create_group(i);
         
+        clustGrp.create_dataset("rating", data=cluster.getRating());
         for j in paramKeys:
             param=cluster.getParamAllChs(j);
             if(len(param.shape)>=2):
@@ -42,6 +43,7 @@ def exportToHDF5PerCluster(fileName, dataSet):
     for i in clustIDs:
         fout=h5py.File(fName+".C_"+str(i)+fExt, "w");
         cluster=dataSet.getCluster(i);
+        fout.create_dataset("rating", data=cluster.getRating());
         for j in paramKeys:
             param=cluster.getParamAllChs(j);
             if(len(param.shape)>=2):

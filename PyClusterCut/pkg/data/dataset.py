@@ -121,8 +121,8 @@ class DataSet(object):
         self.__clusters[self.__workClustID].modifySelect(pointsBA);
     
     
-    def setWorkClustID(self, id):
-        self.__workClustID=id;
+    def setWorkClustID(self, clustID):
+        self.__workClustID=clustID;
         
         return self.__clusters[self.__workClustID];
     
@@ -155,8 +155,8 @@ class DataSet(object):
         overlapNumPoints=np.sum(indSelArray & overlapPoints);
         return (indNumPoints, overlapNumPoints);
 
-    def getCluster(self, id):
-        return self.__clusters[id];
+    def getCluster(self, clustID):
+        return self.__clusters[clustID];
     
     def getSamples(self):
         return self.__samples;

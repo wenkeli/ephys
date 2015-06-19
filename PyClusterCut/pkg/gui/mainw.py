@@ -203,6 +203,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.saveFileButton.setText(QApplication.translate("MainW", "file saved!",
                                                            None, QApplication.UnicodeUTF8));
         
+        
     def exportData(self):
 #         fileName=QFileDialog.getSaveFileName(self, self.tr("export cluster data"), 
 #                                              self.tr(os.path.join(self.__dataDir, self.__dataName+".h5")), 
@@ -278,6 +279,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.clearWavePlotsButton.setEnabled(enable);
         self.resetWaveNButton.setEnabled(enable);
         self.numWavesIncBox.setEnabled(enable);
+        
+        self.clustRateBox.setEnabled(enable);
         
         
     def enableClusterUI(self, enable):
@@ -727,6 +730,10 @@ class MainW(QMainWindow, Ui_MainW):
         if(not self.__viewClustList[workClustID].isSelected()):
             self.__viewClustList[workClustID].setSelected(True);
             self.invalidateView();
+        self.clustRateBox.setValue(self.__dataSet.getWorkingCluster().getRating());
+        
+    def updateClustRating(self, rating):
+        self.__dataSet.getWorkingCluster().setRating(rating);
         
     def viewClustersChanged(self):
         selectItems=self.viewClustersSelect.selectedItems();
@@ -774,7 +781,8 @@ class MainW(QMainWindow, Ui_MainW):
             (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
             percOverlap=int(numOverlap/float(numPoints)*1000);
             percOverlap=percOverlap/10.0;
-            output="cluster "+str(i)+": "+str(numPoints)+" pts, overlap: "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
+            rating=self.__dataSet.getCluster(i).getRating();
+            output="cluster "+str(i)+": rating "+str(rating)+", "+str(numPoints)+" pts, overlap: "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
             self.__reportDisp.insertPlainText(output);
             for j in clustIDs:
                 if(i==j):
