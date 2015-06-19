@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Fri Jun 19 03:39:42 2015
+# Created: Fri Jun 19 12:45:55 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -100,9 +100,9 @@ class Ui_MainW(object):
         self.nextWavesButton = QtGui.QPushButton(MainW)
         self.nextWavesButton.setGeometry(QtCore.QRect(60, 540, 41, 25))
         self.nextWavesButton.setObjectName("nextWavesButton")
-        self.undoBoundaryButton = QtGui.QPushButton(MainW)
-        self.undoBoundaryButton.setGeometry(QtCore.QRect(30, 600, 41, 25))
-        self.undoBoundaryButton.setObjectName("undoBoundaryButton")
+        self.stepBackBoundButton = QtGui.QPushButton(MainW)
+        self.stepBackBoundButton.setGeometry(QtCore.QRect(30, 600, 41, 25))
+        self.stepBackBoundButton.setObjectName("stepBackBoundButton")
         self.prevWavesButton = QtGui.QPushButton(MainW)
         self.prevWavesButton.setGeometry(QtCore.QRect(10, 540, 41, 25))
         self.prevWavesButton.setObjectName("prevWavesButton")
@@ -158,9 +158,9 @@ class Ui_MainW(object):
         self.clustRatelabel = QtGui.QLabel(MainW)
         self.clustRatelabel.setGeometry(QtCore.QRect(190, 360, 61, 31))
         self.clustRatelabel.setObjectName("clustRatelabel")
-        self.backButton = QtGui.QPushButton(MainW)
-        self.backButton.setGeometry(QtCore.QRect(220, 570, 41, 25))
-        self.backButton.setObjectName("backButton")
+        self.undoClustButton = QtGui.QPushButton(MainW)
+        self.undoClustButton.setGeometry(QtCore.QRect(220, 570, 41, 25))
+        self.undoClustButton.setObjectName("undoClustButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -182,14 +182,14 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.resetWaveNButton, QtCore.SIGNAL("clicked()"), MainW.resetWaveInd)
         QtCore.QObject.connect(self.timeSelButton, QtCore.SIGNAL("clicked()"), MainW.selectTimeWindow)
         QtCore.QObject.connect(self.saveFileButton, QtCore.SIGNAL("clicked()"), MainW.saveClusterData)
-        QtCore.QObject.connect(self.undoBoundaryButton, QtCore.SIGNAL("clicked()"), MainW.undoBoundaryStep)
         QtCore.QObject.connect(self.exportDataButton, QtCore.SIGNAL("clicked()"), MainW.exportData)
         QtCore.QObject.connect(self.exportWavesButton, QtCore.SIGNAL("clicked()"), MainW.exportWaveforms)
         QtCore.QObject.connect(self.viewButton, QtCore.SIGNAL("clicked()"), MainW.plotPoints)
         QtCore.QObject.connect(self.viewLargeButton, QtCore.SIGNAL("clicked()"), MainW.plotLargePoints)
         QtCore.QObject.connect(self.timeResetButton, QtCore.SIGNAL("clicked()"), MainW.resetTimeWindow)
         QtCore.QObject.connect(self.clustRateBox, QtCore.SIGNAL("valueChanged(int)"), MainW.updateClustRating)
-        QtCore.QObject.connect(self.backButton, QtCore.SIGNAL("clicked()"), MainW.stepBackCluster)
+        QtCore.QObject.connect(self.undoClustButton, QtCore.SIGNAL("clicked()"), MainW.undoCluster)
+        QtCore.QObject.connect(self.stepBackBoundButton, QtCore.SIGNAL("clicked()"), MainW.stepBackBoundary)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -234,8 +234,8 @@ class Ui_MainW(object):
         self.reportClusterButton.setText(QtGui.QApplication.translate("MainW", "report", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the next 100 waveforms of the working cluster</p><p>Keyboard shortcut: W</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.nextWavesButton.setText(QtGui.QApplication.translate("MainW", "nWav", None, QtGui.QApplication.UnicodeUTF8))
-        self.undoBoundaryButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo a step in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.undoBoundaryButton.setText(QtGui.QApplication.translate("MainW", "undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.stepBackBoundButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>step back one point in the boundary selection</p><p>Keyboard shortcut: Z</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.stepBackBoundButton.setText(QtGui.QApplication.translate("MainW", "back", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>View the previous 100 waveforms of the working cluster</p><p>Keyboard shortcut: Q</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.prevWavesButton.setText(QtGui.QApplication.translate("MainW", "pwav", None, QtGui.QApplication.UnicodeUTF8))
         self.resetWaveNButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>Reset the display wave index of the working cluster back to 0 (beginning)</p><p>Keyboard shortcut: R</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
@@ -262,6 +262,6 @@ class Ui_MainW(object):
         self.timeResetButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>reset the time window selection to the max and minimum value.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeResetButton.setText(QtGui.QApplication.translate("MainW", "reset", None, QtGui.QApplication.UnicodeUTF8))
         self.clustRatelabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">cluster<br/>rating</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.backButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo the operations on the working cluster, one step per click.</p><p>keyboard shortcut: Shift-G</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.backButton.setText(QtGui.QApplication.translate("MainW", "back", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoClustButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo the operations on the working cluster, one step per click.</p><p>keyboard shortcut: Shift-G</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.undoClustButton.setText(QtGui.QApplication.translate("MainW", "undo", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -253,7 +253,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.viewLargeButton.setEnabled(enable);
         self.reportClusterButton.setEnabled(enable);
         
-        self.undoBoundaryButton.setEnabled(enable);
+        self.stepBackBoundButton.setEnabled(enable);
         
         self.nextWavesButton.setEnabled(enable);
         self.prevWavesButton.setEnabled(enable);
@@ -269,7 +269,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
         self.deleteButton.setEnabled(enable);
-        self.backButton.setEnabled(enable);
+        self.undoClustButton.setEnabled(enable);
         
         
     def enableTimeSelectUI(self, enable):
@@ -588,9 +588,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("S")),
                                                          widget, self.copyCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Shift+G")),
-                                                         widget, self.stepBackCluster));
+                                                         widget, self.undoCluster));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Z")),
-                                                         widget, self.undoBoundaryStep));     
+                                                         widget, self.stepBackBoundary));     
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("X")),
                                                          widget, self.showReport));                                                               
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Q")),
@@ -666,7 +666,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.validateView();
         
         
-    def stepBackCluster(self):
+    def undoCluster(self):
         if(not self.__dataValid):
             return;
         view=self.__dataSet.stepBackCluster();
@@ -890,7 +890,7 @@ class MainW(QMainWindow, Ui_MainW):
                                      y=[self.__boundPoints[1, -1], mousePoint.y()]);
 
     
-    def undoBoundaryStep(self):
+    def stepBackBoundary(self):
         if(not self.__viewValid):
             return;
         numPoints=self.__boundPoints.shape[1];
