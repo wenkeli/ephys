@@ -36,7 +36,6 @@ from ..data.cluster import Cluster, Boundary;
 from ..data.dataset import DataSet;
 
 from .clusterplotitem import ClusterPlotItem;
-from uc2.utils.streamfilter import FilterType
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -134,17 +133,18 @@ class MainW(QMainWindow, Ui_MainW):
 
 
     def __setupPens(self):
-        self.__colors.append(pg.mkColor("#FF4444")); #red
-        self.__colors.append(pg.mkColor("#4444FF")); #blue
-        self.__colors.append(pg.mkColor("#44FF44")); #green
         self.__colors.append(pg.mkColor("#FF00FF")); #magenta
         self.__colors.append(pg.mkColor("#00FFFF")); #cyan
+        self.__colors.append(pg.mkColor("#00FF00")); #lime
         self.__colors.append(pg.mkColor("#FFFF00")); #yellow
-        self.__colors.append(pg.mkColor("#9370DB")); #medium purple
-        self.__colors.append(pg.mkColor("#FF69B4")); #hot pink
-        self.__colors.append(pg.mkColor("#CD853F")); #Peru
-        self.__colors.append(pg.mkColor("#8A2BE2")); #blue violet
-        
+        self.__colors.append(pg.mkColor("#B041FF")); #purple daffadil
+        self.__colors.append(pg.mkColor("#F87217")); #pumpkin orange
+        self.__colors.append(pg.mkColor("#3BB9FF")); #deep sky blue
+        self.__colors.append(pg.mkColor("#7FFFD4")); #aquamarine
+        self.__colors.append(pg.mkColor("#87F717")); #lawn green
+        self.__colors.append(pg.mkColor("#FDD017")); #bright gold
+        self.__colors.append(pg.mkColor("#F660AB")); #hot pink
+        self.__colors.append(pg.mkColor("#FF0000")); #red
         for i in self.__colors:
             self.__pens.append(pg.mkPen(i));
             brushColor=QColor(i);
