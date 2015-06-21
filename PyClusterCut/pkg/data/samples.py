@@ -100,7 +100,7 @@ class SamplesData(object):
         self.__calcTime();
         
     def __calcPeak(self, peakTime=8):
-        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+1)], 2);
+        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+2)], 2);
         peakLocalInds=peakLocalInds[self.__triggerCh, np.r_[0:self.__numSamples]];
         self.__params["peakTime"]=peakLocalInds+peakTime-1;
         self.__paramType["peakTime"]=0;
@@ -110,14 +110,20 @@ class SamplesData(object):
         self.__paramType["peak"]=1;
         
         
-    def __calcValley(self, valleyStart=7, valleyEnd=35):
-#         self.__params["valley"]=np.min(self.__waveforms[:, :, valleyStart:valleyEnd], 2);
-        self.__params["valleyTime"]=np.argmin(self.__waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
-        self.__params["valleyTime"]=self.__params["valleyTime"][self.__triggerCh, np.r_[0:self.__numSamples]];
+    def __calcValley(self, valleyStartOffset=0, valleyLen=27):
+        inds=np.mgrid[0:self.__numSamples, 0:valleyLen];
+        sampleInd=inds[0];
+        valleyInd=inds[1];
+        startInd=self.__params["peakTime"]+valleyStartOffset;
+        valleyInd=valleyInd+np.reshape(startInd, (self.__numSamples,1));
+#         self.__params["valleyTime"]=np.argmin(self.__waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
+        self.__params["valleyTime"]=np.argmin(self.__waveforms[:, sampleInd, valleyInd], 2)+startInd;
+        sampleInd=np.r_[0:self.__numSamples];
+        self.__params["valleyTime"]=self.__params["valleyTime"][self.__triggerCh, sampleInd];
         self.__params["valleyTime"]=np.uint32(self.__params["valleyTime"]);
         self.__paramType["valleyTime"]=0;
         
-        self.__params["valley"]=self.__waveforms[:, np.r_[0:self.__numSamples], self.__params["valleyTime"]];
+        self.__params["valley"]=self.__waveforms[:, sampleInd, self.__params["valleyTime"]];
         self.__paramType["valley"]=1;
     
     def __calcPVWidth(self):
@@ -166,12 +172,12 @@ class SamplesData(object):
     def getParamAllChs(self, paramName):
         return self.__params[paramName];
     
-    def getWaveforms(self, sBA, chN=None):
+    def getWaveforms(self, sBA, chN=None, triggerChOnly=False):
         numSel=np.sum(sBA);
         xVals=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
         connectArr=np.zeros(xVals.shape, dtype="bool");
         connectArr[:]=True;
-        connectArr[:, self.__numPtsPerCh-1]=False;
+        connectArr[:, -1]=False;
         if(chN is None):
             return (self.__numPtsPerCh, self.__waveforms[:, sBA, :], xVals, connectArr);
         return (self.__numPtsPerCh, self.__waveforms[chN, sBA, :], xVals, connectArr);

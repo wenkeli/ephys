@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>273</width>
+    <width>280</width>
     <height>746</height>
    </rect>
   </property>
@@ -451,9 +451,9 @@
   <widget class="QSpinBox" name="numWavesIncBox">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>80</x>
      <y>510</y>
-     <width>101</width>
+     <width>71</width>
      <height>22</height>
     </rect>
    </property>
@@ -566,9 +566,9 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>510</y>
-     <width>71</width>
+     <width>81</width>
      <height>21</height>
     </rect>
    </property>
@@ -576,7 +576,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;number of waves to be displayed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;num waves&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;num waves&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="exportDataButton">
@@ -689,6 +689,38 @@
    </property>
    <property name="text">
     <string>undo</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="triggerChOnlyWaveBox">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>510</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;when checked, pressing pwav and nWav buttons will only display the waveforms of trigger channels.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>trigger chs only</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="toggleTrigChWaveButton">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>540</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;toggle displaying only triggle channel waveforms, which also sets the checkbox.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>Toggle</string>
    </property>
   </widget>
  </widget>
@@ -1126,6 +1158,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>toggleTrigChWaveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainW</receiver>
+   <slot>toggleTrgChWaves()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadFile()</slot>
@@ -1152,5 +1200,6 @@
   <slot>resetTimeWindow()</slot>
   <slot>updateClustRating(int)</slot>
   <slot>undoCluster()</slot>
+  <slot>toggleTrgChWaves()</slot>
  </slots>
 </ui>
