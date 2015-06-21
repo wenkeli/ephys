@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Fri Jun 19 12:45:55 2015
+# Created: Sun Jun 21 13:42:09 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainW(object):
     def setupUi(self, MainW):
         MainW.setObjectName("MainW")
-        MainW.resize(273, 746)
+        MainW.resize(280, 746)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -110,7 +110,7 @@ class Ui_MainW(object):
         self.resetWaveNButton.setGeometry(QtCore.QRect(160, 540, 41, 25))
         self.resetWaveNButton.setObjectName("resetWaveNButton")
         self.numWavesIncBox = QtGui.QSpinBox(MainW)
-        self.numWavesIncBox.setGeometry(QtCore.QRect(90, 510, 101, 22))
+        self.numWavesIncBox.setGeometry(QtCore.QRect(80, 510, 71, 22))
         self.numWavesIncBox.setObjectName("numWavesIncBox")
         self.timeSelEndBox = QtGui.QSpinBox(MainW)
         self.timeSelEndBox.setGeometry(QtCore.QRect(60, 690, 131, 22))
@@ -135,7 +135,7 @@ class Ui_MainW(object):
         self.timeSelEndLabel.setGeometry(QtCore.QRect(20, 690, 31, 21))
         self.timeSelEndLabel.setObjectName("timeSelEndLabel")
         self.label_4 = QtGui.QLabel(MainW)
-        self.label_4.setGeometry(QtCore.QRect(10, 510, 71, 21))
+        self.label_4.setGeometry(QtCore.QRect(0, 510, 81, 21))
         self.label_4.setObjectName("label_4")
         self.exportDataButton = QtGui.QPushButton(MainW)
         self.exportDataButton.setGeometry(QtCore.QRect(150, 40, 101, 21))
@@ -161,6 +161,12 @@ class Ui_MainW(object):
         self.undoClustButton = QtGui.QPushButton(MainW)
         self.undoClustButton.setGeometry(QtCore.QRect(220, 570, 41, 25))
         self.undoClustButton.setObjectName("undoClustButton")
+        self.triggerChOnlyWaveBox = QtGui.QCheckBox(MainW)
+        self.triggerChOnlyWaveBox.setGeometry(QtCore.QRect(160, 510, 111, 21))
+        self.triggerChOnlyWaveBox.setObjectName("triggerChOnlyWaveBox")
+        self.toggleTrigChWaveButton = QtGui.QPushButton(MainW)
+        self.toggleTrigChWaveButton.setGeometry(QtCore.QRect(210, 540, 41, 25))
+        self.toggleTrigChWaveButton.setObjectName("toggleTrigChWaveButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -190,6 +196,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.clustRateBox, QtCore.SIGNAL("valueChanged(int)"), MainW.updateClustRating)
         QtCore.QObject.connect(self.undoClustButton, QtCore.SIGNAL("clicked()"), MainW.undoCluster)
         QtCore.QObject.connect(self.stepBackBoundButton, QtCore.SIGNAL("clicked()"), MainW.stepBackBoundary)
+        QtCore.QObject.connect(self.toggleTrigChWaveButton, QtCore.SIGNAL("clicked()"), MainW.toggleTrgChWaves)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -252,7 +259,7 @@ class Ui_MainW(object):
         self.timeSelEndLabel.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>end of the time window selection</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">end</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>number of waves to be displayed</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">num waves</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">num waves</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportDataButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export cluster parameters to hdf5 format for import into other programs. Each cut cluster is a single file, in the directory that the data file was originally loaded from. The waveforms are not exported.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportDataButton.setText(QtGui.QApplication.translate("MainW", "export data", None, QtGui.QApplication.UnicodeUTF8))
         self.exportWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export the waveforms that are drawn on the plot currently to HDF5 format for analysis and display in other programs. The exported waveforms are organized into the clusters that they came from.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
@@ -264,4 +271,8 @@ class Ui_MainW(object):
         self.clustRatelabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">cluster<br/>rating</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.undoClustButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo the operations on the working cluster, one step per click.</p><p>keyboard shortcut: Shift-G</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.undoClustButton.setText(QtGui.QApplication.translate("MainW", "undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.triggerChOnlyWaveBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>when checked, pressing pwav and nWav buttons will only display the waveforms of trigger channels.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.triggerChOnlyWaveBox.setText(QtGui.QApplication.translate("MainW", "trigger chs only", None, QtGui.QApplication.UnicodeUTF8))
+        self.toggleTrigChWaveButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>toggle displaying only triggle channel waveforms, which also sets the checkbox.</p><p>Keyboard shortcut: T</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.toggleTrigChWaveButton.setText(QtGui.QApplication.translate("MainW", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
 

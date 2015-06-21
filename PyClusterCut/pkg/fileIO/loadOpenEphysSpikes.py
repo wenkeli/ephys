@@ -83,6 +83,7 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
     
     for i in np.r_[0:numSpikes]:
         spike=struct.unpack(spikeFStr, fh.read(spikeSize));
+#         print(str(spike));
         retData["timestamps"][i]=spike[1];
         if(triggerChInd is not None):
             retData["triggerChs"]=spike[triggerChInd];

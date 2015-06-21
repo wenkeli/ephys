@@ -1,4 +1,5 @@
 import numpy as np;
+from scipy.signal import waveforms
 
 class SamplesClustCount(object):
     def __init__(self, numSamples):
@@ -61,7 +62,7 @@ class SamplesData(object):
         
     def __calcTriggerChannel(self, triggerCh, thresholds, triggerEndPoint=9):
         self.__triggerCh=np.zeros(self.__numSamples, dtype="int32");
-        self.__triggerCh[:]=-1;
+        self.__triggerCh[:]=-10;
         
         if(triggerCh is not None):
             self.__triggerCh[:]=triggerCh;
@@ -172,15 +173,33 @@ class SamplesData(object):
     def getParamAllChs(self, paramName):
         return self.__params[paramName];
     
+    
     def getWaveforms(self, sBA, chN=None, triggerChOnly=False):
-        numSel=np.sum(sBA);
-        xVals=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
-        connectArr=np.zeros(xVals.shape, dtype="bool");
-        connectArr[:]=True;
-        connectArr[:, -1]=False;
-        if(chN is None):
-            return (self.__numPtsPerCh, self.__waveforms[:, sBA, :], xVals, connectArr);
-        return (self.__numPtsPerCh, self.__waveforms[chN, sBA, :], xVals, connectArr);
+        if(chN==None):
+            chN=np.r_[0:self.__numChs];
+        
+        xVals=[];
+        connectArrs=[];
+        waveforms=[];      
+        for i in chN:
+            select=sBA;
+            if(triggerChOnly):
+                select=select & (self.__triggerCh==i);
+                
+            numSel=np.sum(select);
+            
+            xVal=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
+            xVals.append(xVal);
+            
+            connectArr=np.zeros(xVal.shape, dtype="bool");
+            connectArr[:]=True;
+            connectArr[:, -1]=False;
+            connectArrs.append(connectArr);
+            
+            waveforms.append(self.__waveforms[i, select, :]);    
+                 
+        return (self.__numPtsPerCh, waveforms, xVals, connectArrs);
+        
     
     def getNumChannels(self):
         return self.__numChs;

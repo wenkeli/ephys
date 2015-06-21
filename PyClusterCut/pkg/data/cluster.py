@@ -113,10 +113,10 @@ class Cluster(object):
     def getSelectArray(self):
         return self.__sBA;
     
-    def getWaveforms(self, sBA=None, chN=None):
+    def getWaveforms(self, sBA=None, chN=None, trigChOnly=False):
         if(sBA is None):
             sBA=self.__sBA;
-        return self.__data.getWaveforms(sBA, chN);
+        return self.__data.getWaveforms(sBA, chN, trigChOnly);
     
     def getParam(self, chN, paramName):
         return self.__data.getParam(chN, paramName)[self.__sBA];

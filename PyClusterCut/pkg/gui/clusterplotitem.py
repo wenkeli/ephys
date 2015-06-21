@@ -92,7 +92,7 @@ class ClusterPlotItem(object):
         sBA=self.__cluster.getSelectArray();
         self.__numSelPoints=np.cumsum(sBA);
         
-    def getPrevWaves(self, indIncSize):
+    def getPrevWaves(self, indIncSize, trigChOnly):
         if(self.__waveStartInd<=0):
             return (None, None, None, None, None);
         self.__waveStartInd=self.__waveStartInd-indIncSize;
@@ -104,10 +104,10 @@ class ClusterPlotItem(object):
         sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
         self.__selDispWaves=self.__selDispWaves | sBA;
         
-        (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
-        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArr);
+        (nptsPerCh, waves, xvals, connArrs)=self.__cluster.getWaveforms(sBA, None, trigChOnly);
+        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArrs);
         
-    def getNextWaves(self, indIncSize):
+    def getNextWaves(self, indIncSize, trigChOnly):
         if(self.__waveStartInd>=self.__getTotalSelPoints()):
             return (None, None, None, None, None);
         sBA=self.__getSelPointsByRange(self.__waveStartInd, self.__waveStartInd+indIncSize);
@@ -115,8 +115,8 @@ class ClusterPlotItem(object):
         
         self.__waveStartInd=self.__waveStartInd+indIncSize;
         
-        (nptsPerCh, waves, xvals, connArr)=self.__cluster.getWaveforms(sBA, None);
-        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArr);
+        (nptsPerCh, waves, xvals, connArrs)=self.__cluster.getWaveforms(sBA, None, trigChOnly);
+        return (self.__cluster.getNumChannels(), nptsPerCh, waves, xvals, connArrs);
     
     def resetWaveInd(self):
         self.__waveStartInd=0;

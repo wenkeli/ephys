@@ -261,6 +261,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.prevWavesButton.setEnabled(enable);
         self.clearWavePlotsButton.setEnabled(enable);
         self.resetWaveNButton.setEnabled(enable);
+        self.toggleTrigChWaveButton.setEnabled(enable);
+        self.triggerChOnlyWaveBox.setEnabled(enable);
         self.numWavesIncBox.setEnabled(enable);
         
         self.clustRateBox.setEnabled(enable);
@@ -603,7 +605,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("E")),
                                                          widget, self.clearWavePlots));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("R")),
-                                                         widget, self.resetWaveInd));                           
+                                                         widget, self.resetWaveInd));
+        self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("T")),
+                                                         widget, self.toggleTrgChWaves));                       
                                           
         
     def enableKeyShortcuts(self, enable):
@@ -805,8 +809,9 @@ class MainW(QMainWindow, Ui_MainW):
         workClustID=self.__dataSet.getWorkClustID();
         drawPen=self.__plotClusterItems[workClustID].getCurPen();
         
-        (nChs, nptsPerCh, waves, xvals, conArr)=self.__plotClusterItems[workClustID].getPrevWaves(self.numWavesIncBox.value());
-        self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
+        triggerOnly=self.triggerChOnlyWaveBox.isChecked();
+        (nChs, nptsPerCh, waves, xvals, conArrs)=self.__plotClusterItems[workClustID].getPrevWaves(self.numWavesIncBox.value(), triggerOnly);
+        self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
         
     def drawNextWaves(self):
         if(not self.__dataValid):
@@ -815,15 +820,18 @@ class MainW(QMainWindow, Ui_MainW):
         workClustID=self.__dataSet.getWorkClustID();
         drawPen=self.__plotClusterItems[workClustID].getCurPen();
         
-        (nChs, nptsPerCh, waves, xvals, conArr)=self.__plotClusterItems[workClustID].getNextWaves(self.numWavesIncBox.value());
-        self.__drawWavesCommon(nChs, waves, xvals, conArr, drawPen);
+        triggerOnly=self.triggerChOnlyWaveBox.isChecked();
+        (nChs, nptsPerCh, waves, xvals, conArrs)=self.__plotClusterItems[workClustID].getNextWaves(self.numWavesIncBox.value(), triggerOnly);
+        self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
     
-    def __drawWavesCommon(self, nChs, waves, xvals, conArr, drawPen):
+    def __drawWavesCommon(self, nChs, waves, xvals, conArrs, drawPen):
         yMin=100000.0;
         yMax=-100000.0;
         for i in np.r_[0:nChs]:
-            self.__wavePlots[i].plot(xvals.flatten(), waves[i, :, :].flatten(), 
-                                     pen=drawPen, connect=conArr.flatten());
+            if(len(waves[i])<=0):
+                continue;
+            self.__wavePlots[i].plot(xvals[i].flatten(), waves[i][:, :].flatten(), 
+                                     pen=drawPen, connect=conArrs[i].flatten());
             self.__wavePlots[i].getViewBox().autoRange();
             boxRange=self.__wavePlots[i].getViewBox().viewRange();
             boxMin=boxRange[1][0];
@@ -849,7 +857,10 @@ class MainW(QMainWindow, Ui_MainW):
         workClustID=self.__dataSet.getWorkClustID();
         self.__plotClusterItems[workClustID].resetWaveInd();
         
-    
+    def toggleTrgChWaves(self):
+        self.triggerChOnlyWaveBox.toggle();
+        
+        
     def plotMouseClicked(self, evt):
         if((not self.__viewValid) or (self.__closedBound)):
             return;
