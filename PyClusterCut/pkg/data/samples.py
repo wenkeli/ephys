@@ -22,14 +22,14 @@ class SamplesClustCount(object):
         return self.__sampleNumClust>=numClusts;
 
 class SamplesData(object):
-    def __init__(self, waveforms, thresholds, timestamps, samplingHz, triggerChs):
+    def __init__(self, waveforms, timestamps, numChs, samplingHz):
         self.__waveforms=[];
         self.__timestamps=[];
         
         self.__thresholds=[];
         self.__gains=[];
         
-        self.__triggerCh=[];
+        self.__refWaveCh=[];
         
         self.__params=dict();
         self.__paramType=dict();
@@ -43,7 +43,7 @@ class SamplesData(object):
         
         
         self.__numSamples=waveforms.shape[0];
-        self.__numChs=thresholds.shape[1];
+        self.__numChs=numChs;
         self.__numPtsPerCh=waveforms.shape[1]/self.__numChs;
         
         self.__waveforms=np.array(np.copy(waveforms), dtype="float32");
@@ -53,40 +53,25 @@ class SamplesData(object):
         self.__timestamps=np.zeros(timestamps.shape, dtype="float64");
         self.__timestamps[:]=timestamps;
 
-        if(thresholds is not None):        
-            self.__calcTriggerChannel(triggerChs, thresholds.T);
-        else:
-            self.__calcTriggerChannel(triggerChs, None);
-            
+        self.__calcRefWaveCh();
         self.__calcParams();
         
-    def __calcTriggerChannel(self, triggerCh, thresholds, triggerEndPoint=9):
-        self.__triggerCh=np.zeros(self.__numSamples, dtype="int32");
-        self.__triggerCh[:]=-10;
         
-        if(triggerCh is not None):
-            self.__triggerCh[:]=triggerCh;
-            return;
+    def __calcRefWaveCh(self, peakStart=7, peakEnd=10):
+        wavesMax=np.max(self.__waveforms[:, :, peakStart:peakEnd], 2);
+#         print(wavesMax.shape);
+        self.__refWaveCh=np.argmax(wavesMax, 0);
+#         print(self.__refWaveCh.shape);
         
-        appendCol=np.zeros(self.__numSamples, dtype="bool")[np.newaxis].T;
-        for i in np.r_[0:self.__numChs]:
-            aboveThresh=self.__waveforms[i, :, 0:triggerEndPoint]>=(thresholds[i, :][np.newaxis].T);
-            belowThresh=self.__waveforms[i, :, 0:triggerEndPoint-1]<(thresholds[i, :][np.newaxis].T);
-            
-            belowThresh=np.hstack((appendCol, belowThresh));
-            
-            isTrigger=np.sum((aboveThresh & belowThresh), 1)>0;
-                                         
-            self.__triggerCh[isTrigger]=i;
-            
-        validEvents=self.__triggerCh>=0;
         
-        self.__numSamples=np.sum(validEvents);
+    def __calcPeak(self, peakStart=7, peakEnd=10):
+        sampleInds=np.r_[0:self.__numSamples];
+        wavesMaxP=np.argmax(self.__waveforms[:, :, peakStart:peakEnd], 2)+peakStart;
+        self.__params["peakTime"]=wavesMaxP[self.__refWaveCh, sampleInds];
+        self.__paramType["peakTime"]=0;
         
-        self.__waveforms=self.__waveforms[:, validEvents, :];
-        self.__timestamps=self.__timestamps[validEvents];
-        
-        self.__triggerCh=self.__triggerCh[validEvents];
+        self.__params["peak"]=self.__waveforms[:, sampleInds, self.__params["peakTime"]];
+        self.__paramType["peak"]=1;
     
     
     def __calcParams(self):
@@ -100,15 +85,15 @@ class SamplesData(object):
         self.__calcPeakAngle();
         self.__calcTime();
         
-    def __calcPeak(self, peakTime=8):
-        peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+2)], 2);
-        peakLocalInds=peakLocalInds[self.__triggerCh, np.r_[0:self.__numSamples]];
-        self.__params["peakTime"]=peakLocalInds+peakTime-1;
-        self.__paramType["peakTime"]=0;
-
-        self.__params["peak"]=self.__waveforms[:, np.r_[0:self.__numSamples], self.__params["peakTime"]];
-#         self.__params["peak"]=self.__waveforms[:, :, peakTime];
-        self.__paramType["peak"]=1;
+#     def __calcPeak(self, peakTime=8):
+#         peakLocalInds=np.argmax(self.__waveforms[:, :, (peakTime-1):(peakTime+2)], 2);
+#         peakLocalInds=peakLocalInds[self.__refWaveCh, np.r_[0:self.__numSamples]];
+#         self.__params["peakTime"]=peakLocalInds+peakTime-1;
+#         self.__paramType["peakTime"]=0;
+# 
+#         self.__params["peak"]=self.__waveforms[:, np.r_[0:self.__numSamples], self.__params["peakTime"]];
+# #         self.__params["peak"]=self.__waveforms[:, :, peakTime];
+#         self.__paramType["peak"]=1;
         
         
     def __calcValley(self, valleyStartOffset=0, valleyLen=27):
@@ -120,7 +105,7 @@ class SamplesData(object):
 #         self.__params["valleyTime"]=np.argmin(self.__waveforms[:, :, valleyStart:valleyEnd], 2)+valleyStart;
         self.__params["valleyTime"]=np.argmin(self.__waveforms[:, sampleInd, valleyInd], 2)+startInd;
         sampleInd=np.r_[0:self.__numSamples];
-        self.__params["valleyTime"]=self.__params["valleyTime"][self.__triggerCh, sampleInd];
+        self.__params["valleyTime"]=self.__params["valleyTime"][self.__refWaveCh, sampleInd];
         self.__params["valleyTime"]=np.uint32(self.__params["valleyTime"]);
         self.__paramType["valleyTime"]=0;
         
@@ -174,7 +159,7 @@ class SamplesData(object):
         return self.__params[paramName];
     
     
-    def getWaveforms(self, sBA, chN=None, triggerChOnly=False):
+    def getWaveforms(self, sBA, chN=None, refWaveChOnly=False):
         if(chN==None):
             chN=np.r_[0:self.__numChs];
         
@@ -183,20 +168,24 @@ class SamplesData(object):
         waveforms=[];      
         for i in chN:
             select=sBA;
-            if(triggerChOnly):
-                select=select & (self.__triggerCh==i);
+            try:
+                if(refWaveChOnly):
+                    select=select & (self.__refWaveCh==i);
+            except AttributeError:
+                self.__calcRefWaveCh();
+                select=select & (self.__refWaveCh==i);
+            else:                
+                numSel=np.sum(select);
                 
-            numSel=np.sum(select);
-            
-            xVal=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
-            xVals.append(xVal);
-            
-            connectArr=np.zeros(xVal.shape, dtype="bool");
-            connectArr[:]=True;
-            connectArr[:, -1]=False;
-            connectArrs.append(connectArr);
-            
-            waveforms.append(self.__waveforms[i, select, :]);    
+                xVal=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
+                xVals.append(xVal);
+                
+                connectArr=np.zeros(xVal.shape, dtype="bool");
+                connectArr[:]=True;
+                connectArr[:, -1]=False;
+                connectArrs.append(connectArr);
+                
+                waveforms.append(self.__waveforms[i, select, :]);    
                  
         return (self.__numPtsPerCh, waveforms, xVals, connectArrs);
         

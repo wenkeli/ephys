@@ -4,8 +4,8 @@ from .samples import SamplesData, SamplesClustCount;
 from .cluster import Cluster, Boundary;
 
 class DataSet(object):
-    def __init__(self, waveforms, thresholds, timestamps, samplingHz, triggerChs):
-        self.__samples=SamplesData(waveforms, thresholds, timestamps, samplingHz, triggerChs);
+    def __init__(self, waveforms, timestamps, numChs, samplingHz):
+        self.__samples=SamplesData(waveforms, timestamps, numChs, samplingHz);
         self.__workingSet=None;
         self.__workingSetStartTime=-1;
         self.__workingSetEndTime=-1;

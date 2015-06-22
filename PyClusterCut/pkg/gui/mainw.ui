@@ -691,7 +691,7 @@
     <string>undo</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="triggerChOnlyWaveBox">
+  <widget class="QCheckBox" name="refWaveChsOnlyBox">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -701,13 +701,13 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;when checked, pressing pwav and nWav buttons will only display the waveforms of trigger channels.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;when checked, pressing pwav and nWav buttons will only display the reference waveform channels.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string>trigger chs only</string>
+    <string>RefWaves only</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="toggleTrigChWaveButton">
+  <widget class="QPushButton" name="toggleRefWaveChsButton">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -717,7 +717,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;toggle displaying only triggle channel waveforms, which also sets the checkbox.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;toggle displaying only reference waveform channels, which also sets the checkbox.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Toggle</string>
@@ -1159,18 +1159,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>toggleTrigChWaveButton</sender>
+   <sender>toggleRefWaveChsButton</sender>
    <signal>clicked()</signal>
    <receiver>MainW</receiver>
-   <slot>toggleTrgChWaves()</slot>
+   <slot>toggleRefWaveChs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>545</y>
+     <x>229</x>
+     <y>558</y>
     </hint>
     <hint type="destinationlabel">
-     <x>262</x>
-     <y>492</y>
+     <x>207</x>
+     <y>466</y>
     </hint>
    </hints>
   </connection>
@@ -1200,6 +1200,6 @@
   <slot>resetTimeWindow()</slot>
   <slot>updateClustRating(int)</slot>
   <slot>undoCluster()</slot>
-  <slot>toggleTrgChWaves()</slot>
+  <slot>toggleRefWaveChs()</slot>
  </slots>
 </ui>

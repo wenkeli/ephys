@@ -78,6 +78,7 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
     retData["triggerChs"]=None;
     if(triggerChInd is not None):
         retData["triggerChs"]=np.zeros(numSpikes, dtype="uint16");
+    retData["numChs"]=nChs;
     
     fh.seek(fHeaderSize);
     

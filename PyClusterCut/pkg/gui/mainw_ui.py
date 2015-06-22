@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sun Jun 21 13:42:09 2015
+# Created: Sun Jun 21 22:36:49 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -161,12 +161,12 @@ class Ui_MainW(object):
         self.undoClustButton = QtGui.QPushButton(MainW)
         self.undoClustButton.setGeometry(QtCore.QRect(220, 570, 41, 25))
         self.undoClustButton.setObjectName("undoClustButton")
-        self.triggerChOnlyWaveBox = QtGui.QCheckBox(MainW)
-        self.triggerChOnlyWaveBox.setGeometry(QtCore.QRect(160, 510, 111, 21))
-        self.triggerChOnlyWaveBox.setObjectName("triggerChOnlyWaveBox")
-        self.toggleTrigChWaveButton = QtGui.QPushButton(MainW)
-        self.toggleTrigChWaveButton.setGeometry(QtCore.QRect(210, 540, 41, 25))
-        self.toggleTrigChWaveButton.setObjectName("toggleTrigChWaveButton")
+        self.refWaveChsOnlyBox = QtGui.QCheckBox(MainW)
+        self.refWaveChsOnlyBox.setGeometry(QtCore.QRect(160, 510, 111, 21))
+        self.refWaveChsOnlyBox.setObjectName("refWaveChsOnlyBox")
+        self.toggleRefWaveChsButton = QtGui.QPushButton(MainW)
+        self.toggleRefWaveChsButton.setGeometry(QtCore.QRect(210, 540, 41, 25))
+        self.toggleRefWaveChsButton.setObjectName("toggleRefWaveChsButton")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -196,7 +196,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.clustRateBox, QtCore.SIGNAL("valueChanged(int)"), MainW.updateClustRating)
         QtCore.QObject.connect(self.undoClustButton, QtCore.SIGNAL("clicked()"), MainW.undoCluster)
         QtCore.QObject.connect(self.stepBackBoundButton, QtCore.SIGNAL("clicked()"), MainW.stepBackBoundary)
-        QtCore.QObject.connect(self.toggleTrigChWaveButton, QtCore.SIGNAL("clicked()"), MainW.toggleTrgChWaves)
+        QtCore.QObject.connect(self.toggleRefWaveChsButton, QtCore.SIGNAL("clicked()"), MainW.toggleRefWaveChs)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -271,8 +271,8 @@ class Ui_MainW(object):
         self.clustRatelabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">cluster<br/>rating</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.undoClustButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>undo the operations on the working cluster, one step per click.</p><p>keyboard shortcut: Shift-G</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.undoClustButton.setText(QtGui.QApplication.translate("MainW", "undo", None, QtGui.QApplication.UnicodeUTF8))
-        self.triggerChOnlyWaveBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>when checked, pressing pwav and nWav buttons will only display the waveforms of trigger channels.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.triggerChOnlyWaveBox.setText(QtGui.QApplication.translate("MainW", "trigger chs only", None, QtGui.QApplication.UnicodeUTF8))
-        self.toggleTrigChWaveButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>toggle displaying only triggle channel waveforms, which also sets the checkbox.</p><p>Keyboard shortcut: T</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.toggleTrigChWaveButton.setText(QtGui.QApplication.translate("MainW", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
+        self.refWaveChsOnlyBox.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>when checked, pressing pwav and nWav buttons will only display the reference waveform channels.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.refWaveChsOnlyBox.setText(QtGui.QApplication.translate("MainW", "RefWaves only", None, QtGui.QApplication.UnicodeUTF8))
+        self.toggleRefWaveChsButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>toggle displaying only reference waveform channels, which also sets the checkbox.</p><p>Keyboard shortcut: T</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.toggleRefWaveChsButton.setText(QtGui.QApplication.translate("MainW", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
 
