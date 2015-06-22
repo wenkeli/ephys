@@ -827,7 +827,7 @@ class MainW(QMainWindow, Ui_MainW):
         yMin=100000.0;
         yMax=-100000.0;
         for i in np.r_[0:nChs]:
-            if(len(waves[i])<=0):
+            if((waves[i] is None) or (len(waves[i])<=0)):
                 continue;
             self.__wavePlots[i].plot(xvals[i].flatten(), waves[i][:, :].flatten(), 
                                      pen=drawPen, connect=conArrs[i].flatten());

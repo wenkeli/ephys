@@ -163,9 +163,9 @@ class SamplesData(object):
         if(chN==None):
             chN=np.r_[0:self.__numChs];
         
-        xVals=[];
-        connectArrs=[];
-        waveforms=[];      
+        xVals=[None]*self.__numChs;
+        connectArrs=[None]*self.__numChs;
+        waveforms=[None]*self.__numChs;      
         for i in chN:
             select=sBA;
             try:
@@ -178,14 +178,14 @@ class SamplesData(object):
                 numSel=np.sum(select);
                 
                 xVal=np.mgrid[0:numSel, 0:self.__numPtsPerCh][1];
-                xVals.append(xVal);
+                xVals[i]=xVal;
                 
                 connectArr=np.zeros(xVal.shape, dtype="bool");
                 connectArr[:]=True;
                 connectArr[:, -1]=False;
-                connectArrs.append(connectArr);
+                connectArrs[i]=connectArr;
                 
-                waveforms.append(self.__waveforms[i, select, :]);    
+                waveforms[i]=self.__waveforms[i, select, :];    
                  
         return (self.__numPtsPerCh, waveforms, xVals, connectArrs);
         
