@@ -32,6 +32,7 @@ from ..data.cluster import Cluster, Boundary;
 from ..data.dataset import DataSet;
 
 from .clusterplotitem import ClusterPlotItem;
+from .colortable import ColorTable;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -48,6 +49,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataSet=None;
         self.__plotClusterItems=dict();
         self.__dataValid=False;
+        
+        self.__colorTable=ColorTable();
                             
         self.__app=app;
         screenSize=QApplication.desktop().availableGeometry(self);
@@ -110,12 +113,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.__viewClustList=dict();
         self.__viewValid=False;
         
-        self.__colors=[];
-        self.__pens=[];
-        self.__brushes=[];
-        self.__curColorInd=0;
-        self.__setupPens();
-        
         self.__boundPoints=[];
         self.__drawMovingBound=False;
         self.__closedBound=False;
@@ -125,35 +122,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__curMousePos=np.zeros(2, dtype="float32");
         
         self.resetState();
-    
-
-
-    def __setupPens(self):
-        self.__colors.append(pg.mkColor("#FF00FF")); #magenta
-        self.__colors.append(pg.mkColor("#00FFFF")); #cyan
-        self.__colors.append(pg.mkColor("#00FF00")); #lime
-        self.__colors.append(pg.mkColor("#FFFF00")); #yellow
-        self.__colors.append(pg.mkColor("#B041FF")); #purple daffadil
-        self.__colors.append(pg.mkColor("#F87217")); #pumpkin orange
-        self.__colors.append(pg.mkColor("#3BB9FF")); #deep sky blue
-        self.__colors.append(pg.mkColor("#7FFFD4")); #aquamarine
-        self.__colors.append(pg.mkColor("#87F717")); #lawn green
-        self.__colors.append(pg.mkColor("#FDD017")); #bright gold
-        self.__colors.append(pg.mkColor("#F660AB")); #hot pink
-        self.__colors.append(pg.mkColor("#FF0000")); #red
-        for i in self.__colors:
-            self.__pens.append(pg.mkPen(i));
-            brushColor=QColor(i);
-            brushColor.setAlphaF(0.8);
-            self.__brushes.append(QBrush(brushColor));
         
-    def getCurColor(self):
-        curPen=self.__pens[self.__curColorInd];
-        curColor=self.__colors[self.__curColorInd];
-        curBrush=self.__brushes[self.__curColorInd];
         
-        self.__curColorInd=(self.__curColorInd+1)%len(self.__pens);
-        return (curColor, curPen, curBrush);  
 
     def __initBound(self):
         self.__boundPoints=np.zeros((2, 0));
@@ -404,7 +374,7 @@ class MainW(QMainWindow, Ui_MainW):
             pen=None;
             brush=None;
             if(i!=initID):
-                (color, pen, brush)=self.getCurColor();
+                (color, pen, brush)=self.__colorTable.getCurColor();
             self.__addClusterToView(i, cluster, pen, brush);
         
         self.__workClustList[workID].setSelected(True);
@@ -671,7 +641,7 @@ class MainW(QMainWindow, Ui_MainW):
                                   self.__hParamName, self.__vParamName,
                                   self.__boundPoints[0, :], self.__boundPoints[1, :]);
         if(clustID is not None):
-            (color, pen, brush)=self.getCurColor();
+            (color, pen, brush)=self.__colorTable.getCurColor();
             self.__addClusterToView(clustID, cluster, pen, brush);
 
         self.__initBound();
