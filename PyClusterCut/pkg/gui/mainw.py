@@ -33,6 +33,7 @@ from ..data.dataset import DataSet;
 
 from .clusterplotitem import ClusterPlotItem;
 from .colortable import ColorTable;
+from .workboundary import WorkBoundary;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -113,46 +114,18 @@ class MainW(QMainWindow, Ui_MainW):
         self.__viewClustList=dict();
         self.__viewValid=False;
         
-        self.__boundPoints=[];
-        self.__drawMovingBound=False;
-        self.__closedBound=False;
-        self.__boundPlotItem=None;
-        self.__movingBoundItem=None;
-        self.__proxyConList=[];
-        self.__curMousePos=np.zeros(2, dtype="float32");
+        self.__workBound=WorkBoundary(self.__plot);
         
         self.resetState();
-        
-        
-
-    def __initBound(self):
-        self.__boundPoints=np.zeros((2, 0));
-        self.__drawMovingBound=False;
-        self.__closedBound=False;
-        
-        if(self.__dataValid):
+                                                    
+       
+    def __resetBound(self):
+        if(self.__dataSet is None):
+            drawPen=None;
+        else:
             workClustID=self.__dataSet.getWorkClustID();
             drawPen=self.__plotClusterItems[workClustID].getCurPen();
-        else:
-            drawPen="w";
-        
-        if((self.__boundPlotItem is None) or (self.__movingBoundItem is None)):
-            self.__boundPlotItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
-            self.__movingBoundItem=pg.PlotDataItem(x=[0], y=[0], pen=drawPen);
-        else:
-            self.__boundPlotItem.setData(x=[0], y=[0], pen=drawPen);
-            self.__movingBoundItem.setData(x=[0], y=[0], pen=drawPen);
-            
-        self.__plot.addItem(self.__boundPlotItem);
-        self.__plot.addItem(self.__movingBoundItem);
-            
-        if(len(self.__proxyConList)<=0):
-            self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseClicked, 
-                                                    rateLimit=100, 
-                                                    slot=self.plotMouseClicked));
-            self.__proxyConList.append(pg.SignalProxy(self.__plot.scene().sigMouseMoved,
-                                                    rateLimit=100, slot=self.plotMouseMoved));
-                                                    
+        self.__workBound.reset(drawPen);
                                                     
         
     def saveClusterData(self):
@@ -239,10 +212,12 @@ class MainW(QMainWindow, Ui_MainW):
         
     def invalidateView(self):
         self.__viewValid=False;
+        self.__workBound.setDrawBound(self.__viewValid);
         self.enableClusterUI(False);
         
-    def validateView(self):
+    def __validateView(self):
         self.__viewValid=True;
+        self.__workBound.setDrawBound(self.__viewValid);
         self.enableClusterUI(True);
         
 
@@ -250,21 +225,10 @@ class MainW(QMainWindow, Ui_MainW):
         self.__app.closeAllWindows();
     
     def resetState(self):
-        self.enableClusterUI(False);
-        self.enableTimeSelectUI(False);
-        self.enableViewUI(False);
-        self.enableKeyShortcuts(False);
-        self.clearSelect();
-        
         self.__dataSet=None;
         self.__plotClusterItems.clear();
         self.__dataValid=False;
         
-        self.clearSelect();
-        
-        self.__curColorInd=0;
-        
-        self.__initBound();
         self.__plot.clear();
         
         numWavePlots=len(self.__wavePlots);
@@ -275,6 +239,12 @@ class MainW(QMainWindow, Ui_MainW):
             self.__wavePlots=[];
             
         self.resetFileButtonTexts();
+        
+        self.enableClusterUI(False);
+        self.enableTimeSelectUI(False);
+        self.enableViewUI(False);
+        self.enableKeyShortcuts(False);
+        self.clearSelect();
                                                                                                      
         gc.collect();
         
@@ -306,7 +276,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.resetState();
         
         fin=open(fileName, "rb");
-        self.clearSelect(); 
         
         if(fileType[0]=="1"):
             print("spikes datafile");
@@ -403,13 +372,13 @@ class MainW(QMainWindow, Ui_MainW):
         
     def __setDataIsValid(self):
         self.populateSelect();
-        self.__initBound();
+        self.__resetBound();
         self.enableViewUI(True);
         self.enableClusterUI(False);
         self.enableTimeSelectUI(False);
         self.enableKeyShortcuts(True);
         self.__dataValid=True;
-        self.__viewValid=False;
+        self.invalidateView();
 
         
     def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
@@ -455,6 +424,7 @@ class MainW(QMainWindow, Ui_MainW):
 
         
     def clearSelect(self):
+        self.invalidateView();
         self.hChannelSelect.clear();
         self.__hChList=dict();
         self.__hChN=None;
@@ -471,7 +441,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.__workClustList.clear();
         self.viewClustersSelect.clear();
         self.__viewClustList.clear();
-        self.__viewValid=False;
         self.__paramBounds.clear();
     
     def populateSelect(self):
@@ -594,7 +563,8 @@ class MainW(QMainWindow, Ui_MainW):
         vParamSel=self.vParamSelect.selectedItems();
         
         self.__plot.clear();
-        self.__initBound();
+        
+        self.__resetBound();
         
         if((len(hChSel)==0) or (len(vChSel)==0) or (len(hParamSel)==0) or (len(vParamSel)==0)):
             return;
@@ -620,7 +590,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotVBox.setXRange(xBound[0], xBound[1]);
         self.__plotVBox.setYRange(yBound[0], yBound[1]);
         
-        self.validateView();
+        self.__validateView();
         
         
     def undoCluster(self):
@@ -633,18 +603,19 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def addClustCommon(self, copy):
-        if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
+        if((not self.__workBound.getBoundClosed()) 
+           or (not self.__dataValid) or (not self.__viewValid)):
             return;
         self.resetFileButtonTexts();
         
         (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
                                   self.__hParamName, self.__vParamName,
-                                  self.__boundPoints[0, :], self.__boundPoints[1, :]);
+                                  self.__workBound.getBoundX(), 
+                                  self.__workBound.getBoundY());
         if(clustID is not None):
             (color, pen, brush)=self.__colorTable.getCurColor();
             self.__addClusterToView(clustID, cluster, pen, brush);
-
-        self.__initBound();
+            
         self.updatePlotView();
     
     def addCluster(self):
@@ -664,15 +635,15 @@ class MainW(QMainWindow, Ui_MainW):
        
     
     def refineCluster(self):
-        if((not self.__closedBound) or (not self.__dataValid) or (not self.__viewValid)):
+        if((not self.__workBound.getBoundClosed()) 
+           or (not self.__dataValid) or (not self.__viewValid)):
             return;
         self.resetFileButtonTexts();
         
         self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
                                      self.__hParamName, self.__vParamName,
-                                     self.__boundPoints[0, :], self.__boundPoints[1, :]);
-        
-        self.__initBound();
+                                     self.__workBound.getBoundX(), 
+                                     self.__workBound.getBoundY());
         self.updatePlotView();
         
         
@@ -682,7 +653,8 @@ class MainW(QMainWindow, Ui_MainW):
             return;
         workClustID=selectItem[0].data(self.__selectDataRole);
         self.__dataSet.setWorkClustID(workClustID);
-        self.__initBound();
+        self.__resetBound();
+        self.__validateView();
         if(not self.__viewClustList[workClustID].isSelected()):
             self.__viewClustList[workClustID].setSelected(True);
             self.invalidateView();
@@ -809,63 +781,8 @@ class MainW(QMainWindow, Ui_MainW):
         
     def toggleRefWaveChs(self):
         self.refWaveChsOnlyBox.toggle();
-        
-        
-    def plotMouseClicked(self, evt):
-        if((not self.__viewValid) or (self.__closedBound)):
-            return;
-        numPoints=self.__boundPoints.shape[1];
-        if(evt[0].button()==Qt.MouseButton.RightButton):
-            if(numPoints<3):
-                return;
-            
-            self.__boundPoints=np.hstack((self.__boundPoints, 
-                                        [[self.__boundPoints[0, 0]], [self.__boundPoints[1, 0]]]));
-            self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
-            self.__movingBoundItem.setData(x=[0], y=[0]);
-            
-            self.__closedBound=True;
-            self.__drawMovingBound=False;
-            return;
-        
-        pos=evt[0].scenePos();
-        mousePoint=self.__plotVBox.mapSceneToView(pos);
-        
-        point=[[mousePoint.x()], [mousePoint.y()]];
-        self.__boundPoints=np.hstack((self.__boundPoints, point));
-        self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
-        
-        self.__drawMovingBound=True;
-        self.__closedBound=False;
-        
-            
-    def plotMouseMoved(self, evt):
-        if(not self.__viewValid):
-            return;
-        pos=evt[0];
-        if((not self.__plot.sceneBoundingRect().contains(pos)) 
-           or (not self.__drawMovingBound) or (self.__closedBound)):
-            return;
-        
-        mousePoint=self.__plotVBox.mapSceneToView(pos);
-        self.__curMousePos[0]=mousePoint.x();
-        self.__curMousePos[1]=mousePoint.y();
-        self.__movingBoundItem.setData(x=[self.__boundPoints[0, -1], mousePoint.x()],
-                                     y=[self.__boundPoints[1, -1], mousePoint.y()]);
-
     
     def stepBackBoundary(self):
         if(not self.__viewValid):
             return;
-        numPoints=self.__boundPoints.shape[1];
-        if(numPoints<=0):
-            return;
-        
-        self.__boundPoints=self.__boundPoints[:, 0:-1];
-        self.__boundPlotItem.setData(x=self.__boundPoints[0, :], y=self.__boundPoints[1, :]);
-        
-        numPoints=self.__boundPoints.shape[1];
-        self.__drawMovingBound=numPoints>0;
-        if(not self.__drawMovingBound):
-            self.__movingBoundItem.setData(x=[0], y=[0]);
-        self.__closedBound=False;
+        self.__workBound.stepBackBoundary();
