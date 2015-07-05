@@ -460,6 +460,15 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set the number of waves to display each time pwav and nWav buttons are clicked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>100000</number>
+   </property>
+   <property name="value">
+    <number>100</number>
+   </property>
   </widget>
   <widget class="QSpinBox" name="timeSelEndBox">
    <property name="geometry">
@@ -922,7 +931,7 @@
    <sender>reportClusterButton</sender>
    <signal>clicked()</signal>
    <receiver>MainW</receiver>
-   <slot>showReport()</slot>
+   <slot>toggleReport()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>103</x>
@@ -1184,7 +1193,7 @@
   <slot>invalidateView()</slot>
   <slot>deleteCluster()</slot>
   <slot>copyCluster()</slot>
-  <slot>showReport()</slot>
+  <slot>toggleReport()</slot>
   <slot>drawPrevWaves()</slot>
   <slot>drawNextWaves()</slot>
   <slot>clearWavePlots()</slot>

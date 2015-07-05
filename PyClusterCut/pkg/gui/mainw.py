@@ -54,13 +54,13 @@ class MainW(QMainWindow, Ui_MainW):
         self.__colorTable=ColorTable();
                             
         self.__app=app;
+        
+        self.__reportW=ReportW();
+        
+        
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
-        
-        self.__reportW=ReportW();
-        self.__reportDisp=self.__reportW.getReportDisp();
-        
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
         
@@ -73,6 +73,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW.setWindowFlags(Qt.CustomizeWindowHint
                                     | Qt.WindowMinimizeButtonHint);
         self.__plotW.show();
+        
         
         self.__plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
 #         self.__plotW.ci.layout.setColumnMaximumWidth(1, 25);
@@ -90,15 +91,12 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
         self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
         self.__wavePlots=[];
-        self.numWavesIncBox.setMinimum(1);
-        self.numWavesIncBox.setMaximum(1000000);
-        self.numWavesIncBox.setValue(100);
         
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
         self.__setupKeyShortcuts(self.__plotW);
         self.__setupKeyShortcuts(self.__reportW);
-        self.enableKeyShortcuts(False);
+        self.__enableKeyShortcuts(False);
         
         self.__hChList=[];
         self.__vChList=[];
@@ -116,7 +114,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.__workBound=WorkBoundary(self.__plot);
         
-        self.resetState();
+        self.__resetState();
                                                     
        
     def __resetBound(self):
@@ -161,7 +159,7 @@ class MainW(QMainWindow, Ui_MainW):
         exportWavesToHDF5(fileName, self.__plotClusterItems);
         
 
-    def enableViewUI(self, enable):
+    def __enableViewUI(self, enable):
         self.saveFileButton.setEnabled(enable);
         self.exportDataButton.setEnabled(enable);
         self.exportWavesButton.setEnabled(enable);
@@ -192,7 +190,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.clustRateBox.setEnabled(enable);
         
         
-    def enableClusterUI(self, enable):
+    def __enableClusterUI(self, enable):
         self.addButton.setEnabled(enable);
         self.copyButton.setEnabled(enable);
         self.refineButton.setEnabled(enable);
@@ -200,7 +198,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.undoClustButton.setEnabled(enable);
         
         
-    def enableTimeSelectUI(self, enable):
+    def __enableTimeSelectUI(self, enable):
         self.timeSelLabel.setEnabled(enable);
         self.timeSelStartLabel.setEnabled(enable);
         self.timeSelEndLabel.setEnabled(enable);
@@ -213,18 +211,18 @@ class MainW(QMainWindow, Ui_MainW):
     def invalidateView(self):
         self.__viewValid=False;
         self.__workBound.setDrawBound(self.__viewValid);
-        self.enableClusterUI(False);
+        self.__enableClusterUI(False);
         
     def __validateView(self):
         self.__viewValid=True;
         self.__workBound.setDrawBound(self.__viewValid);
-        self.enableClusterUI(True);
+        self.__enableClusterUI(True);
         
 
     def quit(self):
         self.__app.closeAllWindows();
     
-    def resetState(self):
+    def __resetState(self):
         self.__dataSet=None;
         self.__plotClusterItems.clear();
         self.__dataValid=False;
@@ -238,18 +236,18 @@ class MainW(QMainWindow, Ui_MainW):
                 del(self.__wavePlots[0]);
             self.__wavePlots=[];
             
-        self.resetFileButtonTexts();
+        self.__resetFileButtonTexts();
         
-        self.enableClusterUI(False);
-        self.enableTimeSelectUI(False);
-        self.enableViewUI(False);
-        self.enableKeyShortcuts(False);
+        self.__enableClusterUI(False);
+        self.__enableTimeSelectUI(False);
+        self.__enableViewUI(False);
+        self.__enableKeyShortcuts(False);
         self.clearSelect();
                                                                                                      
         gc.collect();
         
         
-    def resetFileButtonTexts(self):
+    def __resetFileButtonTexts(self):
         self.saveFileButton.setText(QApplication.translate("MainW", "save file",
                                                            None, QApplication.UnicodeUTF8));
         self.exportDataButton.setText(QApplication.translate("MainW", "export data",
@@ -273,7 +271,7 @@ class MainW(QMainWindow, Ui_MainW):
         (self.__dataName, ext)=os.path.splitext(dataFName);
         self.__plotW.setWindowTitle(dataFName);
         
-        self.resetState();
+        self.__resetState();
         
         fin=open(fileName, "rb");
         
@@ -315,7 +313,7 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def __setTimeSelUI(self, startT, endT):
-        self.enableTimeSelectUI(True);
+        self.__enableTimeSelectUI(True);
         tSSVal=self.timeSelStartBox.value();
         tSEVal=self.timeSelEndBox.value();
         
@@ -371,12 +369,12 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def __setDataIsValid(self):
-        self.populateSelect();
+        self.__populateSelect();
         self.__resetBound();
-        self.enableViewUI(True);
-        self.enableClusterUI(False);
-        self.enableTimeSelectUI(False);
-        self.enableKeyShortcuts(True);
+        self.__enableViewUI(True);
+        self.__enableClusterUI(False);
+        self.__enableTimeSelectUI(False);
+        self.__enableKeyShortcuts(True);
         self.__dataValid=True;
         self.invalidateView();
 
@@ -443,7 +441,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__viewClustList.clear();
         self.__paramBounds.clear();
     
-    def populateSelect(self):
+    def __populateSelect(self):
         numChannels=self.__dataSet.getSamples().getNumChannels();
         self.__hChList=dict();
         self.__vChList=dict();
@@ -516,7 +514,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Z")),
                                                          widget, self.stepBackBoundary));     
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("X")),
-                                                         widget, self.showReport));                                                               
+                                                         widget, self.toggleReport));                                                               
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("Q")),
                                                          widget, self.drawPrevWaves));
         self.__keyShortcuts[widgetName].append(QShortcut(QKeySequence(self.tr("W")),
@@ -529,7 +527,7 @@ class MainW(QMainWindow, Ui_MainW):
                                                          widget, self.toggleRefWaveChs));                       
                                           
         
-    def enableKeyShortcuts(self, enable):
+    def __enableKeyShortcuts(self, enable):
         keys=self.__keyShortcuts.keys();
         
         for i in keys:
@@ -602,11 +600,11 @@ class MainW(QMainWindow, Ui_MainW):
         self.updatePlotView();
         
         
-    def addClustCommon(self, copy):
+    def __addClustCommon(self, copy):
         if((not self.__workBound.getBoundClosed()) 
            or (not self.__dataValid) or (not self.__viewValid)):
             return;
-        self.resetFileButtonTexts();
+        self.__resetFileButtonTexts();
         
         (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
                                   self.__hParamName, self.__vParamName,
@@ -619,15 +617,15 @@ class MainW(QMainWindow, Ui_MainW):
         self.updatePlotView();
     
     def addCluster(self):
-        self.addClustCommon(False);
+        self.__addClustCommon(False);
     
     def copyCluster(self):
-        self.addClustCommon(True);
+        self.__addClustCommon(True);
     
     def deleteCluster(self):
         if((not self.__dataValid) or (not self.__viewValid)):
             return;
-        self.resetFileButtonTexts();
+        self.__resetFileButtonTexts();
         
         workClustID=self.__dataSet.getWorkClustID();
         self.__removeCluster(workClustID);
@@ -638,7 +636,7 @@ class MainW(QMainWindow, Ui_MainW):
         if((not self.__workBound.getBoundClosed()) 
            or (not self.__dataValid) or (not self.__viewValid)):
             return;
-        self.resetFileButtonTexts();
+        self.__resetFileButtonTexts();
         
         self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
                                      self.__hParamName, self.__vParamName,
@@ -684,45 +682,12 @@ class MainW(QMainWindow, Ui_MainW):
         
 
         
-    def showReport(self):
+    def toggleReport(self):
         if(self.__reportW.isVisible()):
             self.__reportW.hide();
         else:
             self.__reportW.show();
-            self.generateReport();
-            
-    def generateReport(self):
-        self.__reportDisp.clear();
-#         self.__reportDisp.insertPlainText("testtesttest1234test1234\n");
-#         self.__reportDisp.insertPlainText("\ttest1\n");
-        clustIDs=self.__dataSet.getClusterIDs();
-        initClustID=self.__dataSet.getInitClustID();
-        clustIDs.remove(initClustID);
-        
-        output="clusters: ";
-        for i in clustIDs:
-            output=output+str(i)+" ";
-        output=output+"\n";
-        self.__reportDisp.insertPlainText(output);
-        
-        for i in clustIDs:
-            (numPoints, numOverlap)=self.__dataSet.computeClusterOverlap(i);
-            percOverlap=int(numOverlap/float(numPoints)*1000);
-            percOverlap=percOverlap/10.0;
-            rating=self.__dataSet.getCluster(i).getRating();
-            output="cluster "+str(i)+": rating "+str(rating)+", "+str(numPoints)+" pts, overlap: "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
-            self.__reportDisp.insertPlainText(output);
-            for j in clustIDs:
-                if(i==j):
-                    continue;
-                (numPoints, numOverlap)=self.__dataSet.compareClustersOverlap(i, j);
-                percOverlap=int(numOverlap/float(numPoints)*1000);
-                percOverlap=percOverlap/10.0;
-                if(numOverlap<=0):
-                    continue;
-                output="\toverlap cluster "+str(j)+": "+str(numOverlap)+" pts, "+str(percOverlap)+"%\n";
-                self.__reportDisp.insertPlainText(output);
-            self.__reportDisp.insertPlainText("\n");
+            self.__reportW.generateReport(self.__dataSet);
             
     def drawPrevWaves(self):
         if(not self.__dataValid):

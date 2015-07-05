@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sun Jun 21 22:36:49 2015
+# Created: Sun Jul  5 16:52:31 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -111,6 +111,9 @@ class Ui_MainW(object):
         self.resetWaveNButton.setObjectName("resetWaveNButton")
         self.numWavesIncBox = QtGui.QSpinBox(MainW)
         self.numWavesIncBox.setGeometry(QtCore.QRect(80, 510, 71, 22))
+        self.numWavesIncBox.setMinimum(1)
+        self.numWavesIncBox.setMaximum(100000)
+        self.numWavesIncBox.setProperty("value", 100)
         self.numWavesIncBox.setObjectName("numWavesIncBox")
         self.timeSelEndBox = QtGui.QSpinBox(MainW)
         self.timeSelEndBox.setGeometry(QtCore.QRect(60, 690, 131, 22))
@@ -181,7 +184,7 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.viewClustersSelect, QtCore.SIGNAL("itemSelectionChanged()"), MainW.viewClustersChanged)
         QtCore.QObject.connect(self.deleteButton, QtCore.SIGNAL("clicked()"), MainW.deleteCluster)
         QtCore.QObject.connect(self.copyButton, QtCore.SIGNAL("clicked()"), MainW.copyCluster)
-        QtCore.QObject.connect(self.reportClusterButton, QtCore.SIGNAL("clicked()"), MainW.showReport)
+        QtCore.QObject.connect(self.reportClusterButton, QtCore.SIGNAL("clicked()"), MainW.toggleReport)
         QtCore.QObject.connect(self.prevWavesButton, QtCore.SIGNAL("clicked()"), MainW.drawPrevWaves)
         QtCore.QObject.connect(self.nextWavesButton, QtCore.SIGNAL("clicked()"), MainW.drawNextWaves)
         QtCore.QObject.connect(self.clearWavePlotsButton, QtCore.SIGNAL("clicked()"), MainW.clearWavePlots)
