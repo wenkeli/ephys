@@ -4,8 +4,6 @@ import gc;
 
 import cPickle as pickle;
 
-import h5py;
-
 import numpy as np;
 
 import PySide;
@@ -23,13 +21,11 @@ from pyqtgraph.widgets.GraphicsLayoutWidget import GraphicsLayoutWidget;
 from mainw_ui import Ui_MainW;
 from reportw import ReportW;
 
-import FastScatterPlotItem as fscatter;
-
 from ..fileIO.loadOpenEphysSpikes import readSpikeFile, readSamples;
 
-from ..fileIO.exporthdf5 import exportToHDF5, exportToHDF5PerCluster;
+from ..fileIO.exporthdf5 import exportToHDF5PerCluster, exportWavesToHDF5;
 
-from ..data.samples import SamplesData;
+from ..data.samples import SamplesData; 
 from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
 
@@ -219,22 +215,7 @@ class MainW(QMainWindow, Ui_MainW):
         fileName=fileName[0];
         if(fileName==""):
             return;
-        
-        fout=h5py.File(fileName, "w");
-        
-        clusterIDs=self.__plotClusterItems.keys();
-        
-        for i in clusterIDs:
-            (waves, wAvg, wSEM)=self.__plotClusterItems[i].getSelDispWaves();
-            if(waves.size<=0):
-                continue;
-            clustGrp=fout.create_group("c_"+i);
-            clustGrp.create_dataset("waveforms", data=waves.transpose(1, 0, 2));
-            clustGrp.create_dataset("waveAverage", data=wAvg.T);
-            clustGrp.create_dataset("waveSEM", data=wSEM.T);
-            
-        fout.flush();
-        fout.close();
+        exportWavesToHDF5(fileName, self.__plotClusterItems);
         
 
     def enableViewUI(self, enable):

@@ -5,6 +5,7 @@ import h5py;
 import numpy as np;
 
 from ..data.dataset import DataSet;
+from ..gui.clusterplotitem import ClusterPlotItem;
 
 def exportToHDF5(fileName, dataSet):
     fout=h5py.File(fileName, "w");
@@ -52,7 +53,22 @@ def exportToHDF5PerCluster(fileName, dataSet):
         fout.flush();
         fout.close();
 
-
+def exportWavesToHDF5(fileName, plotClusters):
+    fout=h5py.File(fileName, "w");
+    clustIDs=plotClusters.keys();
+    
+    for i in clustIDs:
+        (waves, wAvg, wSEM)=plotClusters[i].getSelDispWaves();
+        if(waves.size<=0):
+            continue;
+        clustGrp=fout.create_group("c_"+i);
+        clustGrp.create_dataset("waveforms", data=waves.transpose(1, 0, 2));
+        clustGrp.create_dataset("waveAverage", data=wAvg.T);
+        clustGrp.create_dataset("waveSEM", data=wSEM.T);
+        
+    fout.flush();
+    fout.close();
+    
     
     
     
