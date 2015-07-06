@@ -220,7 +220,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__enableTimeSelectUI(False);
         self.__enableViewUI(False);
         self.__enableKeyShortcuts(False);
-        self.clearSelect();
+        self.__clearSelect();
                                                                                                      
         gc.collect();
         
@@ -238,11 +238,11 @@ class MainW(QMainWindow, Ui_MainW):
                                              self.tr(self.__dataDir), 
                                              self.tr("1. spike files (*.spikes);;2. cluster data set (*.clusterdataset)"),
                                              self.__dataFilter);
+        if(fileName[0]==""):
+            return;
         fileType=fileName[1];
         self.__dataFilter=fileType;
         fileName=fileName[0];
-        if(fileName==""):
-            return;
         
         self.__dataDir=os.path.dirname(fileName);
         dataFName=os.path.basename(fileName);
@@ -250,6 +250,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW.setWindowTitle(dataFName);
         
         self.__resetState();
+        print("file name: "+fileName);
         
         if(fileType[0]=="1"):
             print("spikes datafile");
@@ -394,10 +395,15 @@ class MainW(QMainWindow, Ui_MainW):
         self.changeWorkCluster();
 
         
-    def clearSelect(self):
+    def __clearSelect(self):
         self.invalidateView();
         self.__hAxis.reset();
         self.__vAxis.reset();
+        
+        self.workClusterSelect.clear();
+        self.viewClustersSelect.clear();
+        self.__workClustList.clear();
+        self.__viewClustList.clear();
 
 
     def __populateSelect(self):
