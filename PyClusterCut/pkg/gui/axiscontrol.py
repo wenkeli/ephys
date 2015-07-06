@@ -73,7 +73,7 @@ class AxisControl(object):
     
     def setSelected(self, chN, paramName):
         self.__chList[str(chN)].setSelected(True);
-        self.__paramList[paramName].setSelect(True);
+        self.__paramList[paramName].setSelected(True);
 
     def getSelected(self):
         chSel=self.__chSelect.selectedItems();
