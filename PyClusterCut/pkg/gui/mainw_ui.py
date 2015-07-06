@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sun Jul  5 16:52:31 2015
+# Created: Mon Jul  6 13:08:16 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -137,9 +137,9 @@ class Ui_MainW(object):
         self.timeSelEndLabel = QtGui.QLabel(MainW)
         self.timeSelEndLabel.setGeometry(QtCore.QRect(20, 690, 31, 21))
         self.timeSelEndLabel.setObjectName("timeSelEndLabel")
-        self.label_4 = QtGui.QLabel(MainW)
-        self.label_4.setGeometry(QtCore.QRect(0, 510, 81, 21))
-        self.label_4.setObjectName("label_4")
+        self.numWavesIncLabel = QtGui.QLabel(MainW)
+        self.numWavesIncLabel.setGeometry(QtCore.QRect(0, 510, 81, 21))
+        self.numWavesIncLabel.setObjectName("numWavesIncLabel")
         self.exportDataButton = QtGui.QPushButton(MainW)
         self.exportDataButton.setGeometry(QtCore.QRect(150, 40, 101, 21))
         self.exportDataButton.setObjectName("exportDataButton")
@@ -261,8 +261,8 @@ class Ui_MainW(object):
         self.timeSelStartLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">start</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndLabel.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>end of the time window selection</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.timeSelEndLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">end</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>number of waves to be displayed</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">num waves</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.numWavesIncLabel.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>number of waves to be displayed</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.numWavesIncLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">num waves</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportDataButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export cluster parameters to hdf5 format for import into other programs. Each cut cluster is a single file, in the directory that the data file was originally loaded from. The waveforms are not exported.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.exportDataButton.setText(QtGui.QApplication.translate("MainW", "export data", None, QtGui.QApplication.UnicodeUTF8))
         self.exportWavesButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>export the waveforms that are drawn on the plot currently to HDF5 format for analysis and display in other programs. The exported waveforms are organized into the clusters that they came from.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))

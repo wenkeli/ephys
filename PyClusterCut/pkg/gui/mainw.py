@@ -28,6 +28,7 @@ from ..data.dataset import DataSet;
 from .clusterplotitem import ClusterPlotItem;
 from .colortable import ColorTable;
 from .workboundary import WorkBoundary;
+from .axiscontrol import AxisControl;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -86,16 +87,10 @@ class MainW(QMainWindow, Ui_MainW):
         self.__setupKeyShortcuts(self.__reportW);
         self.__enableKeyShortcuts(False);
         
-        self.__hChList=[];
-        self.__vChList=[];
-        self.__hParamList=[];
-        self.__vParamList=[];
+        self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
+        self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
+        
         self.__selectDataRole=0;
-        self.__hChN=None;
-        self.__vChN=None;
-        self.__hParamName=None;
-        self.__vParamName=None;
-        self.__paramBounds=dict();
         self.__workClustList=dict();
         self.__viewClustList=dict();
         self.__viewValid=False;
@@ -401,75 +396,14 @@ class MainW(QMainWindow, Ui_MainW):
         
     def clearSelect(self):
         self.invalidateView();
-        self.hChannelSelect.clear();
-        self.__hChList=dict();
-        self.__hChN=None;
-        self.hParamSelect.clear();
-        self.__hParamList=dict();
-        self.__hParamName=None;
-        self.vChannelSelect.clear();
-        self.__vChList=dict();
-        self.__vchN=None;
-        self.vParamSelect.clear();
-        self.__vParamList=dict();
-        self.__vParamName=None;
-        self.workClusterSelect.clear();
-        self.__workClustList.clear();
-        self.viewClustersSelect.clear();
-        self.__viewClustList.clear();
-        self.__paramBounds.clear();
-    
+        self.__hAxis.reset();
+        self.__vAxis.reset();
+
+
     def __populateSelect(self):
-        numChannels=self.__dataSet.getSamples().getNumChannels();
-        self.__hChList=dict();
-        self.__vChList=dict();
-        for i in np.r_[0:numChannels]:
-            self.__hChList[str(i)]=QListWidgetItem(str(i));
-            self.__hChList[str(i)].setData(self.__selectDataRole, i);
-            self.hChannelSelect.addItem(self.__hChList[str(i)]);
-            
-            self.__vChList[str(i)]=QListWidgetItem(str(i));
-            self.__vChList[str(i)].setData(self.__selectDataRole, i);
-            self.vChannelSelect.addItem(self.__vChList[str(i)]);
-            
-        paramNames=self.__dataSet.getSamples().getParamNames();
+        self.__hAxis.populate(self.__dataSet);
+        self.__vAxis.populate(self.__dataSet);
         
-        ignoredParamNames=["peakTime", "valleyTime", "timestamp"];
-        
-        modParamNames=[];
-        if("peak" in paramNames):
-            modParamNames.append("peak");
-        if("valley" in paramNames):
-            modParamNames.append("valley");
-        if("peakAngle" in paramNames):
-            modParamNames.append("peakAngle");
-        if("time" in paramNames):
-            modParamNames.append("time");
-        
-        for name in paramNames:
-            if(name in ignoredParamNames):
-                continue;
-            if(name in modParamNames):
-                continue;
-            modParamNames.append(name);
-        
-        self.__hParamList=dict();
-        self.__vParamList=dict();
-        for name in modParamNames:
-            self.__hParamList[name]=QListWidgetItem(name);
-            self.__hParamList[name].setData(self.__selectDataRole, name);
-            self.hParamSelect.addItem(self.__hParamList[name]);
-            
-            self.__vParamList[name]=QListWidgetItem(name);
-            self.__vParamList[name].setData(self.__selectDataRole, name);
-            self.vParamSelect.addItem(self.__vParamList[name]);
-            
-        for name in modParamNames:
-            self.__paramBounds[name]=dict();
-            for j in np.r_[0:numChannels]:
-                bounds=self.__dataSet.getParamBounds(j, name);
-                self.__paramBounds[name][j]=bounds;
-            
         
     def __setupKeyShortcuts(self, widget):
         widgetName=widget.objectName();
@@ -523,31 +457,22 @@ class MainW(QMainWindow, Ui_MainW):
         self.updatePlotView();
         
     def __setView(self, hChN, vChN, hParamName, vParamName):
-        self.__hChList[str(hChN)].setSelected(True);
-        self.__vChList[str(vChN)].setSelected(True);
-        self.__hParamList[hParamName].setSelected(True);
-        self.__vParamList[vParamName].setSelected(True);
+        self.__hAxis.setSelected(hChN, hParamName);
+        self.__vAxis.setSelected(vChN, vParamName)
         self.updatePlotView();
     
     
     def updatePlotView(self):
         if(not self.__dataValid):
             return;
-        hChSel=self.hChannelSelect.selectedItems();
-        vChSel=self.vChannelSelect.selectedItems();
-        hParamSel=self.hParamSelect.selectedItems();
-        vParamSel=self.vParamSelect.selectedItems();
+        (hCh, hParam)=self.__hAxis.getSelected();
+        (vCh, vParam)=self.__vAxis.getSelected();
         
         self.__plot.clear();
-        
         self.__resetBound();
         
-        if((len(hChSel)==0) or (len(vChSel)==0) or (len(hParamSel)==0) or (len(vParamSel)==0)):
-            return;
-        self.__hChN=int(hChSel[0].data(self.__selectDataRole));
-        self.__vChN=int(vChSel[0].data(self.__selectDataRole));
-        self.__hParamName=hParamSel[0].data(self.__selectDataRole);
-        self.__vParamName=vParamSel[0].data(self.__selectDataRole);
+        if((hCh is None) or (hParam is None) or (vCh is None) or (vParam is None)):
+            return;            
 
         workClustID=self.__dataSet.getWorkClustID();
         self.__viewClustList[workClustID].setSelected(True);
@@ -555,16 +480,14 @@ class MainW(QMainWindow, Ui_MainW):
         viewClustItems=self.viewClustersSelect.selectedItems();
         for item in viewClustItems[::-1]:
             clustID=item.data(self.__selectDataRole);        
-            self.__plotClusterItems[clustID].setPlotData(self.__hChN, self.__vChN, 
-                                                         self.__hParamName, 
-                                                         self.__vParamName,
+            self.__plotClusterItems[clustID].setPlotData(hCh, vCh, hParam, vParam, 
                                                          self.__plotType);
             self.__plotClusterItems[clustID].addToPlot(self.__plotType);
         
-        xBound=self.__paramBounds[self.__hParamName][self.__hChN];
-        yBound=self.__paramBounds[self.__vParamName][self.__vChN];
-        self.__plotVBox.setXRange(xBound[0], xBound[1]);
-        self.__plotVBox.setYRange(yBound[0], yBound[1]);
+        hLim=self.__hAxis.getLimits();
+        vLim=self.__vAxis.getLimits();
+        self.__plotVBox.setXRange(hLim[0], hLim[1]);
+        self.__plotVBox.setYRange(vLim[0], vLim[1]);
         
         self.__validateView();
         
@@ -583,9 +506,10 @@ class MainW(QMainWindow, Ui_MainW):
            or (not self.__dataValid) or (not self.__viewValid)):
             return;
         self.__resetFileButtonTexts();
-        
-        (clustID, cluster)=self.__dataSet.addCluster(copy, self.__hChN, self.__vChN,
-                                  self.__hParamName, self.__vParamName,
+
+        (hCh, hParam)=self.__hAxis.getSelected();
+        (vCh, vParam)=self.__vAxis.getSelected();        
+        (clustID, cluster)=self.__dataSet.addCluster(copy, hCh, vCh, hParam, vParam,
                                   self.__workBound.getBoundX(), 
                                   self.__workBound.getBoundY());
         if(clustID is not None):
@@ -615,9 +539,10 @@ class MainW(QMainWindow, Ui_MainW):
            or (not self.__dataValid) or (not self.__viewValid)):
             return;
         self.__resetFileButtonTexts();
-        
-        self.__dataSet.refineCluster(self.__hChN, self.__vChN, 
-                                     self.__hParamName, self.__vParamName,
+
+        (hCh, hParam)=self.__hAxis.getSelected();
+        (vCh, vParam)=self.__vAxis.getSelected();        
+        self.__dataSet.refineCluster(hCh, vCh, hParam, vParam,
                                      self.__workBound.getBoundX(), 
                                      self.__workBound.getBoundY());
         self.updatePlotView();
