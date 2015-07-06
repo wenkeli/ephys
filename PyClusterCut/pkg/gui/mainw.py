@@ -1,18 +1,12 @@
 import os;
-
 import gc;
-
-import cPickle as pickle;
 
 import numpy as np;
 
 import PySide;
-
 from PySide.QtGui import QMainWindow, QApplication;
 from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
-from PySide.QtGui import QKeySequence, QKeySequence, QShortcut, QFileDialog;
-from PySide.QtGui import QBrush, QColor;
-
+from PySide.QtGui import QKeySequence, QShortcut, QFileDialog;
 from PySide.QtCore import Qt, QRect;
 
 import pyqtgraph as pg;
@@ -21,14 +15,14 @@ from pyqtgraph.widgets.GraphicsLayoutWidget import GraphicsLayoutWidget;
 from mainw_ui import Ui_MainW;
 from reportw import ReportW;
 
-from ..fileIO.loadOpenEphysSpikes import readSpikeFile, readSamples;
-
+from ..fileIO.loadOpenEphysSpikes import readSpikeFile;
 from ..fileIO.exporthdf5 import exportToHDF5PerCluster, exportWavesToHDF5;
+from ..fileIO.datasetpickle import saveDataSetPickle, loadDataSetPickle;
+
 
 from ..data.samples import SamplesData; 
 from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
-
 from ..data.dataset import DataSet;
 
 from .clusterplotitem import ClusterPlotItem;
@@ -57,7 +51,6 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.__reportW=ReportW();
         
-        
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
@@ -74,18 +67,13 @@ class MainW(QMainWindow, Ui_MainW):
                                     | Qt.WindowMinimizeButtonHint);
         self.__plotW.show();
         
-        
         self.__plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
-#         self.__plotW.ci.layout.setColumnMaximumWidth(1, 25);
-
-        self.__plotType=0;
-        
         self.__plotScene=self.__plot.scene();
         self.__plotScene.setMoveDistance(200);
-        
         self.__plotVBox=self.__plot.getViewBox();
         self.__plotVBox.setMouseMode(pg.ViewBox.RectMode);
         self.__plotVBox.disableAutoRange();
+        self.__plotType=0;
         
         self.__wavePlotLayout=self.__plotW.addLayout(0, 1, 1, 1);
         self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
@@ -128,12 +116,7 @@ class MainW(QMainWindow, Ui_MainW):
         
     def saveClusterData(self):
         fileName=os.path.join(self.__dataDir,self.__dataName+".clusterdataset");
-        
-        fout=open(fileName, "wb");
-        pickle.dump(self.__dataSet, fout, protocol=2);
-        
-        fout.close();
-        
+        saveDataSetPickle(fileName, self.__dataSet);
         self.saveFileButton.setText(QApplication.translate("MainW", "file saved!",
                                                            None, QApplication.UnicodeUTF8));
         
@@ -273,17 +256,13 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.__resetState();
         
-        fin=open(fileName, "rb");
-        
         if(fileType[0]=="1"):
             print("spikes datafile");
-            self.__loadSpikesFile(fileName, fin);
+            self.__loadSpikesFile(fileName);
             
         if(fileType[0]=="2"):
             print("cluster data set");
-            self.__loadClusterDataSetFile(fin);     
-
-        fin.close();
+            self.__loadClusterDataSetFile(fileName);
         
         if(self.__dataSet is None):
             return;
@@ -295,9 +274,9 @@ class MainW(QMainWindow, Ui_MainW):
             
             
     
-    def __loadSpikesFile(self, fileName, fh):
+    def __loadSpikesFile(self, fileName):
 #         fileStat=os.stat(fileName);        
-        data=readSpikeFile(fh, fileName);
+        data=readSpikeFile(fileName);
         if(data is None):
             self.__dataSet=None;
             return;
@@ -309,7 +288,6 @@ class MainW(QMainWindow, Ui_MainW):
         
         (startT, endT)=self.__dataSet.getSamplesStartEndTimes();
         self.__setTimeSelUI(startT, endT);
-        
         
         
     def __setTimeSelUI(self, startT, endT):
@@ -329,8 +307,8 @@ class MainW(QMainWindow, Ui_MainW):
         
         
               
-    def __loadClusterDataSetFile(self, fh):
-        self.__dataSet=pickle.load(fh);
+    def __loadClusterDataSetFile(self, fileName):
+        self.__dataSet=loadDataSetPickle(fileName);
         
         clustIDs=self.__dataSet.getClusterIDs();
         initID=self.__dataSet.getInitClustID();

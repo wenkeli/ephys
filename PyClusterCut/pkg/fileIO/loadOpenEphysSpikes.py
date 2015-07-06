@@ -3,10 +3,12 @@ import os;
 import struct;
 import numpy as np;
 
-def readSpikeFile(fh, fileName):
+def readSpikeFile(fileName):
     fsize=os.stat(fileName);
     fsize=fsize.st_size;
     fHeaderSize=1024;
+    
+    fh=open(fileName, "rb");
     
     header=fh.read(fHeaderSize);
     header=regexp.sub("header\.", "", header);
@@ -23,6 +25,8 @@ def readSpikeFile(fh, fileName):
         return data;
     
     data["samplingHz"]=sampleRate;
+    
+    fh.close();
     
     return data;
         
