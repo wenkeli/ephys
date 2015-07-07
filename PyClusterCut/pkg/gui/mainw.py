@@ -29,6 +29,7 @@ from .workboundary import WorkBoundary;
 from .axiscontrol import AxisControl;
 from .clustercontrol import ClusterControl;
 from .mainplot import MainPlot;
+from .waveplots import WavePlots;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -59,7 +60,6 @@ class MainW(QMainWindow, Ui_MainW):
         self.__plotW=GraphicsLayoutWidget();
         self.__plotW.resize(sw-cpw-25, sh);
         self.__plotW.move(0, 0);
-#         self.__plotW.resize(1500, 1000);
         self.__plotW.setFocusPolicy(Qt.StrongFocus);
         self.__plotW.setObjectName("plotWindow");
         self.__plotW.setWindowFlags(Qt.CustomizeWindowHint
@@ -76,7 +76,9 @@ class MainW(QMainWindow, Ui_MainW):
         self.__wavePlotLayout=self.__plotW.addLayout(0, 1, 1, 1);
         self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
         self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
-        self.__wavePlots=[];
+        
+        self.__wavePlots=WavePlots(self.__wavePlotLayout);
+#         self.__wavePlots=[];
         
         self.__keyShortcuts=dict();
         self.__setupKeyShortcuts(self);
@@ -197,13 +199,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataValid=False;
         
         self.__mainPlot.reset();
-        
-        numWavePlots=len(self.__wavePlots);
-        if(numWavePlots>0):
-            for i in np.r_[0:numWavePlots]:
-                self.__wavePlotLayout.removeItem(self.__wavePlots[0]);
-                del(self.__wavePlots[0]);
-            self.__wavePlots=[];
+        self.__wavePlots.reset();
             
         self.__resetFileButtonTexts();
         
@@ -255,11 +251,7 @@ class MainW(QMainWindow, Ui_MainW):
             return;
         
         numChannels=self.__dataSet.getSamples().getNumChannels();
-        for i in np.r_[0:numChannels]:
-            wavePlot=self.__wavePlotLayout.addPlot(i, 0, enableMenu=False);
-            self.__wavePlots.append(wavePlot);
-            
-            
+        self.__wavePlots.initializePlots(numChannels);
     
     def __loadSpikesFile(self, fileName):
 #         fileStat=os.stat(fileName);        
@@ -513,7 +505,7 @@ class MainW(QMainWindow, Ui_MainW):
         workClust=self.__clustCtrl.getWorkPlotCluster();
         
         (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getPrevWaves(self.numWavesIncBox.value(), triggerOnly);        
-        self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
+        self.__wavePlots.drawWaves(waves, xvals, conArrs, drawPen);
         
     def drawNextWaves(self):
         if(not self.__dataValid):
@@ -523,37 +515,12 @@ class MainW(QMainWindow, Ui_MainW):
         workClust=self.__clustCtrl.getWorkPlotCluster();
         
         (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getNextWaves(self.numWavesIncBox.value(), triggerOnly);
-        self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
-    
-    def __drawWavesCommon(self, nChs, waves, xvals, conArrs, drawPen):
-        yMin=100000.0;
-        yMax=-100000.0;
-        for i in np.r_[0:nChs]:
-            if((waves[i] is None) or (len(waves[i])<=0)):
-                continue;
-            self.__wavePlots[i].plot(xvals[i].flatten(), waves[i][:, :].flatten(), 
-                                     pen=drawPen, connect=conArrs[i].flatten());
-            self.__wavePlots[i].getViewBox().autoRange();
-            boxRange=self.__wavePlots[i].getViewBox().viewRange();
-            boxMin=boxRange[1][0];
-            boxMax=boxRange[1][1];
-            if(boxMin<yMin):
-                yMin=boxMin;
-            if(boxMax>yMax):
-                yMax=boxMax;
-                
-        for i in np.r_[0:nChs]:
-            self.__wavePlots[i].getViewBox().setYRange(yMin, yMax);            
+        self.__wavePlots.drawWaves(waves, xvals, conArrs, drawPen);
+           
         
     def clearWavePlots(self):
-        for i in np.r_[0:len(self.__wavePlots)]:
-            self.__wavePlots[i].getViewBox().autoRange();
-            self.__wavePlots[i].clear();
-
-        plotClusters=self.__clustCtrl.getPlotClusters();            
-        clustIDs=plotClusters.keys();
-        for i in clustIDs:
-            plotClusters.clearSelDispWaves();
+        self.__wavePlots.clearPlots();            
+        self.__clustCtrl.clearClusterSelWaves();
             
     def resetWaveInd(self):
         if(not self.__dataValid):

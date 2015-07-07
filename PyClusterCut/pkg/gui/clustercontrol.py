@@ -125,5 +125,8 @@ class ClusterControl(object):
         workClustID=self.__dataSet.getWorkClustID();
         return self.__plotClusters[workClustID];
         
-    
+    def clearClusterSelWaves(self):
+        clustIDs=self.__plotClusters.keys();
+        for i in clustIDs:
+            self.__plotClusters[i].clearSelDispWaves();
 
