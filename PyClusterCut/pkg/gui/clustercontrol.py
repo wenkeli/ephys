@@ -77,7 +77,7 @@ class ClusterControl(object):
         del(clustList[clustID]);
         
         
-    def updatePlot(self, hCh, vCh, hParam, vParam, plotType):
+    def updatePlot(self, hCh, vCh, hParam, vParam, drawType):
         self.__plot.clear();
         workClustID=self.__dataSet.getWorkClustID();
         self.__viewClustList[workClustID].setSelected(True);
@@ -86,8 +86,8 @@ class ClusterControl(object):
         viewItems=self.__viewClustSel.selectedItems();
         for item in viewItems:
             clustID=item.data(self.__selDataRole);
-            self.__plotClusters[clustID].setPlotData(hCh, vCh, hParam, vParam, plotType);
-            self.__plotClusters[clustID].addToPlot(plotType);
+            self.__plotClusters[clustID].setPlotData(hCh, vCh, hParam, vParam, drawType);
+            self.__plotClusters[clustID].addToPlot(drawType);
             
     def changeWorkCluster(self):
         selectItem=self.__workClustSel.selectedItems();

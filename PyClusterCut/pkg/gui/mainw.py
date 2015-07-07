@@ -28,6 +28,7 @@ from ..data.dataset import DataSet;
 from .workboundary import WorkBoundary;
 from .axiscontrol import AxisControl;
 from .clustercontrol import ClusterControl;
+from .mainplot import MainPlot;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -65,13 +66,12 @@ class MainW(QMainWindow, Ui_MainW):
                                     | Qt.WindowMinimizeButtonHint);
         self.__plotW.show();
         
-        self.__plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
-        self.__plotScene=self.__plot.scene();
-        self.__plotScene.setMoveDistance(200);
-        self.__plotVBox=self.__plot.getViewBox();
-        self.__plotVBox.setMouseMode(pg.ViewBox.RectMode);
-        self.__plotVBox.disableAutoRange();
-        self.__plotType=0;
+        self.__drawType=0;
+        
+        self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
+        self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
+        plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
+        self.__mainPlot=MainPlot(plot, self.__hAxis, self.__vAxis);
         
         self.__wavePlotLayout=self.__plotW.addLayout(0, 1, 1, 1);
         self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
@@ -84,13 +84,11 @@ class MainW(QMainWindow, Ui_MainW):
         self.__setupKeyShortcuts(self.__reportW);
         self.__enableKeyShortcuts(False);
         
-        self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
-        self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
-        
         self.__clustCtrl=ClusterControl(self.workClusterSelect, 
-                                        self.viewClustersSelect, self.__plot);
+                                        self.viewClustersSelect,
+                                        self.__mainPlot.getPlot());
         
-        self.__workBound=WorkBoundary(self.__plot);
+        self.__workBound=WorkBoundary(self.__mainPlot.getPlot());
         
         self.__resetState();
                                                     
@@ -198,7 +196,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataSet=None;
         self.__dataValid=False;
         
-        self.__plot.clear();
+        self.__mainPlot.reset();
         
         numWavePlots=len(self.__wavePlots);
         if(numWavePlots>0):
@@ -394,11 +392,11 @@ class MainW(QMainWindow, Ui_MainW):
                 
     
     def plotPoints(self):
-        self.__plotType=0;
+        self.__drawType=0;
         self.updatePlotView();
         
     def plotLargePoints(self):
-        self.__plotType=1;
+        self.__drawType=1;
         self.updatePlotView();
         
     def __setView(self, hChN, vChN, hParamName, vParamName):
@@ -415,13 +413,10 @@ class MainW(QMainWindow, Ui_MainW):
         
         if((hCh is None) or (hParam is None) or (vCh is None) or (vParam is None)):
             return;            
-        self.__clustCtrl.updatePlot(hCh, vCh, hParam, vParam, self.__plotType);
+        self.__clustCtrl.updatePlot(hCh, vCh, hParam, vParam, self.__drawType);
         
         self.__resetBound();
-        hLim=self.__hAxis.getLimits();
-        vLim=self.__vAxis.getLimits();
-        self.__plotVBox.setXRange(hLim[0], hLim[1]);
-        self.__plotVBox.setYRange(vLim[0], vLim[1]);
+        self.__mainPlot.updateLimits();
         
         self.__validateView();
         

@@ -40,8 +40,8 @@ class ClusterPlotItem(object):
         self.__selDispWaves=np.zeros(self.__cluster.getSelectArray().shape, dtype="bool");
         
     
-    def setPlotData(self, xChN, yChN, xChParamT, yChParamT, plotType=0):
-        if(plotType==0):
+    def setPlotData(self, xChN, yChN, xChParamT, yChParamT, drawType=0):
+        if(drawType==0):
             self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
                                   y=self.__cluster.getParam(yChN, yChParamT),
                                   symbol="s", pen=self.__pen,
@@ -68,8 +68,8 @@ class ClusterPlotItem(object):
             
     
                               
-    def addToPlot(self, plotType=0):
-        if(plotType==0):
+    def addToPlot(self, drawType=0):
+        if(drawType==0):
             self.__plot.addItem(self.__plotData);
         else:
             self.__plot.addItem(self.__plotDataBigP);
