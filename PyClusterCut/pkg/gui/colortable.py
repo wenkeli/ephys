@@ -28,6 +28,9 @@ class ColorTable(object):
             brushColor.setAlphaF(0.8);
             self.__brushes.append(QBrush(brushColor));
             
+    def resetInd(self):
+        self.__curColorInd=0;
+    
     def getCurColor(self):
         curPen=self.__pens[self.__curColorInd];
         curColor=self.__colors[self.__curColorInd];

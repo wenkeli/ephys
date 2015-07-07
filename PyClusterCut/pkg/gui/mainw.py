@@ -25,10 +25,9 @@ from ..data.samples import SamplesClustCount;
 from ..data.cluster import Cluster, Boundary;
 from ..data.dataset import DataSet;
 
-from .clusterplotitem import ClusterPlotItem;
-from .colortable import ColorTable;
 from .workboundary import WorkBoundary;
 from .axiscontrol import AxisControl;
+from .clustercontrol import ClusterControl;
         
 
 class MainW(QMainWindow, Ui_MainW):
@@ -43,10 +42,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataDir="";
         self.__dataFilter="";
         self.__dataSet=None;
-        self.__plotClusterItems=dict();
         self.__dataValid=False;
-        
-        self.__colorTable=ColorTable();
+        self.__viewValid=False;
                             
         self.__app=app;
         
@@ -90,10 +87,8 @@ class MainW(QMainWindow, Ui_MainW):
         self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
         self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
         
-        self.__selectDataRole=0;
-        self.__workClustList=dict();
-        self.__viewClustList=dict();
-        self.__viewValid=False;
+        self.__clustCtrl=ClusterControl(self.workClusterSelect, 
+                                        self.viewClustersSelect, self.__plot);
         
         self.__workBound=WorkBoundary(self.__plot);
         
@@ -101,11 +96,10 @@ class MainW(QMainWindow, Ui_MainW):
                                                     
        
     def __resetBound(self):
-        if(self.__dataSet is None):
+        if(not self.__dataValid):
             drawPen=None;
         else:
-            workClustID=self.__dataSet.getWorkClustID();
-            drawPen=self.__plotClusterItems[workClustID].getCurPen();
+            drawPen=self.__clustCtrl.getWorkPen();
         self.__workBound.reset(drawPen);
                                                     
         
@@ -134,7 +128,7 @@ class MainW(QMainWindow, Ui_MainW):
         fileName=fileName[0];
         if(fileName==""):
             return;
-        exportWavesToHDF5(fileName, self.__plotClusterItems);
+        exportWavesToHDF5(fileName, self.__clustCtrl.getPlotClusters());
         
 
     def __enableViewUI(self, enable):
@@ -202,7 +196,6 @@ class MainW(QMainWindow, Ui_MainW):
     
     def __resetState(self):
         self.__dataSet=None;
-        self.__plotClusterItems.clear();
         self.__dataValid=False;
         
         self.__plot.clear();
@@ -305,25 +298,13 @@ class MainW(QMainWindow, Ui_MainW):
               
     def __loadClusterDataSetFile(self, fileName):
         self.__dataSet=loadDataSetPickle(fileName);
-        
-        clustIDs=self.__dataSet.getClusterIDs();
-        initID=self.__dataSet.getInitClustID();
-        workID=self.__dataSet.getWorkClustID();
-        self.__dataSet.setWorkClustID(initID);
-        for i in clustIDs:
-            cluster=self.__dataSet.getCluster(i);
-            pen=None;
-            brush=None;
-            if(i!=initID):
-                (color, pen, brush)=self.__colorTable.getCurColor();
-            self.__addClusterToView(i, cluster, pen, brush);
-        
-        self.__workClustList[workID].setSelected(True);
+        self.__clustCtrl.initalize(self.__dataSet);
         self.changeWorkCluster();
         
         (startT, endT)=self.__dataSet.getWorkingStartEndTimes();
         self.__setTimeSelUI(startT, endT);
         self.__setDataIsValid();
+        
         
     def resetTimeWindow(self):
         (startT, endT)=self.__dataSet.getSamplesStartEndTimes();
@@ -336,9 +317,8 @@ class MainW(QMainWindow, Ui_MainW):
         if(endTime<=startTime):
             return;
         
-        (clustID, cluster)=self.__dataSet.initializeWorkingSet(startTime, endTime);
-        self.__addClusterToView(clustID, cluster);
-        
+        self.__dataSet.initializeWorkingSet(startTime, endTime);
+        self.__clustCtrl.initalize(self.__dataSet);
         self.__setDataIsValid();
         
         
@@ -351,60 +331,19 @@ class MainW(QMainWindow, Ui_MainW):
         self.__enableKeyShortcuts(True);
         self.__dataValid=True;
         self.invalidateView();
-
-        
-    def __addClusterToView(self, clustID, cluster, pen=None, brush=None):
-        self.__plotClusterItems[clustID]=ClusterPlotItem(cluster, self.__plot, pen, brush);
-        
-        self.__workClustList[clustID]=QListWidgetItem(clustID);
-        self.__workClustList[clustID].setData(self.__selectDataRole, clustID);
-        if(brush is not None):
-            self.__workClustList[clustID].setBackground(brush);
-        self.workClusterSelect.addItem(self.__workClustList[clustID]);
-        
-        self.__viewClustList[clustID]=QListWidgetItem(clustID);
-        self.__viewClustList[clustID].setData(self.__selectDataRole, clustID);
-        if(brush is not None):
-            self.__viewClustList[clustID].setBackground(brush);
-        self.viewClustersSelect.addItem(self.__viewClustList[clustID]);
-        self.__viewClustList[clustID].setSelected(True);
-        
-        workClustID=self.__dataSet.getWorkClustID();
-        if(not (self.__workClustList[workClustID].isSelected())):
-            self.__workClustList[workClustID].setSelected(True);
-            self.changeWorkCluster();
-    
         
     def __removeCluster(self, clustID):
         (success, workClustID)=self.__dataSet.deleteCluster(clustID);
-        
         if(not success):
             return;
-        
-        row=self.workClusterSelect.row(self.__workClustList[clustID]);
-        self.workClusterSelect.takeItem(row);
-        del(self.__workClustList[clustID]);
-        
-        row=self.viewClustersSelect.row(self.__viewClustList[clustID]);
-        self.viewClustersSelect.takeItem(row);
-        del(self.__viewClustList[clustID]);
-        
-        del(self.__plotClusterItems[clustID]);
-        
-        self.__workClustList[workClustID].setSelected(True);
-        self.changeWorkCluster();
+        self.__clustCtrl.removeCluster(clustID);
 
         
     def __clearSelect(self):
         self.invalidateView();
         self.__hAxis.reset();
         self.__vAxis.reset();
-        
-        self.workClusterSelect.clear();
-        self.viewClustersSelect.clear();
-        self.__workClustList.clear();
-        self.__viewClustList.clear();
-
+        self.__clustCtrl.reset();
 
     def __populateSelect(self):
         self.__hAxis.populate(self.__dataSet);
@@ -474,22 +413,11 @@ class MainW(QMainWindow, Ui_MainW):
         (hCh, hParam)=self.__hAxis.getSelected();
         (vCh, vParam)=self.__vAxis.getSelected();
         
-        self.__plot.clear();
-        self.__resetBound();
-        
         if((hCh is None) or (hParam is None) or (vCh is None) or (vParam is None)):
             return;            
-
-        workClustID=self.__dataSet.getWorkClustID();
-        self.__viewClustList[workClustID].setSelected(True);
-        self.__workClustList[workClustID].setSelected(True);
-        viewClustItems=self.viewClustersSelect.selectedItems();
-        for item in viewClustItems[::-1]:
-            clustID=item.data(self.__selectDataRole);        
-            self.__plotClusterItems[clustID].setPlotData(hCh, vCh, hParam, vParam, 
-                                                         self.__plotType);
-            self.__plotClusterItems[clustID].addToPlot(self.__plotType);
+        self.__clustCtrl.updatePlot(hCh, vCh, hParam, vParam, self.__plotType);
         
+        self.__resetBound();
         hLim=self.__hAxis.getLimits();
         vLim=self.__vAxis.getLimits();
         self.__plotVBox.setXRange(hLim[0], hLim[1]);
@@ -519,8 +447,7 @@ class MainW(QMainWindow, Ui_MainW):
                                   self.__workBound.getBoundX(), 
                                   self.__workBound.getBoundY());
         if(clustID is not None):
-            (color, pen, brush)=self.__colorTable.getCurColor();
-            self.__addClusterToView(clustID, cluster, pen, brush);
+            self.__clustCtrl.addCluster(clustID, cluster, True);
             
         self.updatePlotView();
     
@@ -555,43 +482,28 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def changeWorkCluster(self):
-        selectItem=self.workClusterSelect.selectedItems();
-        if(len(selectItem)<=0):
+        if(not self.__dataValid):
             return;
-        workClustID=selectItem[0].data(self.__selectDataRole);
-        self.__dataSet.setWorkClustID(workClustID);
+        self.__clustCtrl.changeWorkCluster();
         self.__resetBound();
         self.__validateView();
-        if(not self.__viewClustList[workClustID].isSelected()):
-            self.__viewClustList[workClustID].setSelected(True);
-            self.invalidateView();
         self.clustRateBox.setValue(self.__dataSet.getWorkingCluster().getRating());
         
     def updateClustRating(self, rating):
+        if(not self.__dataValid):
+            return;
         self.__dataSet.getWorkingCluster().setRating(rating);
         
     def viewClustersChanged(self):
-        selectItems=self.viewClustersSelect.selectedItems();
-        if(self.__dataSet is None):
+        if(not self.__dataValid):
             return;
-        workClustID=self.__dataSet.getWorkClustID();
-        
-        if((len(self.__viewClustList.keys())<=0) or (len(self.__workClustList.keys())<=0)):
-            return;
-        if(not self.__viewClustList[workClustID].isSelected()):
-            if(len(selectItems)<=0):
-                workClustID=self.__dataSet.getInitClustID();
-            else:
-                workClustID=selectItems[0].data(self.__selectDataRole);
-            self.__dataSet.setWorkClustID(workClustID);
-            self.__workClustList[workClustID].setSelected(True);
-            self.__viewClustList[workClustID].setSelected(True);
-            
+        self.__clustCtrl.changeViewClusters();
         self.invalidateView();
-        
 
         
     def toggleReport(self):
+        if(not self.__dataValid):
+            return;
         if(self.__reportW.isVisible()):
             self.__reportW.hide();
         else:
@@ -601,23 +513,21 @@ class MainW(QMainWindow, Ui_MainW):
     def drawPrevWaves(self):
         if(not self.__dataValid):
             return;
-        
-        workClustID=self.__dataSet.getWorkClustID();
-        drawPen=self.__plotClusterItems[workClustID].getCurPen();
-        
+        drawPen=self.__clustCtrl.getWorkPen();
         triggerOnly=self.refWaveChsOnlyBox.isChecked();
-        (nChs, nptsPerCh, waves, xvals, conArrs)=self.__plotClusterItems[workClustID].getPrevWaves(self.numWavesIncBox.value(), triggerOnly);
+        workClust=self.__clustCtrl.getWorkPlotCluster();
+        
+        (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getPrevWaves(self.numWavesIncBox.value(), triggerOnly);        
         self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
         
     def drawNextWaves(self):
         if(not self.__dataValid):
             return;
-        
-        workClustID=self.__dataSet.getWorkClustID();
-        drawPen=self.__plotClusterItems[workClustID].getCurPen();
-        
+        drawPen=self.__clustCtrl.getWorkPen();        
         triggerOnly=self.refWaveChsOnlyBox.isChecked();
-        (nChs, nptsPerCh, waves, xvals, conArrs)=self.__plotClusterItems[workClustID].getNextWaves(self.numWavesIncBox.value(), triggerOnly);
+        workClust=self.__clustCtrl.getWorkPlotCluster();
+        
+        (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getNextWaves(self.numWavesIncBox.value(), triggerOnly);
         self.__drawWavesCommon(nChs, waves, xvals, conArrs, drawPen);
     
     def __drawWavesCommon(self, nChs, waves, xvals, conArrs, drawPen):
@@ -644,14 +554,17 @@ class MainW(QMainWindow, Ui_MainW):
         for i in np.r_[0:len(self.__wavePlots)]:
             self.__wavePlots[i].getViewBox().autoRange();
             self.__wavePlots[i].clear();
-            
-            clustIDs=self.__plotClusterItems.keys();
-            for i in clustIDs:
-                self.__plotClusterItems[i].clearSelDispWaves();
+
+        plotClusters=self.__clustCtrl.getPlotClusters();            
+        clustIDs=plotClusters.keys();
+        for i in clustIDs:
+            plotClusters.clearSelDispWaves();
             
     def resetWaveInd(self):
-        workClustID=self.__dataSet.getWorkClustID();
-        self.__plotClusterItems[workClustID].resetWaveInd();
+        if(not self.__dataValid):
+            return;
+        workPlotClust=self.__clustCtrl.getWorkPlotCluster();
+        workPlotClust.resetWaveInd();
         
     def toggleRefWaveChs(self):
         self.refWaveChsOnlyBox.toggle();
