@@ -30,67 +30,50 @@ from .axiscontrol import AxisControl;
 from .clustercontrol import ClusterControl;
 from .mainplot import MainPlot;
 from .waveplots import WavePlots;
+from .plotw import PlotW;
         
 
 class MainW(QMainWindow, Ui_MainW):
     def __init__(self, app, parent=None):
         super(MainW, self).__init__(parent);
         self.setupUi(self);
-        
         self.setFocusPolicy(Qt.StrongFocus);
         self.setWindowFlags(Qt.CustomizeWindowHint
-                            | Qt.WindowMinimizeButtonHint);
-                            
+                            | Qt.WindowMinimizeButtonHint); 
+        
+        self.__app=app;
         self.__dataDir="";
         self.__dataFilter="";
         self.__dataSet=None;
         self.__dataValid=False;
         self.__viewValid=False;
-                            
-        self.__app=app;
+        self.__drawType=0;
         
         self.__reportW=ReportW();
+        
+        self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
+        self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
         
         screenSize=QApplication.desktop().availableGeometry(self);
         sh=screenSize.height();
         sw=screenSize.width();
         cpw=self.geometry().width();
         self.move(sw-cpw, 0);
-        
-        self.__plotW=GraphicsLayoutWidget();
-        self.__plotW.resize(sw-cpw-25, sh);
-        self.__plotW.move(0, 0);
-        self.__plotW.setFocusPolicy(Qt.StrongFocus);
-        self.__plotW.setObjectName("plotWindow");
-        self.__plotW.setWindowFlags(Qt.CustomizeWindowHint
-                                    | Qt.WindowMinimizeButtonHint);
-        self.__plotW.show();
-        
-        self.__drawType=0;
-        
-        self.__hAxis=AxisControl(self.hChannelSelect, self.hParamSelect);
-        self.__vAxis=AxisControl(self.vChannelSelect, self.vParamSelect);
-        plot=self.__plotW.addPlot(0, 0, 1, 1, enableMenu=False);
-        self.__mainPlot=MainPlot(plot, self.__hAxis, self.__vAxis);
-        
-        self.__wavePlotLayout=self.__plotW.addLayout(0, 1, 1, 1);
-        self.__plotW.ci.layout.setColumnStretchFactor(0, 80);
-        self.__plotW.ci.layout.setColumnStretchFactor(1, 20);
-        
-        self.__wavePlots=WavePlots(self.__wavePlotLayout);
-#         self.__wavePlots=[];
-        
-        self.__keyShortcuts=dict();
-        self.__setupKeyShortcuts(self);
-        self.__setupKeyShortcuts(self.__plotW);
-        self.__setupKeyShortcuts(self.__reportW);
-        self.__enableKeyShortcuts(False);
+        pW=sw-cpw-25;
+        pH=sh; 
+        self.__plotW=PlotW(pW, pH, self.__hAxis, self.__vAxis);
         
         self.__clustCtrl=ClusterControl(self.workClusterSelect, 
                                         self.viewClustersSelect,
-                                        self.__mainPlot.getPlot());
+                                        self.__plotW.getMainPlot().getPlot());
         
-        self.__workBound=WorkBoundary(self.__mainPlot.getPlot());
+        self.__workBound=WorkBoundary(self.__plotW.getMainPlot().getPlot());
+        
+        self.__keyShortcuts=dict();
+        self.__setupKeyShortcuts(self);
+        self.__setupKeyShortcuts(self.__plotW.getWindow());
+        self.__setupKeyShortcuts(self.__reportW);
+        self.__enableKeyShortcuts(False);
         
         self.__resetState();
                                                     
@@ -198,8 +181,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataSet=None;
         self.__dataValid=False;
         
-        self.__mainPlot.reset();
-        self.__wavePlots.reset();
+        self.__plotW.reset();
             
         self.__resetFileButtonTexts();
         
@@ -242,16 +224,15 @@ class MainW(QMainWindow, Ui_MainW):
         if(fileType[0]=="1"):
             print("spikes datafile");
             self.__loadSpikesFile(fileName);
-            
         if(fileType[0]=="2"):
             print("cluster data set");
             self.__loadClusterDataSetFile(fileName);
-        
         if(self.__dataSet is None):
             return;
         
         numChannels=self.__dataSet.getSamples().getNumChannels();
-        self.__wavePlots.initializePlots(numChannels);
+        self.__plotW.initialize(numChannels);
+        
     
     def __loadSpikesFile(self, fileName):
 #         fileStat=os.stat(fileName);        
@@ -408,7 +389,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.__clustCtrl.updatePlot(hCh, vCh, hParam, vParam, self.__drawType);
         
         self.__resetBound();
-        self.__mainPlot.updateLimits();
+        self.__plotW.getMainPlot().updateLimits();
         
         self.__validateView();
         
@@ -505,7 +486,7 @@ class MainW(QMainWindow, Ui_MainW):
         workClust=self.__clustCtrl.getWorkPlotCluster();
         
         (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getPrevWaves(self.numWavesIncBox.value(), triggerOnly);        
-        self.__wavePlots.drawWaves(waves, xvals, conArrs, drawPen);
+        self.__plotW.getWavePlots().drawWaves(waves, xvals, conArrs, drawPen);
         
     def drawNextWaves(self):
         if(not self.__dataValid):
@@ -515,11 +496,11 @@ class MainW(QMainWindow, Ui_MainW):
         workClust=self.__clustCtrl.getWorkPlotCluster();
         
         (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getNextWaves(self.numWavesIncBox.value(), triggerOnly);
-        self.__wavePlots.drawWaves(waves, xvals, conArrs, drawPen);
+        self.__plotW.getWavePlots().drawWaves(waves, xvals, conArrs, drawPen);
            
         
     def clearWavePlots(self):
-        self.__wavePlots.clearPlots();            
+        self.__plotW.getWavePlots().clearPlots();            
         self.__clustCtrl.clearClusterSelWaves();
             
     def resetWaveInd(self):
