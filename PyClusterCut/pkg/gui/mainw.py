@@ -481,22 +481,26 @@ class MainW(QMainWindow, Ui_MainW):
     def drawPrevWaves(self):
         if(not self.__dataValid):
             return;
-        drawPen=self.__clustCtrl.getWorkPen();
-        triggerOnly=self.refWaveChsOnlyBox.isChecked();
-        workClust=self.__clustCtrl.getWorkPlotCluster();
-        
-        (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getPrevWaves(self.numWavesIncBox.value(), triggerOnly);        
+        (waves, xvals, conArrs, drawPen)=self.__getWaves(False);        
         self.__plotW.getWavePlots().drawWaves(waves, xvals, conArrs, drawPen);
         
     def drawNextWaves(self):
         if(not self.__dataValid):
             return;
-        drawPen=self.__clustCtrl.getWorkPen();        
+        (waves, xvals, conArrs, drawPen)=self.__getWaves(True);
+        self.__plotW.getWavePlots().drawWaves(waves, xvals, conArrs, drawPen);
+        
+    def __getWaves(self, getNext):
+        if(not self.__dataValid):
+            return (None, None, None, None);
+        drawPen=self.__clustCtrl.getWorkPen();
         triggerOnly=self.refWaveChsOnlyBox.isChecked();
         workClust=self.__clustCtrl.getWorkPlotCluster();
-        
-        (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getNextWaves(self.numWavesIncBox.value(), triggerOnly);
-        self.__plotW.getWavePlots().drawWaves(waves, xvals, conArrs, drawPen);
+        if(getNext):
+            (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getNextWaves(self.numWavesIncBox.value(), triggerOnly);
+        else:
+            (nChs, nptsPerCh, waves, xvals, conArrs)=workClust.getPrevWaves(self.numWavesIncBox.value(), triggerOnly);
+        return (waves, xvals, conArrs, drawPen);
            
         
     def clearWavePlots(self):
