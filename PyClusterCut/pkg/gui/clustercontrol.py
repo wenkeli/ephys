@@ -102,7 +102,17 @@ class ClusterControl(object):
     def changeViewClusters(self):
         workClustID=self.__dataSet.getWorkClustID();
         if(not self.__viewClustList[workClustID].isSelected()):
-            workClustID=self.__dataSet.getInitClustID();
+            initClustID=self.__dataSet.getInitClustID();
+            if(workClustID==initClustID):
+                clustIDs=self.__dataSet.getClusterIDs();
+                if(len(clustIDs)<=1):
+                    self.__viewClustList[initClustID].setSelected(True);
+                    self.__workClustList[initClustID].setSelected(True);
+                    return;
+                workClustID=clustIDs[1];
+            else:
+                workClustID=self.__dataSet.getInitClustID();
+                
             self.__dataSet.setWorkClustID(workClustID);
             self.__viewClustList[workClustID].setSelected(True);
             self.__workClustList[workClustID].setSelected(True);
