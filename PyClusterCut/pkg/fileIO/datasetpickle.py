@@ -1,5 +1,6 @@
 import cPickle as pickle;
 from ..data.dataset import DataSet;
+from ..data.samples import SamplesData;
 
 def saveDataSetPickle(fileName, dataSet):
     fout=open(fileName, "wb");
@@ -9,5 +10,9 @@ def saveDataSetPickle(fileName, dataSet):
 def loadDataSetPickle(fileName):
     fin=open(fileName, "rb");
     dataSet=pickle.load(fin);
+    
+    paramNames=dataSet.getSamples().getParamNames();
+    if(not ("peakFallAngle" in paramNames)):
+        dataSet.getSamples().calcPeakFallAngle();
     fin.close();
     return dataSet;

@@ -83,6 +83,7 @@ class SamplesData(object):
         self.__calcPeakEnergy();
         self.__calcValleyEnergy();
         self.__calcPeakAngle();
+        self.calcPeakFallAngle();
         self.__calcTime();
         
 #     def __calcPeak(self, peakTime=8):
@@ -136,6 +137,14 @@ class SamplesData(object):
         self.__params["peakAngle"]=self.__params["peakAngle"]/(self.__samplingUSec*stepSize);
         self.__params["peakAngle"]=np.arctan(self.__params["peakAngle"])/(2*np.pi)*360;                       
         self.__paramType["peakAngle"]=1;
+        
+    def calcPeakFallAngle(self, startOffset=1, stepSize=3):
+        sampleInd=np.r_[0:self.__numSamples];
+        self.__params["peakFallAngle"]=(self.__waveforms[:, sampleInd, self.__params["peakTime"]+startOffset+stepSize]-
+                                       self.__waveforms[:, sampleInd, self.__params["peakTime"]+startOffset]);
+        self.__params["peakFallAngle"]=self.__params["peakFallAngle"]/(self.__samplingUSec*stepSize);
+        self.__params["peakFallAngle"]=np.arctan(self.__params["peakFallAngle"])/(2*np.pi)*360;
+        self.__paramType["peakFallAngle"]=1;
         
     def __calcTime(self):
         self.__params["time"]=np.float64(self.__timestamps)/self.__samplingHz;

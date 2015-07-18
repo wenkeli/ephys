@@ -48,6 +48,8 @@ class AxisControl(object):
             modParamNames.append("valley");
         if("peakAngle" in paramNames):
             modParamNames.append("peakAngle");
+        if("peakFallAngle" in paramNames):
+            modParamNames.append("peakFallAngle");
         if("time" in paramNames):
             modParamNames.append("time");
         
