@@ -7,31 +7,6 @@ import numpy as np;
 from ..data.dataset import DataSet;
 from ..gui.clusterplotitem import ClusterPlotItem;
 
-def exportToHDF5(fileName, dataSet):
-    fout=h5py.File(fileName, "w");
-    
-    initID=dataSet.getInitClustID();
-    
-    clustIDs=dataSet.getClusterIDs();
-    clustIDs.remove(initID);
-    
-    paramKeys=dataSet.getSamples().getParamNames();
-    
-    for i in clustIDs:
-        cluster=dataSet.getCluster(i);
-        
-        clustGrp=fout.create_group(i);
-        
-        clustGrp.create_dataset("rating", data=cluster.getRating());
-        for j in paramKeys:
-            param=cluster.getParamAllChs(j);
-            if(len(param.shape)>=2):
-                param=param.T;
-            clustGrp.create_dataset(j, data=param);
-        
-    fout.flush();
-    fout.close();
-
 def exportToHDF5PerCluster(fileName, dataSet):
     fName, fExt=os.path.splitext(fileName);
     
@@ -45,11 +20,17 @@ def exportToHDF5PerCluster(fileName, dataSet):
         fout=h5py.File(fName+".C_"+str(i)+fExt, "w");
         cluster=dataSet.getCluster(i);
         fout.create_dataset("rating", data=cluster.getRating());
+        
+        (wAvg, wSEM)=cluster.calcWaveStats();
+        fout.create_dataset("waveAverage", data=wAvg.T);
+        fout.create_dataset("waveSEM", data=wSEM.T);
+        
         for j in paramKeys:
             param=cluster.getParamAllChs(j);
             if(len(param.shape)>=2):
                 param=param.T;
             fout.create_dataset(j, data=param);
+        
         fout.flush();
         fout.close();
 

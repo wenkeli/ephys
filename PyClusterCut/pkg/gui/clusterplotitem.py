@@ -133,8 +133,7 @@ class ClusterPlotItem(object):
         wSEM=np.std(waves, 1)/np.sqrt(waves.shape[1]);
         
         (nptsPerCh, waves, xvals, conArrs)=self.__cluster.getWaveforms(self.__selDispWaves, 
-                                                                       None, False);
-        waves=np.array(waves);
+                                                                       None, False)
         return (waves, wAvg, wSEM);
     
     def __getSelPointsByRange(self, startInd, endInd):

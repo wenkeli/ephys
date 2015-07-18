@@ -118,6 +118,14 @@ class Cluster(object):
             sBA=self.__sBA;
         return self.__data.getWaveforms(sBA, chN, trigChOnly);
     
+    def calcWaveStats(self):
+        (nptsPerCh, waves, xvals, conArrs)=self.__data.getWaveforms(self.__sBA, None, False);
+        waves=np.array(waves);
+        wAvg=np.average(waves, 1);
+        wSEM=np.std(waves, 1)/np.sqrt(waves.shape[1]);
+        return (wAvg, wSEM);
+#         
+    
     def getParam(self, chN, paramName):
         return self.__data.getParam(chN, paramName)[self.__sBA];
     
