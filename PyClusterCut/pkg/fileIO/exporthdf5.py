@@ -36,10 +36,12 @@ def exportToHDF5PerCluster(fileName, dataSet):
 
 def exportWavesToHDF5(fileName, plotClusters):
     fout=h5py.File(fileName, "w");
+    
     clustIDs=plotClusters.keys();
     
     for i in clustIDs:
         (waves, wAvg, wSEM)=plotClusters[i].getSelDispWaves();
+        waves=np.array(waves);
         if(waves.size<=0):
             continue;
         clustGrp=fout.create_group("c_"+i);
