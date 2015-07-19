@@ -52,6 +52,12 @@ class AxisControl(object):
             modParamNames.append("peakFallAngle");
         if("time" in paramNames):
             modParamNames.append("time");
+        if("peakEnergy" in paramNames):
+            modParamNames.append("peakEnergy");
+        if("valleyEnergy" in paramNames):
+            modParamNames.append("valleyEnergy");
+        if("PVWidth" in paramNames):
+            modParamNames.append("PVWidth");
         
         for name in paramNames:
             if(name in ignoredParamNames):
