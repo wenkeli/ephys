@@ -123,7 +123,10 @@ class Cluster(object):
         waves=np.array(waves);
         wAvg=np.average(waves, 1);
         wSEM=np.std(waves, 1)/np.sqrt(waves.shape[1]);
-        return (wAvg, wSEM);
+        w25P=np.percentile(waves, 25.0, 1);
+        w75P=np.percentile(waves, 75.0, 1);
+        wMed=np.percentile(waves, 50.0, 1);
+        return (wAvg, wSEM, w25P, wMed, w75P);
 #         
     
     def getParam(self, chN, paramName):

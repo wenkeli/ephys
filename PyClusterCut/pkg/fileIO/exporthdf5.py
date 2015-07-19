@@ -21,9 +21,12 @@ def exportToHDF5PerCluster(fileName, dataSet):
         cluster=dataSet.getCluster(i);
         fout.create_dataset("rating", data=cluster.getRating());
         
-        (wAvg, wSEM)=cluster.calcWaveStats();
+        (wAvg, wSEM, w25P, wMed, w75P)=cluster.calcWaveStats();
         fout.create_dataset("waveAverage", data=wAvg.T);
         fout.create_dataset("waveSEM", data=wSEM.T);
+        fout.create_dataset("wave25Percentile", data=w25P.T);
+        fout.create_dataset("waveMedian", data=wMed.T);
+        fout.create_dataset("wave75Percentile", data=w75P.T);
         
         for j in paramKeys:
             param=cluster.getParamAllChs(j);
