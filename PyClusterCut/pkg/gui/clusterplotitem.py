@@ -127,14 +127,11 @@ class ClusterPlotItem(object):
         self.__calcSelPtsSequence();
         
     def getSelDispWaves(self):
-        (nptsPerCh, waves, xvals, conArrs)=self.__cluster.getWaveforms(None, None, False);
-        waves=np.array(waves);
-        wAvg=np.average(waves, 1);
-        wSEM=np.std(waves, 1)/np.sqrt(waves.shape[1]);
+        (wAvg, wSEM, w25P, wMed, w75P)=self.__cluster.calcWaveStats();
         
         (nptsPerCh, waves, xvals, conArrs)=self.__cluster.getWaveforms(self.__selDispWaves, 
                                                                        None, False)
-        return (waves, wAvg, wSEM);
+        return (waves, wAvg, wSEM, w25P, wMed, w75P);
     
     def __getSelPointsByRange(self, startInd, endInd):
         sBA=self.__cluster.getSelectArray();

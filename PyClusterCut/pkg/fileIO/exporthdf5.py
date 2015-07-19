@@ -43,7 +43,7 @@ def exportWavesToHDF5(fileName, plotClusters):
     clustIDs=plotClusters.keys();
     
     for i in clustIDs:
-        (waves, wAvg, wSEM)=plotClusters[i].getSelDispWaves();
+        (waves, wAvg, wSEM, w25P, wMed, w75P)=plotClusters[i].getSelDispWaves();
         waves=np.array(waves);
         if(waves.size<=0):
             continue;
@@ -51,6 +51,10 @@ def exportWavesToHDF5(fileName, plotClusters):
         clustGrp.create_dataset("waveforms", data=waves.transpose(1, 0, 2));
         clustGrp.create_dataset("waveAverage", data=wAvg.T);
         clustGrp.create_dataset("waveSEM", data=wSEM.T);
+        clustGrp.create_dataset("wave25Percentile", data=w25P.T);
+        clustGrp.create_dataset("waveMedian", data=wMed.T);
+        clustGrp.create_dataset("wave75Percentile", data=w75P.T);
+        
         
     fout.flush();
     fout.close();
