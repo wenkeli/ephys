@@ -106,7 +106,7 @@ class ClusterControl(object):
             if(len(clustItems)<=0):
                 workClustID=self.__dataSet.getInitClustID();
             else:
-                workClustID=clustItems[-1].data(self.__selDataRole);
+                workClustID=clustItems[0].data(self.__selDataRole);
                 
             self.__dataSet.setWorkClustID(workClustID);
             self.__viewClustList[workClustID].setSelected(True);
