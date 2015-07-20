@@ -1,3 +1,5 @@
+import numpy as np;
+
 from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
 from .clusterplotitem import ClusterPlotItem;
 from .colortable import ColorTable;
@@ -106,8 +108,18 @@ class ClusterControl(object):
             if(len(clustItems)<=0):
                 workClustID=self.__dataSet.getInitClustID();
             else:
-                workClustID=clustItems[0].data(self.__selDataRole);
+                clustIDs=[];
+                for clustItem in clustItems:
+                    clustIDs.append(np.int(clustItem.data(self.__selDataRole)));
+                clustIDs=np.array(clustIDs);
                 
+                workClustID=np.int(workClustID);
+                clustIDs=np.sort(clustIDs);
+                if(workClustID>np.max(clustIDs)):
+                    workClustID=str(clustIDs[0]);
+                else:
+                    workClustID=str(clustIDs[np.where(clustIDs>workClustID)[0][0]]);
+                            
             self.__dataSet.setWorkClustID(workClustID);
             self.__viewClustList[workClustID].setSelected(True);
             self.__workClustList[workClustID].setSelected(True);
