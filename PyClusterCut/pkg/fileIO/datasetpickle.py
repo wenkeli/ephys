@@ -10,9 +10,12 @@ def saveDataSetPickle(fileName, dataSet):
 def loadDataSetPickle(fileName):
     fin=open(fileName, "rb");
     dataSet=pickle.load(fin);
+    fin.close();
     
     paramNames=dataSet.getSamples().getParamNames();
     if(not ("peakFallAngle" in paramNames)):
         dataSet.getSamples().calcPeakFallAngle();
-    fin.close();
+    if(not ("peakMax" in paramNames)):
+        dataSet.getSamples().calcPeakMax();
+        
     return dataSet;

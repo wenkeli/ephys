@@ -72,12 +72,18 @@ class SamplesData(object):
         
         self.__params["peak"]=self.__waveforms[:, sampleInds, self.__params["peakTime"]];
         self.__paramType["peak"]=1;
+        
+        
+    def calcPeakMax(self, peakStart=7, peakEnd=10):
+        self.__params["peakMax"]=np.max(self.__waveforms[:, :, peakStart:peakEnd], 2);
+        self.__paramType["peakMax"]=1;
     
     
     def __calcParams(self):
         self.__params["timestamp"]=self.__timestamps;
         self.__paramType["timestamp"]=0; #0 is channel independent
         self.__calcPeak();
+        self.calcPeakMax();
         self.__calcValley();
         self.__calcPVWidth();
         self.__calcPeakEnergy();
