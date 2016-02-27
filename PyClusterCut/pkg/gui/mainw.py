@@ -274,6 +274,8 @@ class MainW(QMainWindow, Ui_MainW):
     def __loadClusterDataSetFile(self, fileName):
         self.__dataSet=loadDataSetPickle(fileName);
         self.__dataSet.updateWorkingSet();
+        #TODO: gotta refactor the code so that the code for handling all the attribute changes are in one place and not scattered
+        #all over.
         
         self.__clustCtrl.initalize(self.__dataSet);
         self.changeWorkCluster();
