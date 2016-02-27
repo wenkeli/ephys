@@ -174,6 +174,7 @@ class Cluster(object):
         self.__modifySelect(sBA);
         self.__addToHist(self.__sBA, clustBound);
         
+        
     def stepBack(self):
         self.__validateHistory();
         if(len(self.__history)<=1):

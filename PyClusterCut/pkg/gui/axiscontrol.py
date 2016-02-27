@@ -73,11 +73,16 @@ class AxisControl(object):
             self.__paramList[name].setData(self.__selDataRole, name);
             self.__paramSelect.addItem(self.__paramList[name]);
             
-        for name in modParamNames:
+        self.updateViewLimits(dataSet);
+            
+                
+    def updateViewLimits(self, dataSet):
+        numChs=dataSet.getSamples().getNumChannels();
+        for name in self.__paramList.keys():
             self.__limits[name]=dict();
             for j in np.r_[0:numChs]:
                 bounds=dataSet.getParamBounds(j, name);
-                self.__limits[name][j]=bounds;        
+                self.__limits[name][j]=bounds;  
         
         
     

@@ -144,6 +144,10 @@ class MainW(QMainWindow, Ui_MainW):
         
         self.clustRateBox.setEnabled(enable);
         
+        self.outlierPosThreshBox.setEnabled(enable);
+        self.outlierNegThreshBox.setEnabled(enable);
+        self.elimOutlierButton.setEnabled(enable);
+        
         
     def __enableClusterUI(self, enable):
         self.addButton.setEnabled(enable);
@@ -269,6 +273,8 @@ class MainW(QMainWindow, Ui_MainW):
               
     def __loadClusterDataSetFile(self, fileName):
         self.__dataSet=loadDataSetPickle(fileName);
+        self.__dataSet.updateWorkingSet();
+        
         self.__clustCtrl.initalize(self.__dataSet);
         self.changeWorkCluster();
         
@@ -291,6 +297,21 @@ class MainW(QMainWindow, Ui_MainW):
         self.__dataSet.initializeWorkingSet(startTime, endTime);
         self.__clustCtrl.initalize(self.__dataSet);
         self.__setDataIsValid();
+        
+        
+    def eliminateOutliers(self):
+        posThresh=self.outlierPosThreshBox.value();
+        negThresh=self.outlierNegThreshBox.value();
+        self.__dataSet.eliminateOutliers(negThresh, posThresh);
+        self.__hAxis.updateViewLimits(self.__dataSet);
+        self.__vAxis.updateViewLimits(self.__dataSet);
+        self.updatePlotView();
+
+
+    def disableElimOutlierUI(self):
+        self.outlierNegThreshBox.setEnabled(False);
+        self.outlierPosThreshBox.setEnabled(False);
+        self.elimOutlierButton.setEnabled(False);
         
         
     def __setDataIsValid(self):

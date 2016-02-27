@@ -4,22 +4,38 @@ from scipy.signal import waveforms
 class SamplesClustCount(object):
     def __init__(self, numSamples):
         self.__sampleNumClust=np.zeros(numSamples, dtype="int32");
+        self.__workingSet=np.zeros(numSamples, dtype="bool");
+        
+    def updateWorkingSet(self, set):
+        self.__workingSet=set;
         
     def addClustCount(self, sBA):
         self.__sampleNumClust[sBA]=self.__sampleNumClust[sBA]+1;
         
     def minusClustCount(self, sBA):
-        self.__sampleNumClust[sBA]=self.__sampleNumClust[sBA]-1;
-        self.__sampleNumClust[self.__sampleNumClust<0]=0;
+            self.__sampleNumClust[sBA]=self.__sampleNumClust[sBA]-1;
+            self.__sampleNumClust[self.__sampleNumClust<0]=0;
         
     def getNoClustSamples(self):
         return self.getNClustSamples(0);
     
     def getNClustSamples(self, numClusts):
-        return self.__sampleNumClust==numClusts;
+        try:
+            return (self.__sampleNumClust==numClusts) & self.__workingSet;
+        except(AttributeError):
+            self.__workingSet=np.zeros(self.__sampleNumClust.size, dtype="bool");
+            self.__workingSet=True;
+            return (self.__sampleNumClust==numClusts) & self.__workingSet;
     
     def getMinClustSamples(self, numClusts):
-        return self.__sampleNumClust>=numClusts;
+        try:
+            return (self.__sampleNumClust>=numClusts) & self.__workingSet;
+        except(AttributeError):
+            self.__workingSet=np.zeros(self.__sampleNumClust.size, dtype="bool");
+            self.__workingSet=True;
+            return (self.__sampleNumClust>=numClusts) & self.__workingSet;
+                        
+    
 
 class SamplesData(object):
     def __init__(self, waveforms, timestamps, numChs, samplingHz):
@@ -156,6 +172,10 @@ class SamplesData(object):
         self.__params["time"]=np.float64(self.__timestamps)/self.__samplingHz;
         self.__paramType["time"]=0;
 
+    def getOutlierMask(self, negThresh, posThresh):
+        mask=(self.__params["peakMax"]>posThresh) | (self.__params["peakMax"]<negThresh);
+        mask=mask | (self.__params["peak"]>posThresh) | (self.__params["peak"]<negThresh); 
+        return np.sum(mask, 0)>0;
         
     def getParamNames(self):
         return self.__params.keys();

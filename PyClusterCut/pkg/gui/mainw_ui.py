@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Sun Jul 19 12:53:28 2015
+# Created: Fri Feb 26 20:51:14 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_MainW(object):
     def setupUi(self, MainW):
         MainW.setObjectName("MainW")
-        MainW.resize(280, 746)
+        MainW.resize(280, 831)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -72,7 +72,7 @@ class Ui_MainW(object):
         self.viewButton.setGeometry(QtCore.QRect(180, 600, 41, 25))
         self.viewButton.setObjectName("viewButton")
         self.quitButton = QtGui.QPushButton(MainW)
-        self.quitButton.setGeometry(QtCore.QRect(10, 720, 63, 21))
+        self.quitButton.setGeometry(QtCore.QRect(0, 800, 63, 21))
         self.quitButton.setObjectName("quitButton")
         self.addButton = QtGui.QPushButton(MainW)
         self.addButton.setGeometry(QtCore.QRect(20, 570, 41, 25))
@@ -126,7 +126,7 @@ class Ui_MainW(object):
         self.timeSelStartBox.setProperty("value", -1)
         self.timeSelStartBox.setObjectName("timeSelStartBox")
         self.timeSelButton = QtGui.QPushButton(MainW)
-        self.timeSelButton.setGeometry(QtCore.QRect(200, 690, 61, 41))
+        self.timeSelButton.setGeometry(QtCore.QRect(200, 680, 61, 41))
         self.timeSelButton.setObjectName("timeSelButton")
         self.timeSelLabel = QtGui.QLabel(MainW)
         self.timeSelLabel.setGeometry(QtCore.QRect(0, 640, 271, 20))
@@ -150,7 +150,7 @@ class Ui_MainW(object):
         self.viewLargeButton.setGeometry(QtCore.QRect(130, 600, 41, 25))
         self.viewLargeButton.setObjectName("viewLargeButton")
         self.timeResetButton = QtGui.QPushButton(MainW)
-        self.timeResetButton.setGeometry(QtCore.QRect(210, 660, 41, 21))
+        self.timeResetButton.setGeometry(QtCore.QRect(210, 650, 41, 21))
         self.timeResetButton.setObjectName("timeResetButton")
         self.clustRateBox = QtGui.QSpinBox(MainW)
         self.clustRateBox.setGeometry(QtCore.QRect(200, 400, 51, 31))
@@ -170,6 +170,32 @@ class Ui_MainW(object):
         self.toggleRefWaveChsButton = QtGui.QPushButton(MainW)
         self.toggleRefWaveChsButton.setGeometry(QtCore.QRect(210, 540, 41, 25))
         self.toggleRefWaveChsButton.setObjectName("toggleRefWaveChsButton")
+        self.elimOutlierButton = QtGui.QPushButton(MainW)
+        self.elimOutlierButton.setGeometry(QtCore.QRect(180, 740, 83, 24))
+        self.elimOutlierButton.setObjectName("elimOutlierButton")
+        self.outlierPosThreshBox = QtGui.QSpinBox(MainW)
+        self.outlierPosThreshBox.setGeometry(QtCore.QRect(60, 770, 111, 22))
+        self.outlierPosThreshBox.setMaximum(10000000)
+        self.outlierPosThreshBox.setProperty("value", 500)
+        self.outlierPosThreshBox.setObjectName("outlierPosThreshBox")
+        self.outlierThreshLabel = QtGui.QLabel(MainW)
+        self.outlierThreshLabel.setGeometry(QtCore.QRect(100, 720, 41, 21))
+        self.outlierThreshLabel.setObjectName("outlierThreshLabel")
+        self.outlierNegThreshBox = QtGui.QSpinBox(MainW)
+        self.outlierNegThreshBox.setGeometry(QtCore.QRect(60, 740, 111, 22))
+        self.outlierNegThreshBox.setMinimum(-10000000)
+        self.outlierNegThreshBox.setMaximum(0)
+        self.outlierNegThreshBox.setProperty("value", -200)
+        self.outlierNegThreshBox.setObjectName("outlierNegThreshBox")
+        self.label = QtGui.QLabel(MainW)
+        self.label.setGeometry(QtCore.QRect(30, 770, 21, 20))
+        self.label.setObjectName("label")
+        self.label_2 = QtGui.QLabel(MainW)
+        self.label_2.setGeometry(QtCore.QRect(30, 740, 20, 21))
+        self.label_2.setObjectName("label_2")
+        self.finalizeElimOutlierBox = QtGui.QPushButton(MainW)
+        self.finalizeElimOutlierBox.setGeometry(QtCore.QRect(180, 780, 83, 24))
+        self.finalizeElimOutlierBox.setObjectName("finalizeElimOutlierBox")
 
         self.retranslateUi(MainW)
         QtCore.QObject.connect(self.openFileButton, QtCore.SIGNAL("clicked()"), MainW.loadFile)
@@ -200,6 +226,8 @@ class Ui_MainW(object):
         QtCore.QObject.connect(self.undoClustButton, QtCore.SIGNAL("clicked()"), MainW.undoCluster)
         QtCore.QObject.connect(self.stepBackBoundButton, QtCore.SIGNAL("clicked()"), MainW.stepBackBoundary)
         QtCore.QObject.connect(self.toggleRefWaveChsButton, QtCore.SIGNAL("clicked()"), MainW.toggleRefWaveChs)
+        QtCore.QObject.connect(self.elimOutlierButton, QtCore.SIGNAL("clicked()"), MainW.eliminateOutliers)
+        QtCore.QObject.connect(self.finalizeElimOutlierBox, QtCore.SIGNAL("clicked()"), MainW.disableElimOutlierUI)
         QtCore.QMetaObject.connectSlotsByName(MainW)
 
     def retranslateUi(self, MainW):
@@ -278,4 +306,9 @@ class Ui_MainW(object):
         self.refWaveChsOnlyBox.setText(QtGui.QApplication.translate("MainW", "RefWaves only", None, QtGui.QApplication.UnicodeUTF8))
         self.toggleRefWaveChsButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>toggle displaying only reference waveform channels, which also sets the checkbox.</p><p>Keyboard shortcut: T</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.toggleRefWaveChsButton.setText(QtGui.QApplication.translate("MainW", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
+        self.elimOutlierButton.setText(QtGui.QApplication.translate("MainW", "elim outliers", None, QtGui.QApplication.UnicodeUTF8))
+        self.outlierThreshLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">thresh</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">+</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\"><span style=\" font-weight:600;\">-</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.finalizeElimOutlierBox.setText(QtGui.QApplication.translate("MainW", "finalize", None, QtGui.QApplication.UnicodeUTF8))
 

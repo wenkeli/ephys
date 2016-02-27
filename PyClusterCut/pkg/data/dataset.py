@@ -34,6 +34,7 @@ class DataSet(object):
         self.__workingSet=(timeStamps>=startTime) & (timeStamps<=endTime);
         self.__workingSetStartTime=startTime;
         self.__workingSetEndTime=endTime;
+        self.__sampleClustCnt.updateWorkingSet(self.__workingSet);
             
         self.__addClusterToList(False, False);
         self.__initClustID=self.__workClustID;
@@ -41,6 +42,22 @@ class DataSet(object):
         self.__workingSetInit=True;
         
         return (self.__initClustID, self.__clusters[self.__initClustID]);
+    
+    
+    def updateWorkingSet(self):
+        self.__sampleClustCnt.updateWorkingSet(self.__workingSet);
+    
+    
+    def eliminateOutliers(self, negThresh, posThresh):
+        if(not self.__workingSetInit):
+            return;
+        mask=self.__samples.getOutlierMask(negThresh, posThresh);
+        self.__workingSet=self.__workingSet & (~mask);
+        
+        self.__sampleClustCnt.updateWorkingSet(self.__workingSet);
+        
+        for clustID in self.__clusters.keys():
+            self.__clusters[clustID].removePoints(mask, False);
         
     def getSamplesStartEndTimes(self):
         timeStamps=self.__samples.getParam(0, "timestamp");
