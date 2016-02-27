@@ -52,6 +52,8 @@ class DataSet(object):
         if(not self.__workingSetInit):
             return;
         mask=self.__samples.getOutlierMask(negThresh, posThresh);
+        print("number of outliers: "+np.sum(mask));
+        
         self.__workingSet=self.__workingSet & (~mask);
         
         self.__sampleClustCnt.updateWorkingSet(self.__workingSet);

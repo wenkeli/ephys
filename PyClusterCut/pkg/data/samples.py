@@ -174,7 +174,7 @@ class SamplesData(object):
 
     def getOutlierMask(self, negThresh, posThresh):
         mask=(self.__params["peakMax"]>posThresh) | (self.__params["peakMax"]<negThresh);
-        mask=mask | (self.__params["peak"]>posThresh) | (self.__params["peak"]<negThresh); 
+        mask=mask | (self.__params["peak"]>posThresh) | (self.__params["peak"]<negThresh);
         return np.sum(mask, 0)>0;
         
     def getParamNames(self):

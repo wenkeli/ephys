@@ -147,6 +147,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.outlierPosThreshBox.setEnabled(enable);
         self.outlierNegThreshBox.setEnabled(enable);
         self.elimOutlierButton.setEnabled(enable);
+        self.finalizeElimOutlierBox.setEnabled(enable);
         
         
     def __enableClusterUI(self, enable):
@@ -314,6 +315,7 @@ class MainW(QMainWindow, Ui_MainW):
         self.outlierNegThreshBox.setEnabled(False);
         self.outlierPosThreshBox.setEnabled(False);
         self.elimOutlierButton.setEnabled(False);
+        self.finalizeElimOutlierBox.setEnabled(False);
         
         
     def __setDataIsValid(self):

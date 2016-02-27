@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created: Fri Feb 26 20:51:14 2016
+# Created: Fri Feb 26 23:47:49 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -171,7 +171,7 @@ class Ui_MainW(object):
         self.toggleRefWaveChsButton.setGeometry(QtCore.QRect(210, 540, 41, 25))
         self.toggleRefWaveChsButton.setObjectName("toggleRefWaveChsButton")
         self.elimOutlierButton = QtGui.QPushButton(MainW)
-        self.elimOutlierButton.setGeometry(QtCore.QRect(180, 740, 83, 24))
+        self.elimOutlierButton.setGeometry(QtCore.QRect(182, 740, 81, 21))
         self.elimOutlierButton.setObjectName("elimOutlierButton")
         self.outlierPosThreshBox = QtGui.QSpinBox(MainW)
         self.outlierPosThreshBox.setGeometry(QtCore.QRect(60, 770, 111, 22))
@@ -179,7 +179,7 @@ class Ui_MainW(object):
         self.outlierPosThreshBox.setProperty("value", 500)
         self.outlierPosThreshBox.setObjectName("outlierPosThreshBox")
         self.outlierThreshLabel = QtGui.QLabel(MainW)
-        self.outlierThreshLabel.setGeometry(QtCore.QRect(100, 720, 41, 21))
+        self.outlierThreshLabel.setGeometry(QtCore.QRect(60, 720, 111, 21))
         self.outlierThreshLabel.setObjectName("outlierThreshLabel")
         self.outlierNegThreshBox = QtGui.QSpinBox(MainW)
         self.outlierNegThreshBox.setGeometry(QtCore.QRect(60, 740, 111, 22))
@@ -194,7 +194,7 @@ class Ui_MainW(object):
         self.label_2.setGeometry(QtCore.QRect(30, 740, 20, 21))
         self.label_2.setObjectName("label_2")
         self.finalizeElimOutlierBox = QtGui.QPushButton(MainW)
-        self.finalizeElimOutlierBox.setGeometry(QtCore.QRect(180, 780, 83, 24))
+        self.finalizeElimOutlierBox.setGeometry(QtCore.QRect(182, 780, 81, 21))
         self.finalizeElimOutlierBox.setObjectName("finalizeElimOutlierBox")
 
         self.retranslateUi(MainW)
@@ -307,7 +307,7 @@ class Ui_MainW(object):
         self.toggleRefWaveChsButton.setToolTip(QtGui.QApplication.translate("MainW", "<html><head/><body><p>toggle displaying only reference waveform channels, which also sets the checkbox.</p><p>Keyboard shortcut: T</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.toggleRefWaveChsButton.setText(QtGui.QApplication.translate("MainW", "Toggle", None, QtGui.QApplication.UnicodeUTF8))
         self.elimOutlierButton.setText(QtGui.QApplication.translate("MainW", "elim outliers", None, QtGui.QApplication.UnicodeUTF8))
-        self.outlierThreshLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">thresh</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+        self.outlierThreshLabel.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"center\">thresh</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\">+</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainW", "<html><head/><body><p align=\"right\"><span style=\" font-weight:600;\">-</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.finalizeElimOutlierBox.setText(QtGui.QApplication.translate("MainW", "finalize", None, QtGui.QApplication.UnicodeUTF8))
