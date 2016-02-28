@@ -52,7 +52,7 @@ class DataSet(object):
         if(not self.__workingSetInit):
             return;
         mask=self.__samples.getOutlierMask(negThresh, posThresh);
-        print("number of outliers: "+np.sum(mask));
+        print("number of outliers: "+str(np.sum(mask)));
         
         self.__workingSet=self.__workingSet & (~mask);
         
