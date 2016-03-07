@@ -1,5 +1,4 @@
 import numpy as np;
-from scipy.signal import waveforms
 
 class SamplesClustCount(object):
     def __init__(self, numSamples):
