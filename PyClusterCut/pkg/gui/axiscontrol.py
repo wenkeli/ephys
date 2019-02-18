@@ -1,5 +1,5 @@
 import numpy as np;
-from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
+from PyQt5.QtWidgets import QAbstractItemView, QListWidget, QListWidgetItem;
 from ..data.dataset import DataSet;
 
 class AxisControl(object):

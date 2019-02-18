@@ -1,9 +1,9 @@
 import numpy as np;
 import pyqtgraph as pg;
 
-from PySide.QtGui import QBrush;
+from PyQt5.QtGui import QBrush;
 
-import FastScatterPlotItem as fscatter;
+from .FastScatterPlotItem import FastScatterPlotItem;
 
 from pyqtgraph.graphicsItems.ScatterPlotItem import ScatterPlotItem;
 
@@ -27,7 +27,7 @@ class ClusterPlotItem(object):
 #                                       size=1);
         
 
-        self.__plotData=fscatter.FastScatterPlotItem(x=[0], y=[0],
+        self.__plotData=FastScatterPlotItem(x=[0], y=[0],
                                       symbol="s", pen=self.__pen,
                                       size=1, pointMode=True);
         self.__plotDataBigP=ScatterPlotItem(x=[0], y=[0], symbol="s",

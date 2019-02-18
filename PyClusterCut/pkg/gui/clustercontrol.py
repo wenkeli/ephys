@@ -1,4 +1,4 @@
-from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
+from PyQt5.QtWidgets import QAbstractItemView, QListWidget, QListWidgetItem;
 from .clusterplotitem import ClusterPlotItem;
 from .colortable import ColorTable;
 

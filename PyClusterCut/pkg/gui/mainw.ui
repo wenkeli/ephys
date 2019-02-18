@@ -261,6 +261,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window&lt;/p&gt;&lt;p&gt;keyboard shortcut: V&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>View</string>
    </property>
@@ -292,6 +295,8 @@
    </property>
    <property name="font">
     <font>
+     <family>Noto Sans</family>
+     <pointsize>9</pointsize>
      <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
@@ -299,6 +304,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the selected working cluster with the points in the boundary.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: A&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>Add</string>
@@ -316,6 +324,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;refine the selected working cluster with points in the boundaries, All the points outside of the boundary is returned to the 0 (initial) cluster&lt;/p&gt;&lt;p&gt;keyboard shortcut: F&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>reFine</string>
    </property>
@@ -331,6 +342,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;add a cluster from the currently selected work cluster with points in the boundary, but also keep the points in the parent cluster&lt;/p&gt;&lt;p&gt;keyboard shortcut: S&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>copy</string>
@@ -348,6 +362,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete the selected working cluster, all the points will be returned to the 0 (initial) cluster.&lt;/p&gt;&lt;p&gt;keyboard shortcut: shift+D&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>Delete</string>
    </property>
@@ -363,6 +380,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;clear the waveform view window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: E&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>clEar</string>
@@ -380,6 +400,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;produce a report of cluster overlaps, click again to high window&lt;/p&gt;&lt;p&gt;Keyboard shortcut: X&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>report</string>
    </property>
@@ -395,6 +418,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;View the next 100 waveforms of the working cluster&lt;/p&gt;&lt;p&gt;Keyboard shortcut: W&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>nWav</string>
@@ -412,6 +438,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;step back one point in the boundary selection&lt;/p&gt;&lt;p&gt;Keyboard shortcut: Z&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>back</string>
    </property>
@@ -428,6 +457,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;View the previous 100 waveforms of the working cluster&lt;/p&gt;&lt;p&gt;Keyboard shortcut: Q&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>pwav</string>
    </property>
@@ -443,6 +475,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset the display wave index of the working cluster back to 0 (beginning)&lt;/p&gt;&lt;p&gt;Keyboard shortcut: R&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>Reset</string>
@@ -607,9 +642,9 @@
   <widget class="QPushButton" name="exportWavesButton">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>10</x>
      <y>40</y>
-     <width>91</width>
+     <width>101</width>
      <height>21</height>
     </rect>
    </property>
@@ -631,6 +666,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;update the data viewed in the plot window, draw in large points for visualizing stray isolated points.&lt;/p&gt;&lt;p&gt;Warning: this can be pretty slow, and the plot might take some time to update.&lt;/p&gt;&lt;p&gt;keyboard shortcut: C&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>viewb</string>
@@ -675,9 +713,9 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>360</y>
+     <y>350</y>
      <width>61</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -695,6 +733,9 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;undo the operations on the working cluster, one step per click.&lt;/p&gt;&lt;p&gt;keyboard shortcut: Shift-G&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>undo</string>
@@ -728,6 +769,9 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;toggle displaying only reference waveform channels, which also sets the checkbox.&lt;/p&gt;&lt;p&gt;Keyboard shortcut: T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
+   </property>
    <property name="text">
     <string>Toggle</string>
    </property>
@@ -740,6 +784,9 @@
      <width>81</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 9pt &quot;Noto Sans&quot;;</string>
    </property>
    <property name="text">
     <string>elim outliers</string>
@@ -793,7 +840,7 @@
     <number>-200</number>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="posThreshLabel">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -806,7 +853,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="negThreshLabel">
    <property name="geometry">
     <rect>
      <x>30</x>

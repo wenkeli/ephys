@@ -1,8 +1,10 @@
 import sys;
 
-from pkg.gui.mainw import MainW;
+import PyQt5;
 
-from PySide.QtGui import QApplication;
+from PyQt5.QtWidgets import QApplication;
+
+from pkg.gui.mainw import MainW;
 
 if __name__ =="__main__":
     app=QApplication(sys.argv);

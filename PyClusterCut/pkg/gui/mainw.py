@@ -3,17 +3,17 @@ import gc;
 
 import numpy as np;
 
-import PySide;
-from PySide.QtGui import QMainWindow, QApplication;
-from PySide.QtGui import QAbstractItemView, QListWidget, QListWidgetItem;
-from PySide.QtGui import QKeySequence, QShortcut, QFileDialog;
-from PySide.QtCore import Qt, QRect;
+from PyQt5.QtWidgets import QMainWindow, QApplication;
+from PyQt5.QtWidgets import QAbstractItemView, QListWidget, QListWidgetItem;
+from PyQt5.QtWidgets import QShortcut, QFileDialog;
+from PyQt5.QtGui import QKeySequence;
+from PyQt5.QtCore import Qt, QRect;
 
 import pyqtgraph as pg;
 from pyqtgraph.widgets.GraphicsLayoutWidget import GraphicsLayoutWidget;
 
-from mainw_ui import Ui_MainW;
-from reportw import ReportW;
+from .mainw_ui import Ui_MainW;
+from .reportw import ReportW;
 
 from ..fileIO.loadOpenEphysSpikes import readSpikeFile;
 from ..fileIO.exporthdf5 import exportToHDF5PerCluster, exportWavesToHDF5;
@@ -89,8 +89,7 @@ class MainW(QMainWindow, Ui_MainW):
     def saveClusterData(self):
         fileName=os.path.join(self.__dataDir,self.__dataName+".clusterdataset");
         saveDataSetPickle(fileName, self.__dataSet);
-        self.saveFileButton.setText(QApplication.translate("MainW", "file saved!",
-                                                           None, QApplication.UnicodeUTF8));
+        self.saveFileButton.setText(QApplication.translate("MainW", "file saved!"));
         
         
     def exportData(self):
@@ -100,8 +99,7 @@ class MainW(QMainWindow, Ui_MainW):
         exportToHDF5PerCluster(fileName, self.__dataSet);
 
         print("done");
-        self.exportDataButton.setText(QApplication.translate("MainW", "data exported!",
-                                                             None, QApplication.UnicodeUTF8));
+        self.exportDataButton.setText(QApplication.translate("MainW", "data exported!"));
      
     
     def exportWaveforms(self):
@@ -200,18 +198,16 @@ class MainW(QMainWindow, Ui_MainW):
         
         
     def __resetFileButtonTexts(self):
-        self.saveFileButton.setText(QApplication.translate("MainW", "save file",
-                                                           None, QApplication.UnicodeUTF8));
-        self.exportDataButton.setText(QApplication.translate("MainW", "export data",
-                                                             None, QApplication.UnicodeUTF8));
+        self.saveFileButton.setText(QApplication.translate("MainW", "save file"));
+        self.exportDataButton.setText(QApplication.translate("MainW", "export data"));
 
     
     def loadFile(self):
         print("loading fin");
-        fileName=QFileDialog.getOpenFileName(self, self.tr("open data fin"), 
-                                             self.tr(self.__dataDir), 
-                                             self.tr("1. spike files (*.spikes);;2. cluster data set (*.clusterdataset)"),
-                                             self.__dataFilter);
+        fileName=QFileDialog.getOpenFileName(
+            self, self.tr("open data fin"), self.tr(self.__dataDir), 
+            self.tr("1. spike files (*.spikes);;2. cluster data set (*.clusterdataset)"),
+            self.__dataFilter);
         if(fileName[0]==""):
             return;
         fileType=fileName[1];

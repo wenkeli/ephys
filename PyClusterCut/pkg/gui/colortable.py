@@ -1,5 +1,5 @@
 import pyqtgraph as pg;
-from PySide.QtGui import QBrush, QColor;
+from PyQt5.QtGui import QBrush, QColor;
 
 class ColorTable(object):
     def __init__(self):

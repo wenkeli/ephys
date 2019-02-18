@@ -1,4 +1,4 @@
-from PySide.QtCore import Qt;
+from PyQt5.QtCore import Qt;
 
 from pyqtgraph.widgets.GraphicsLayoutWidget import GraphicsLayoutWidget;
 

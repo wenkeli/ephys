@@ -1,4 +1,4 @@
-import cPickle as pickle;
+import pickle;
 from ..data.dataset import DataSet;
 from ..data.samples import SamplesData;
 

@@ -1,6 +1,6 @@
 import numpy as np;
 import pyqtgraph as pg;
-from PySide.QtCore import Qt;
+from PyQt5.QtCore import Qt;
 
 class WorkBoundary(object):
     def __init__(self, plot):

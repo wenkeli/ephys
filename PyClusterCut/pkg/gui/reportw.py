@@ -1,7 +1,7 @@
-from PySide.QtGui import QWidget;
-from PySide.QtCore import Qt;
+from PyQt5.QtWidgets import QWidget;
+from PyQt5.QtCore import Qt;
 
-from reportw_ui import Ui_ReportW;
+from .reportw_ui import Ui_ReportW;
 
 from ..data.dataset import DataSet;
 
