@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainw.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -41,7 +41,7 @@ class Ui_MainW(object):
         self.workClusterSelect.setGeometry(QtCore.QRect(30, 360, 71, 151))
         self.workClusterSelect.setObjectName("workClusterSelect")
         self.viewClustersSelect = QtWidgets.QListWidget(MainW)
-        self.viewClustersSelect.setGeometry(QtCore.QRect(130, 360, 71, 151))
+        self.viewClustersSelect.setGeometry(QtCore.QRect(120, 360, 71, 151))
         self.viewClustersSelect.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.viewClustersSelect.setObjectName("viewClustersSelect")
         self.chLabel = QtWidgets.QLabel(MainW)
@@ -75,7 +75,7 @@ class Ui_MainW(object):
         self.paramLabel.setFont(font)
         self.paramLabel.setObjectName("paramLabel")
         self.viewingClusterLabel = QtWidgets.QLabel(MainW)
-        self.viewingClusterLabel.setGeometry(QtCore.QRect(130, 320, 61, 41))
+        self.viewingClusterLabel.setGeometry(QtCore.QRect(120, 320, 61, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -205,9 +205,9 @@ class Ui_MainW(object):
         self.clustRateBox.setProperty("value", -1)
         self.clustRateBox.setObjectName("clustRateBox")
         self.clustRatelabel = QtWidgets.QLabel(MainW)
-        self.clustRatelabel.setGeometry(QtCore.QRect(200, 370, 61, 41))
+        self.clustRatelabel.setGeometry(QtCore.QRect(210, 360, 61, 41))
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
         self.clustRatelabel.setFont(font)

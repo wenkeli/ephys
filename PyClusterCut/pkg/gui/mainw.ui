@@ -125,7 +125,7 @@
   <widget class="QListWidget" name="viewClustersSelect">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>120</x>
      <y>360</y>
      <width>71</width>
      <height>151</height>
@@ -235,7 +235,7 @@
   <widget class="QLabel" name="viewingClusterLabel">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>120</x>
      <y>320</y>
      <width>61</width>
      <height>41</height>
@@ -762,15 +762,15 @@
   <widget class="QLabel" name="clustRatelabel">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>370</y>
+     <x>210</x>
+     <y>360</y>
      <width>61</width>
      <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>11</pointsize>
+     <pointsize>10</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
