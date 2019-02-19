@@ -163,7 +163,7 @@ class DataSet(object):
         return self.getCluster(self.__workClustID);
 
     def getClusterIDs(self):
-        keys=self.__clusters.keys();
+        keys=list(self.__clusters.keys());
         keys.sort(key=int);
         return keys;
     

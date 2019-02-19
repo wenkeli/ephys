@@ -1,7 +1,7 @@
 import numpy as np;
 import pyqtgraph as pg;
 
-from PyQt5.QtGui import QBrush;
+from PyQt5.QtGui import QBrush, QColor;
 
 from .FastScatterPlotItem import FastScatterPlotItem;
 
@@ -14,19 +14,18 @@ class ClusterPlotItem(object):
         self.__cluster=cluster;
         
         if(pen is None):
-            self.__pen=pg.mkPen("w");
+            self.__pen=pg.mkPen(QColor("#DFDFDF"));
         else:
             self.__pen=pen;
             
         if(brush is None):
-            self.__brush=QBrush("w");
+            self.__brush=QBrush(QColor("#DFDFDF"));
         else:
             self.__brush=brush;
 #         self.__plotData=pg.ScatterPlotItem(x=[0, 1], y=[0, 1],
 #                                       symbol="s", __pen=pg.mkPen("w"),
 #                                       size=1);
         
-
         self.__plotData=FastScatterPlotItem(x=[0], y=[0],
                                       symbol="s", pen=self.__pen,
                                       size=1, pointMode=True);

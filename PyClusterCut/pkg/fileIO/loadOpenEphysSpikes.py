@@ -1,25 +1,43 @@
-import re as regexp;
+import re;
 import os;
 import struct;
 import numpy as np;
 
 def readSpikeFile(fileName):
+    hVarRE=re.compile("header\.(.+) = \'?(.+?)\'?;");
+    
     fsize=os.stat(fileName);
     fsize=fsize.st_size;
-    fHeaderSize=1024;
     
     fh=open(fileName, "rb");
+    readPos=0;
+    header=dict();
     
-    header=fh.read(fHeaderSize);
-    header=regexp.sub("header\.", "", header);
-    exec(header);
+    while(readPos<fsize):
+        try:
+            line=fh.readline().decode("utf-8");
+            match=hVarRE.match(line);
+        except:
+            break;
+        if(match is None):
+            break;
+        header[match.groups()[0]]=match.groups()[1];
+        readPos=fh.tell();
+        
+    fHeaderSize=int(header["header_bytes"]);
+    version=header["version"];
+    sampleRate=float(header["sampleRate"]);
     
-    if(version==0.4):
+    if(version=="0.4"):
         print("loading version 0.4 file");
-        data=readSamples(fh, fsize, fHeaderSize, "=B2q6H3B2f1H", "f", "H", "1H", "H", 4, 5, 8);
-    elif(version==0.2):
+        data=readSamples(
+            fh, fsize, fHeaderSize, "=B2q6H3B2f1H", 
+            "f", "H", "1H", "H", 4, 5, 8);
+    elif(version=="0.2"):
         print("loading version 0.2 file");
-        data=readSamples(fh, fsize, fHeaderSize, "=Bq3H", "H", "H", "1H", "H", 3, 4, None);
+        data=readSamples(
+            fh, fsize, fHeaderSize, "=Bq3H", 
+            "H", "H", "1H", "H", 3, 4, None);
     
     if(data is None):
         return data;
@@ -67,7 +85,7 @@ def readSamples(fh, fsize, fHeaderSize, spikeHeadFStr,
     spikeGainInd=spikeDataInd+totalSampleSize;
     spikeThreshInd=spikeGainInd+nChs;
     
-    numSpikes=(fsize-fHeaderSize)/spikeSize;
+    numSpikes=(fsize-fHeaderSize)//spikeSize;
     
     print(str(spikeSize)+" "+str(struct.calcsize(spikeFStr))+" "+str(numSpikes));
     print(str((fsize-fHeaderSize)%spikeSize)+"\n");

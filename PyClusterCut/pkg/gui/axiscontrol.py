@@ -31,8 +31,10 @@ class AxisControl(object):
     def populate(self, dataSet):
         self.reset();
         numChs=dataSet.getSamples().getNumChannels();
-        for i in np.r_[0:numChs]:
+        print(numChs);
+        for i in range(numChs):
             strI=str(i);
+            print(strI);
             self.__chList[strI]=QListWidgetItem(strI);
             self.__chList[strI].setData(self.__selDataRole, i);
             self.__chSelect.addItem(self.__chList[strI]);

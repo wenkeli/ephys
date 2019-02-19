@@ -92,7 +92,7 @@ class FastScatterPlotItem(GraphicsObject):
             return i
         except ValueError:
             self._maxWidth = max(self._maxWidth, symbol.width)
-            for i in xrange(len(self._unusedSymbol)):
+            for i in range(len(self._unusedSymbol)):
                 if self._unusedSymbol[i]:
                     self._unusedSymbol[i] = False
                     self._symbolList[i] = symbol
@@ -213,19 +213,19 @@ class FastScatterPlotItem(GraphicsObject):
         tr = self.deviceTransform()
         if tr is None:
             return
-        range = self.getViewBox().viewRange()
+        vRange = self.getViewBox().viewRange()
         mask = np.logical_and(
-               np.logical_and(self.data['x'] > range[0][0],
-                              self.data['x'] < range[0][1]), 
-               np.logical_and(self.data['y'] > range[1][0],
-                              self.data['y'] < range[1][1])) ## remove out of view points 
+               np.logical_and(self.data['x'] > vRange[0][0],
+                              self.data['x'] < vRange[0][1]), 
+               np.logical_and(self.data['y'] > vRange[1][0],
+                              self.data['y'] < vRange[1][1])) ## remove out of view points 
         data = self.data[mask]
         pts = np.empty((2,len(data['x'])))
         pts[0] = data['x']
         pts[1] = data['y']
         pts = fn.transformCoordinates(tr, pts)
 
-        for i in xrange(len(self._symbolList)):
+        for i in range(len(self._symbolList)):
             mask = data['symbol'] == i
             if self.pointMode:
                 p.setPen(self._symbolList[i].pen)

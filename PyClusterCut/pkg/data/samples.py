@@ -59,7 +59,7 @@ class SamplesData(object):
         
         self.__numSamples=waveforms.shape[0];
         self.__numChs=numChs;
-        self.__numPtsPerCh=waveforms.shape[1]/self.__numChs;
+        self.__numPtsPerCh=waveforms.shape[1]//self.__numChs;
         
         self.__waveforms=np.array(np.copy(waveforms), dtype="float32");
         self.__waveforms=self.__waveforms.reshape((self.__numSamples, self.__numChs, self.__numPtsPerCh));
