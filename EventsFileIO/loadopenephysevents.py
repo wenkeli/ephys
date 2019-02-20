@@ -1,19 +1,32 @@
-import re as regexp;
+import re;
 import os;
 import struct;
 import numpy as np;
-from numpy import float64
 
 def readEventFile(fileName):
+    hVarRE=re.compile("header\.(.+) = \'?(.+?)\'?;");
+    
     fsize=os.stat(fileName);
     fsize=fsize.st_size;
-    fHeaderSize=1024;
     
     fh=open(fileName, "rb");
+    readPos=0;
+    header=dict();
     
-    header=fh.read(fHeaderSize);
-    header=regexp.sub("header\.", "", header);
-    exec(header);
+    while(readPos<fsize):
+        try:
+            line=fh.readline().decode("utf-8");
+            match=hVarRE.match(line);
+        except:
+            break;
+        if(match is None):
+            break;
+        header[match.groups()[0]]=match.groups()[1];
+        readPos=fh.tell();
+    
+    fHeaderSize=int(header["header_bytes"]);
+    version=header["version"];
+    sampleRate=float(header["sampleRate"]);
 
     print("version: "+str(version));
     print("sample rate: "+str(sampleRate));
@@ -28,7 +41,7 @@ def readEvents(fh, fsize, fHeaderSize, eventFStr, timeStampInd, posInd, chInd, e
     
     eventSize=struct.calcsize(eventFStr);
     
-    numEvents=(fsize-fHeaderSize)/eventSize;
+    numEvents=(fsize-fHeaderSize)//eventSize;
     
     print(str(eventSize)+" "+str(fsize)+" "+str(numEvents));
     print(str((fsize-fHeaderSize)%eventSize)+"\n");
@@ -42,9 +55,9 @@ def readEvents(fh, fsize, fHeaderSize, eventFStr, timeStampInd, posInd, chInd, e
      
     fh.seek(fHeaderSize);
     
-    for i in np.r_[0:numEvents]:
+    for i in range(numEvents):
         event=struct.unpack(eventFStr, fh.read(eventSize));
-        retData["timestamps"][i]=(event[timeStampInd])/np.float64(sampleRate);
+        retData["timestamps"][i]=event[timeStampInd]/sampleRate;
         retData["eventChs"][i]=event[chInd];
         retData["eventIDs"][i]=event[eIDInd];
         

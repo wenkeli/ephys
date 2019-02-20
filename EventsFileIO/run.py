@@ -1,6 +1,6 @@
 import sys;
 import os;
-from PySide.QtGui import QApplication, QFileDialog;
+from PyQt5.QtWidgets import QApplication, QFileDialog;
 
 from events import Events
 from exporthdf5 import exportEventsHDF5;
