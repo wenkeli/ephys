@@ -47,7 +47,7 @@ class ClusterPlotItem(object):
 #                                   y=self.__cluster.getParam(yChN, yChParamT),
 #                                   symbol="s", pen=self.__pen,
 #                                   size=1, pointMode=False);
-            self.__plotDataBigP.setData(x=self.__cluster.getParam(xChN, xChParamT),
+            self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
                                         y=self.__cluster.getParam(yChN, yChParamT),
                                         symbol="s", pen=self.__pen, brush=self.__brush,
                                         size=1);
