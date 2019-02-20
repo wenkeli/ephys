@@ -26,9 +26,11 @@ class ClusterPlotItem(object):
 #                                       symbol="s", __pen=pg.mkPen("w"),
 #                                       size=1);
         
-        self.__plotData=FastScatterPlotItem(x=[0], y=[0],
-                                      symbol="s", pen=self.__pen,
-                                      size=1, pointMode=True);
+#         self.__plotData=FastScatterPlotItem(x=[0], y=[0],
+#                                       symbol="s", pen=self.__pen,
+#                                       size=1, pointMode=False);
+        self.__plotData=ScatterPlotItem(x=[0], y=[0], symbol="s",
+                                            pen=self.__pen, brush=self.__brush, size=1);
         self.__plotDataBigP=ScatterPlotItem(x=[0], y=[0], symbol="s",
                                             pen=self.__pen, brush=self.__brush, size=2);
         self.__plotBoundaryData=pg.PlotDataItem(x=[0], y=[0], pen=self.__pen);     
@@ -41,10 +43,14 @@ class ClusterPlotItem(object):
     
     def setPlotData(self, xChN, yChN, xChParamT, yChParamT, drawType=0):
         if(drawType==0):
-            self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
-                                  y=self.__cluster.getParam(yChN, yChParamT),
-                                  symbol="s", pen=self.__pen,
-                                  size=1, pointMode=True);
+#             self.__plotData.setData(x=self.__cluster.getParam(xChN, xChParamT),
+#                                   y=self.__cluster.getParam(yChN, yChParamT),
+#                                   symbol="s", pen=self.__pen,
+#                                   size=1, pointMode=False);
+            self.__plotDataBigP.setData(x=self.__cluster.getParam(xChN, xChParamT),
+                                        y=self.__cluster.getParam(yChN, yChParamT),
+                                        symbol="s", pen=self.__pen, brush=self.__brush,
+                                        size=1);
         else:
             self.__plotDataBigP.setData(x=self.__cluster.getParam(xChN, xChParamT),
                                         y=self.__cluster.getParam(yChN, yChParamT),
